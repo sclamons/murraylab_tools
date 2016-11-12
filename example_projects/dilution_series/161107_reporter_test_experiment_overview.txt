@@ -1,0 +1,24 @@
+Materials used:
+g1R-RFP-1.2E:
+	stock concentration: 81.17nM (174.00 ng/uL)
+	total volume: 22.77 uL
+water:
+	stock concentration: 0.00nM
+	total volume: 42.58 uL
+GFP Pos. ctrl:
+	stock concentration: 9.80nM (20.70 ng/uL)
+	total volume: 27.10 uL
+txtl_mm:
+	total volume: 157.50 uL
+	Tubes of extract needed: 2
+	Tubes of buffer needed: 4
+	Master Mix:
+		55.44uL Extract
+		117.81uL Buffer
+
+Instructions:
+	22.77 uL of g1R-RFP-1.2E in well A1
+	42.58 uL of water in well B1
+	27.10 uL of GFP Pos. ctrl in well C1
+	65.00 uL of txtl_mm in wells D1, D2
+	27.50 uL of txtl_mm in well D3
