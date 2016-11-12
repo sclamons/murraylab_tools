@@ -11,18 +11,18 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='murray_echo',
+    name='murraylab_tools',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     version='0.1',
 
-    description='Echo setup for TX-TL experiments',
+    description='Various tools for common Murray lab protocols',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/sclamons/murray_echo',
+    url='https://github.com/sclamons/murraylab_tools',
 
     # Author details
     author='Samuel Clamons',
@@ -56,7 +56,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='TX-TL echo protocols',
+    keywords='bioengineering biology laboratory protocols',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
