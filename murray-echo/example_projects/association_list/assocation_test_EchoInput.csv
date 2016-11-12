@@ -1,7 +1,0 @@
-Source Plate,Source Plate Type,Source Well,Sample ID,Destination Plate Name,Destination Well,Transfer Volume,Sample Comment
-Source[1],384_PP_AP_BP,A01,template2,Nunc_384_black_glassbottom,A2,450,Actual concentration: 1.02 nM
-Source[1],384_PP_AP_BP,A01,template1,Nunc_384_black_glassbottom,A1,325,Actual concentration: 0.98 nM
-Source[1],384_PP_AP_BP,A01,SC4,Nunc_384_black_glassbottom,A2,2500,Actual concentration: 500.00 nM
-Source[1],384_PP_AP_BP,A01,SC1,Nunc_384_black_glassbottom,A1,2500,Actual concentration: 500.00 nM
-Source[1],384_PP_AP_BP,A01,SC3,Nunc_384_black_glassbottom,A2,2500,Actual concentration: 500.00 nM
-Source[1],384_PP_AP_BP,A01,SC2,Nunc_384_black_glassbottom,A1,2500,Actual concentration: 500.00 nM
