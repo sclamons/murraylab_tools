@@ -119,6 +119,8 @@ def tidy_biotek_data(input_filename, supplementary_data = None):
                 if line[0].strip() == "":
                     continue
                 info = line[0].strip()
+                if info == "Layout":
+                    continue
                 read_name = info.split(":")[0]
                 if not info.endswith(']'):
                     read_idx = 0
