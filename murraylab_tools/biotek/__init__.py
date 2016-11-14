@@ -1,1 +1,1 @@
-import biotek
+from .biotek import *
