@@ -151,6 +151,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None):
                         uM_conc   = raw_to_uM(line[i],
                                               standard_channel_name(read_name),
                                               plate_reader_id, gain)
+                        if not uM_conc:
+                            uM = "!"
                         row = [read_name, gain, time, well_name, afu, uM_conc,
                                          excitation, emission]
                         for name in supplementary_data.keys():
