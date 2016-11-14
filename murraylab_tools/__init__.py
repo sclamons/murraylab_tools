@@ -1,2 +1,1 @@
-from .biotek import Biotek
-from .echo import Echo
+__all__ = ['biotek', 'echo']
