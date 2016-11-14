@@ -1,2 +1,2 @@
-from .biotek import biotek
+from .biotek import Biotek
 from .echo import Echo
