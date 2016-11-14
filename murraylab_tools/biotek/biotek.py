@@ -66,10 +66,10 @@ def read_supplementary_info(input_filename):
     return info
 
 
-def tidy_biotek_data(input_filename, supplementary_data = None):
+def tidy_biotek_data(input_filename, supplementary_filename = None):
     supplementary_data = dict()
-    if supplementary_data:
-        supplementary_data = read_supplementary_info(sys.argv[2])
+    if supplementary_filename:
+        supplementary_data = read_supplementary_info(supplementary_filename)
     filename_base   = input_filename.rsplit('.')[0]
     output_filename = filename_base + "_tidy.csv"
 
