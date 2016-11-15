@@ -221,7 +221,7 @@ def background_subtract(df, negative_control_wells):
             # Easiest thing to do is to apply the background subtraction to each
             # well separately
             for well in condition_df.Well.unique():
-                well_df = condition_df[condition_df.Well == well]
+                well_df = condition_df[condition_df.Well == well].copy()
                 well_df.sort_values("Time (sec)", inplace = True)
                 well_df.AFU -= avg_neg_ctrl.AFU
                 if channel in calibration_data and \
