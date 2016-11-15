@@ -223,6 +223,7 @@ def background_subtract(df, negative_control_wells):
             for well in condition_df.Well.unique():
                 well_df = condition_df[condition_df.Well == well].copy()
                 well_df.sort_values("Time (sec)", inplace = True)
+                well_df.set_index("Time (sec)", inplace = True)
                 print("well_df AFU before subtraction:\n" + str(well_df.AFU))
                 print("avg_neg_ctrl AFU:\n" + str(avg_neg_ctrl.AFU))
                 well_df.AFU = well_df.AFU - avg_neg_ctrl.AFU
