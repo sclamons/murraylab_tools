@@ -39,8 +39,9 @@ def standard_channel_name(fp_name):
     for std_name in ["GFP", "Citrine", "RFP", "CFP", "Venus", "Cherry"]:
         if std_name in upper_name:
             return std_name
-    raise ValueError("Can't convert channel name '%s' to standard name." \
-                     % fp_name)
+    raise UserWarning(("Unable to convert channel %s into standard channel " + \
+                      "name. Are you sure this is the right name?") % fp_name)
+    return fp_name
 
 
 def raw_to_uM(raw, protein, biotek, gain):
