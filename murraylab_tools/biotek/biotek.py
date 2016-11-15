@@ -1,6 +1,8 @@
 import csv
 import sys
 import collections
+import pandas as pd
+import numpy as np
 
 ####################
 # Plate Reader IDs #
@@ -67,6 +69,29 @@ def read_supplementary_info(input_filename):
 
 
 def tidy_biotek_data(input_filename, supplementary_filename = None):
+    '''
+    Convert the raw output from a Biotek plate reader into tidy data.
+    Optionally, also adds columns of metadata specified by a "supplementary
+    file", which is a CSV spreadsheet mapping well numbers to metadata.
+
+    Arguments:
+        --input_filename: Name of a Biotek output file. Data file should be
+                            standard excel output files, saved as a CSV.
+        --supplementary_filename: Name of a supplementary file. Supplementary
+                                    file must be a CSV wit a header, where the
+                                    first column is the name of the well,
+                                    additional columns define additional
+                                    metadata, and each row after the header is a
+                                    single well's metadata. Defaults to None
+                                    (no metadata other than what can be mined
+                                    from the data file).
+    Returns: None
+    Side Effects: Creates a new CSV with the same name as the data file with
+                    "_tidy" appended to the end. This new file is in tidy
+                    format, with each row representing a single channel read
+                    from a single well at a single time.
+
+    '''
     supplementary_data = dict()
     if supplementary_filename:
         supplementary_data = read_supplementary_info(supplementary_filename)
@@ -154,18 +179,53 @@ def tidy_biotek_data(input_filename, supplementary_filename = None):
                         if uM_conc == None:
                             uM_conc = -1
                         row = [read_name, gain, time, well_name, afu, uM_conc,
-                                         excitation, emission]
+                               excitation, emission]
                         for name in supplementary_data.keys():
                             row.append(supplementary_data[name][well_name])
                         writer.writerow(row)
 
-def main():
-    input_filename = sys.argv[1]
-    if len(sys.argv) > 2:
-        supplementary_filename = sys.argv[2]
-    else:
-        supplementary_filename = None
-    tidy_biotek_data(input_filename, supplementary_filename)
 
-if __name__ == "__main__":
-    main()
+def background_subtract(df, negative_control_wells):
+    '''
+    Create a new version of a dataframe with background removed. Background is
+    inferred from one or more negative control wells. If more than one negative
+    control is specified, the average of the wells is used as a background
+    value.
+
+    Note that this function assumes that every measurement has a corresponding
+    negative control measurement in each of the negative control wells (same
+    channel and gain).
+
+    Arguments:
+        df -- DataFrame of Biotek data, pulled from a tidy dataset of the form
+                produced by tidy_biotek_data.
+        negative_control_wells -- String or iterable of Strings specifying one
+                                    or more negative control wells.
+    Returns: A new DataFrame with background subtracted out.
+    '''
+    if type(negative_control_wells) == str:
+        negative_control_wells = [negative_control_wells]
+    return_df = pd.DataFrame()
+    # Split the dataframe by channel and gain
+    for channel in df.Channel.unique():
+        channel_df = df[df.Channel == channel]
+        for gain in channel_df.Gain.unique():
+            condition_df = channel_df[channel_df.Gain == gain]
+            neg_ctrl_df  = pd.DataFrame()
+            for well in negative_control_wells:
+                well_df = condition_df[condition_df.Well == well]
+                neg_ctrl_df = neg_ctrl_df.append(well_df)
+            grouped_neg_ctrl = neg_ctrl_df.groupby(["Time (sec)"])
+            avg_neg_ctrl = grouped_neg_ctrl.aggregate(np.average)
+            avg_neg_ctrl.sort_index(inplace = True)
+            # Easiest thing to do is to apply the background subtraction to each
+            # well separately
+            for well in condition_df.Well.unique():
+                well_df = condition_df[condition_df.Well == well]
+                well_df.sort_values("Time (sec)", inplace = True)
+                well_df.AFU -= avg_neg_ctrl.AFU
+                if channel in calibration_data and \
+                   gain in calibration_data[channel]:
+                    well_df.uM  -= avg_neg_ctrl.uM
+                return_df = return_df.append(well_df)
+
