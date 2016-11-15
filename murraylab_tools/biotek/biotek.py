@@ -41,8 +41,8 @@ def standard_channel_name(fp_name, suppress_name_warning = False):
         if std_name in upper_name:
             return std_name
     if not suppress_name_warning:
-    warnings.warn(("Unable to convert channel %s into standard channel " + \
-                   "name. Are you sure this is the right name?") % fp_name)
+        warnings.warn(("Unable to convert channel %s into standard channel " + \
+                       "name. Are you sure this is the right name?") % fp_name)
     return fp_name
 
 
