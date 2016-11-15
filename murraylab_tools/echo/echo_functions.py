@@ -156,11 +156,8 @@ class SourcePlate():
         Reads which wells have been used from a data file. The well-use file
         lists wells that have been used, with one line per well used.
         '''
-        print("Before reading from file, self.wells_used is:")
-        print(self.wells_used)
         with open(filename, 'r') as infile:
             for line in infile:
-                print("After reading line '%s', self.wells_used is:" % line)
                 line = line.strip()
                 if line == "":
                     continue
@@ -171,7 +168,6 @@ class SourcePlate():
                 col_num = int(col_name) - 1
                 row_num = string.ascii_uppercase.find(line.upper())
                 self.wells_used[row_num, col_num] = True
-                print(self.wells_used)
 
 
     def write_to_file(self):
@@ -202,9 +198,7 @@ class SourcePlate():
         number of wells requested is smaller than the number of wells per row,
         also require that the entire block be able to fit in one row.
         '''
-        print("Plate %s has been asked for %d wells." %(self.name, n_wells))
         if n_wells == 0:
-            print("Zero wells requested!!!")
             return []
         return_wells = np.empty(shape=(n_wells,), dtype=object)
         while True:
@@ -215,7 +209,6 @@ class SourcePlate():
                     raise Exeption("Source plate %s is out of available wells."\
                                    % self.name)
                 block = self.wells_used.ravel()[flat_idx:flat_idx + n_wells]
-                print(block)
                 # If it will, return that block and mark it used
                 if True not in block:
                     block[:]    = True
@@ -226,20 +219,14 @@ class SourcePlate():
                         return_list[i-flat_idx] = string.ascii_uppercase[row] +\
                                          ("%02d" % (col+1))
                     # Mark wells as used.
-                    print('%d, %d -->' % (self.current_row, self.current_col))
                     self.increment_position(n_wells)
-                    print('%d, %d -->' % (self.current_row, self.current_col))
                     # Move on, leaving an extra well as a buffer (unless it
                     # just crossed to a new line)
                     if self.current_col != 0:
                         self.wells_used[self.current_row, self.current_col] = \
                                                                         True
                         self.increment_position(1)
-                    print('%d, %d' % (self.current_row, self.current_col))
-                    print("Plate %s returning the following wells:" %\
                            self.name)
-                    for well in return_list:
-                        print(" " + well + ",")
                     return return_list
             # Otherwise, increment
             self.increment_position(1)
@@ -255,10 +242,6 @@ class SourcePlate():
         if self.current_row >= self.rows:
             raise Exception("Source plate %s is out of available wells." % \
                             self.name)
-        print("New current row for %s: %d; new current col: %d" %
-                                                           (self.name,
-                                                            self.current_row,
-                                                            self.current_col))
 
 
 class EchoSourceMaterial():
@@ -411,7 +394,6 @@ class EchoRun():
                 stocks = sheet
             elif sheet.title == "Layout":
                 layout = sheet
-        print(str(stocks['E3'].value))
 
     def build_picklist_from_txtl_setup_csvs(self, stock_filename,
                                             recipe_filename):
