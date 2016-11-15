@@ -228,10 +228,7 @@ def background_subtract(df, negative_control_wells):
                 well_df.AFU = well_df.AFU - avg_neg_ctrl.AFU
                 if channel in calibration_data and \
                    gain in calibration_data[channel]['b1']:
-                    print("well_df uM before subtraction:\n" + str(well_df.uM))
-                    print("avg_neg_ctrl uM:\n" + str(avg_neg_ctrl.uM))
                     well_df.uM = well_df.uM - avg_neg_ctrl.uM
-                    print("well_df uM after subtraction: \n" + str(well_df.uM))
                 return_df = return_df.append(well_df)
     return return_df
 
