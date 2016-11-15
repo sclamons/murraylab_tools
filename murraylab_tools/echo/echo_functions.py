@@ -226,7 +226,6 @@ class SourcePlate():
                         self.wells_used[self.current_row, self.current_col] = \
                                                                         True
                         self.increment_position(1)
-                           self.name)
                     return return_list
             # Otherwise, increment
             self.increment_position(1)
