@@ -3,6 +3,7 @@ import sys
 import collections
 import pandas as pd
 import numpy as np
+import warnings
 
 ####################
 # Plate Reader IDs #
@@ -34,13 +35,14 @@ calibration_data["Cherry"] = {'b3': {61:79.39, 100:2850},
                               'b2': {61:80.84, 100:2822},
                               'b1': {61:51.07, 100:1782}}
 
-def standard_channel_name(fp_name):
+def standard_channel_name(fp_name, suppress_name_warning = False):
     upper_name = fp_name.upper()
     for std_name in ["GFP", "Citrine", "RFP", "CFP", "Venus", "Cherry"]:
         if std_name in upper_name:
             return std_name
-    raise UserWarning(("Unable to convert channel %s into standard channel " + \
-                      "name. Are you sure this is the right name?") % fp_name)
+    if not suppress_name_warning:
+    warnings.warn(("Unable to convert channel %s into standard channel " + \
+                   "name. Are you sure this is the right name?") % fp_name)
     return fp_name
 
 
