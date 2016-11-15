@@ -1,7 +1,11 @@
 Tools for Common Murray Lab Protocols
 =====================================
 
-Code for common tasks in the Murray lab. Currently includes the following subpackages:
+Code for common tasks in the Murray lab. Currently supported in Python 2.7.
+
+Install with the following (probably requires sudo): pip install git+git://github.com/sclamons/murray_echo.git@master
+
+Currently includes the following subpackages:
 
 echo: Echo Setup for TX-TL Experiments (and others)
 =============================================
