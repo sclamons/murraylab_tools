@@ -228,4 +228,5 @@ def background_subtract(df, negative_control_wells):
                    gain in calibration_data[channel]:
                     well_df.uM  -= avg_neg_ctrl.uM
                 return_df = return_df.append(well_df)
+    return return_df
 
