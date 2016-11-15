@@ -1,0 +1,10 @@
+Well,Primer 1 Name,Primer 1 final conc (nM),Primer 2 name,Primer 2 final conc (nM),Template,Template Conc (nM)
+A1,primer_1F,500,primer_1R,500,GFP plasmid,0.1
+A2,primer_2F,500,primer_2R,500,GFP plasmid,0.1
+A3,primer_3F,500,primer_3R,500,GFP plasmid,0.1
+B1,primer_1F,500,primer_1R,500,RFP plasmid,0.1
+B2,primer_2F,500,primer_2R,500,RFP plasmid,0.1
+B3,primer_3F,500,primer_3R,500,RFP plasmid,0.1
+C1,primer_1F,500,primer_1R,500,CFP plasmid,0.1
+C2,primer_2F,500,primer_2R,500,CFP plasmid,0.1
+C3,primer_3F,500,primer_3R,500,CFP plasmid,0.1

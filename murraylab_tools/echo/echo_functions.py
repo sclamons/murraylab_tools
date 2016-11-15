@@ -31,9 +31,6 @@ max_volume  = 65000 # Maximum Echoable volume in an Echo source plate, in nL
 usable_volume = max_volume - dead_volume # Maximum pipettable volume per well
                                          # in an Echo source plate, in nL
 
-rows = 16           # Number of rows in a 384 well plate
-cols = 24           # Number of columns in a 384 well plate
-
 def dna2nM_convert(dnaconc, dnalength):
     '''
     Converts DNA ng/ul to nM
@@ -133,16 +130,20 @@ class SourcePlate():
             else:
                 self.name = SPname
         if SPtype == None:
-            self.type = "384_PP_AP_BP"
+            self.type = "384PP_AQ_BP"
             self.rows = 16
             self.cols = 24
         elif SPtype.startswith("384PP"):
             self.rows = 16
             self.cols = 24
             self.type = SPtype
+        elif SPtype.startswith("6"):
+            self.rows = 2
+            self.cols = 3
+            self.type = SPtype
         else:
             raise ValueError("'%s' is not a recognized plate type." % SPtype)
-        self.wells_used   = np.zeros((rows, cols), dtype=bool)
+        self.wells_used   = np.zeros((self.rows, self.cols), dtype=bool)
         self.current_row  = 0
         self.current_col  = 0
 
@@ -346,8 +347,22 @@ class Pick():
 class EchoRun():
     '''
     Defines and prints an Echo picklist from one of several algorithms.
+
+    Parameters:
+        -- rxn_vol: Volume of a single TX-TL reaction, in uL. Default 5.
+        -- DPtype: Destination plate type. Should be a string recognizable by
+                    the Echo Plate Reformat software, though that is not
+                    enforced in this code. Default "Nunc_384_black_glassbottom"
+        --plate: Source plate. Should be a SourcePlate object. Required for
+                    TX-TL setup experiments, but not for association spreadsheet
+                    experiments.
+        --extract_per_aliquot: Volume of TX-TL extract in one aliquot, in nL.
+                                Default 30000.
+        --buffer_per_aliquot: Volume of TX-TL buffer in one aliquot, in nL.
+                                Default 37000.
     '''
-    def __init__(self, rxn_vol = 5, DPtype = None, plate = None):
+    def __init__(self, rxn_vol = 5, DPtype = None, plate = None,
+                 extract_per_aliquot = 30000, buffer_per_aliquot = 37000):
         # The user gives the reaction volume in microliters; store it in nL
         self.rxn_vol = rxn_vol * 1e3
 
@@ -363,8 +378,8 @@ class EchoRun():
         self.material_list = dict()
         self.picklist      = []
         self.make_master_mix = False
-        self.extract_per_aliquot = 30000 # Volume of extract per aliquot tube
-        self.buffer_per_aliquot  = 37000 # Volume of buffer per aliquot tube
+        self.extract_per_aliquot = extract_per_aliquot
+        self.buffer_per_aliquot  = buffer_per_aliquot
 
     def define_plate(self, SPname, SPtype, DPtype):
         '''

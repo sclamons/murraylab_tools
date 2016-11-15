@@ -1,0 +1,10 @@
+Location,Name,Concentration,Length,Plate
+A1,primer_1F,10000,0,1
+A2,primer_1R,10000,0,1
+A3,primer_2F,10000,0,1
+A4,primer_2R,10000,0,1
+A5,primer_3F,10000,0,1
+A6,primer_3R,10000,0,1
+B1,GFP plasmid,149,3115,1
+B2,RFP plasmid,189,3045,1
+B3,CFP plasmid,125,2789,1
