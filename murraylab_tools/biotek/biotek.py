@@ -218,8 +218,14 @@ def background_subtract(df, negative_control_wells):
             for well in negative_control_wells:
                 well_df = condition_df[condition_df.Well == well]
                 neg_ctrl_df = neg_ctrl_df.append(well_df)
+            print("neg_ctrl_df:")
+            print(neg_ctrl_df.head())
             grouped_neg_ctrl = neg_ctrl_df.groupby(["Time (sec)"])
+            print("grouped_neg_ctrl:")
+            print(grouped_neg_ctrl.head())
             avg_neg_ctrl = grouped_neg_ctrl.aggregate(np.average)
+            print("initial avg_neg_ctrl:")
+            print(avg_neg_ctrl.head())
             avg_neg_ctrl.sort_index(inplace = True)
             avg_neg_ctrl.reset_index(inplace = True)
             # Easiest thing to do is to apply the background subtraction to each
@@ -228,6 +234,7 @@ def background_subtract(df, negative_control_wells):
                 well_df = condition_df[condition_df.Well == well].copy()
                 well_df.sort_values("Time (sec)", inplace = True)
                 well_df.reset_index(inplace = True)
+                print("well_df")
                 print(well_df.head())
                 print("avg_neg_ctrl")
                 print(avg_neg_ctrl.head())
