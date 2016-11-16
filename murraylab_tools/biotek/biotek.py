@@ -176,6 +176,9 @@ def tidy_biotek_data(input_filename, supplementary_filename = None):
                             break
                         well_name = well_names[i]
                         afu       = line[i]
+                        # Check for overflow
+                        if afu.upper() == "OVRFLW":
+                            afu = np.infty
                         uM_conc   = raw_to_uM(line[i],
                                               standard_channel_name(read_name),
                                               plate_reader_id, gain)
