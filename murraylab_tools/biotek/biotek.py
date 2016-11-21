@@ -245,7 +245,7 @@ def endpoint_averages(df, window_size = 10):
     average fluorescence. Averages taken over the last window_size points.
     '''
     # Find the last data points
-    all_times = df["Time (Sec)"].unique()
+    all_times = df["Time (sec)"].unique()
     all_times.sort()
     last_times = all_times[-window_size:]
     endpoint_df = df[df["Time (sec)"].isin(last_times)]
