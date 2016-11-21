@@ -252,7 +252,7 @@ def endpoint_averages(df, window_size = 10):
     print(endpoint_df.head())
 
     # Group by channel, gain, and well
-    grouped_df = endpoint_df.groupby("Channel", "Gain", "Well")
+    grouped_df = endpoint_df.groupby("Channel", "Well")
 
     # Calculate endpoints
     endpoint_averages = grouped_df.aggregate(np.average)
