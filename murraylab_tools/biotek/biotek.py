@@ -248,7 +248,7 @@ def endpoint_averages(df, window_size = 10):
     all_times = df["Time (Sec)"].unique()
     all_times.sort()
     last_times = all_times[-window_size:]
-    endpoint_df = df[df["Time (Sec)"].isin(last_times)]
+    endpoint_df = df[df["Time (sec)"].isin(last_times)]
 
     # Group by channel, gain, and well
     grouped_df = endpoint_df.groupby("Channel", "Gain", "Well")
