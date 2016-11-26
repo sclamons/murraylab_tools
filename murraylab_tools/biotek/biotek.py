@@ -109,8 +109,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None):
         with open(output_filename, 'w') as outfile:
             reader = csv.reader(infile)
             writer = csv.writer(outfile, delimiter = ',')
-            title_row = ['Channel', 'Gain', 'Time (sec)', 'Well', 'AFU', 'uM',
-                             'Excitation', 'Emission']
+            title_row = ['Channel', 'Gain', 'Time (sec)', 'Time (hr)', 'Well',
+                         'AFU', 'uM', 'Excitation', 'Emission']
             for name in supplementary_data.keys():
                 title_row.append(name)
             writer.writerow(title_row)
