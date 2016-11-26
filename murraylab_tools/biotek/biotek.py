@@ -1,3 +1,7 @@
+# TODO:
+#   -- Move calibration data out of source code
+#   -- Add temperature records?
+
 import csv
 import sys
 import collections
@@ -168,8 +172,9 @@ def tidy_biotek_data(input_filename, supplementary_filename = None):
                         break
                     raw_time = line[1]
                     time_parts = raw_time.split(':')
-                    time = int(time_parts[2]) + 60*int(time_parts[1]) \
-                           + 3600*int(time_parts[0])
+                    time_secs = int(time_parts[2]) + 60*int(time_parts[1]) \
+                                + 3600*int(time_parts[0])
+                    time_hrs = time_secs / 3600.0
                     temp = line[2]
                     for i in range(3,len(line)):
                         if line[i].strip() == "":
@@ -184,8 +189,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None):
                                               plate_reader_id, gain)
                         if uM_conc == None:
                             uM_conc = -1
-                        row = [read_name, gain, time, well_name, afu, uM_conc,
-                               excitation, emission]
+                        row = [read_name, gain, time_secs, time_hrs, well_name,
+                               afu, uM_conc, excitation, emission]
                         for name in supplementary_data.keys():
                             row.append(supplementary_data[name][well_name])
                         writer.writerow(row)

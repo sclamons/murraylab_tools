@@ -1,6 +1,7 @@
-# TODO: --Clean up example, publish to github.
+# TODO:
 #       --Add optional user-set source wells
 #       --Positive control reaction on 2D dilution series
+#           * Alternatively, add manual positive control reaction function?
 #
 
 # Written by Victoria Hsiao, August 2016
@@ -138,7 +139,7 @@ class DestinationPlate():
             self.type = DPtype
         else:
             raise ValueError("'%s' is not a recognized plate type." % DPtype)
-        
+
         # Construct use history object and helpers
         self.n_wells = self.rows * self.cols
         lets = string.ascii_uppercase[:self.rows]
@@ -147,12 +148,12 @@ class DestinationPlate():
         self.indices = np.arange(self.n_wells)
         self.wells_used   = np.zeros((self.rows * self.cols,), dtype=bool)
         self.current_idx  = 0
-        
+
         self.used_well_file = filename
         if self.used_well_file:
             if os.path.isfile(filename):
                 self.load_from_file(filename)
-    
+
     def make_picklist(self, source, rxns):
         n_rxns = len(rxns)
         d_wells = self.request_wells(n_rxns)
@@ -167,10 +168,10 @@ class DestinationPlate():
                     c_conc = None
                 c_well = source.get_location(c_name, c_conc)
                 picklist.append([c_well, c_name, well, c_vol, source.name, source.type, self.name])
-        header = ["Source Well", "Sample Name", "Destination Well", 
+        header = ["Source Well", "Sample Name", "Destination Well",
                   "Transfer Volume", "Source Plate Name", "Source Plate Type", "Destination Plate Name"]
         return picklist, header
-    
+
     def load_from_file(self, filename):
         '''
         Reads which wells have been used from a data file. The well-use file
@@ -281,7 +282,7 @@ class SourcePlate():
     def load_well_definitions(self, filename):
         """
         Import source plate definitions from CSV.
-        
+
         Arguments:
             self: object
             filename: filname of CSV
@@ -295,11 +296,11 @@ class SourcePlate():
         for col in necessary_cols:
             assert col in in_plate.columns
         self.plate = in_plate
-        
+
     def get_location(self, name, conc=None, i=0):
         """
         Get well location of material.
-        
+
         Arguments:
             self: object
             name: name of material desired
@@ -314,7 +315,7 @@ class SourcePlate():
                 n = min(len(values)-1, i)
                 return values[n]
             return values
-        
+
         names = self.plate.Name.values
         if name not in names:
             raise AttributeError('No material named {} in source plate'.format(name))
@@ -327,7 +328,7 @@ class SourcePlate():
             if conc in grouped_by_conc.groups:
                 c_group = grouped_by_conc.get_group(conc)
                 return get_from_values(c_group.Location.values)
-    
+
     def load_from_file(self, filename):
         '''
         Reads which wells have been used from a data file. The well-use file
