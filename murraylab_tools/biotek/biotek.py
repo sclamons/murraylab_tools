@@ -50,12 +50,13 @@ def standard_channel_name(fp_name, suppress_name_warning = False):
     return fp_name
 
 
-def raw_to_uM(raw, protein, biotek, gain):
+def raw_to_uM(raw, protein, biotek, gain, volume):
     if not protein in calibration_data or \
        not biotek in calibration_data[protein] or \
        not gain in calibration_data[protein][biotek]:
        return None
-    return float(raw) / calibration_data[protein][biotek][gain]
+    # Note that volume is in uL!
+    return float(raw) * 10.0 / calibration_data[protein][biotek][gain] / volume
 
 ReadSet = collections.namedtuple('ReadSet', ['name', 'excitation', 'emission',
                                              'gain'])
@@ -75,7 +76,8 @@ def read_supplementary_info(input_filename):
     return info
 
 
-def tidy_biotek_data(input_filename, supplementary_filename = None):
+def tidy_biotek_data(input_filename, supplementary_filename = None,
+                     volume = 10):
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
     Optionally, also adds columns of metadata specified by a "supplementary
@@ -92,6 +94,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None):
                                     single well's metadata. Defaults to None
                                     (no metadata other than what can be mined
                                     from the data file).
+        --volume: Volume of the TX-TL reactions. Note that default is 10 uL!
     Returns: None
     Side Effects: Creates a new CSV with the same name as the data file with
                     "_tidy" appended to the end. This new file is in tidy
@@ -186,7 +189,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None):
                             afu = np.infty
                         uM_conc   = raw_to_uM(line[i],
                                               standard_channel_name(read_name),
-                                              plate_reader_id, gain)
+                                              plate_reader_id, gain, volume)
                         if uM_conc == None:
                             uM_conc = -1
                         row = [read_name, gain, time_secs, time_hrs, well_name,
