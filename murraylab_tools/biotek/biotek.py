@@ -261,4 +261,7 @@ def endpoint_averages(df, window_size = 10):
     # Calculate endpoints
     endpoint_averages = grouped_df.aggregate(np.average)
 
+    endpoint_averages.reset_index(inplace = True)
+
+
     return endpoint_averages
