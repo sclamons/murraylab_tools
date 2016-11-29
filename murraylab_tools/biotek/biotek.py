@@ -77,7 +77,7 @@ def read_supplementary_info(input_filename):
 
 
 def tidy_biotek_data(input_filename, supplementary_filename = None,
-                     volume = 10):
+                     volume = None):
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
     Optionally, also adds columns of metadata specified by a "supplementary
@@ -102,6 +102,9 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     from a single well at a single time.
 
     '''
+    if volume == None:
+        print("Assuming default volume 10 uL. Make sure this is what you want!")
+
     supplementary_data = dict()
     if supplementary_filename:
         supplementary_data = read_supplementary_info(supplementary_filename)
