@@ -104,6 +104,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
     '''
     if volume == None:
         print("Assuming default volume 10 uL. Make sure this is what you want!")
+        volume = 10.0
 
     supplementary_data = dict()
     if supplementary_filename:
