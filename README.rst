@@ -16,9 +16,16 @@ Code to produce Echo source plate setup instructions and picklists for one of th
 * A 2-dimensional dilution series, in TX-TL.
 * Association of one or more substances on one or more source plates (not in TX-TL)
 
-See the example usage ipython notebook for usage details.
+For details, see the "Echo Setup Usage Examples" ipython notebook under "examples".
 
 biotek: Tidying and Analysis of Biotek Plate Reader Data
 ========================================================
 
 Code for converting raw excel/CSV data from a Biotek plate reader into tidy format.
+
+Also contains convenience functions for analysis of Biotek timecourse data:
+
+* Background subtraction
+* Endpoint averaging
+
+For details, see the "Biotek Analysis Usage Examples" ipython notebook under "examples".
