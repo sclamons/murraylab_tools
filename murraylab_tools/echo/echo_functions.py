@@ -304,7 +304,8 @@ class SourcePlate():
         Arguments:
             self: object
             name: name of material desired
-            conc: select for concentration when available. Default is to select the first entry.
+            conc: select for concentration when available. Default is to select
+                    the first entry.
         Returns:
             Well location, as a string
         Raises:
@@ -318,7 +319,8 @@ class SourcePlate():
 
         names = self.plate.Name.values
         if name not in names:
-            raise AttributeError('No material named {} in source plate'.format(name))
+            raise AttributeError(('No material named {} in source ' + \
+                                  'plate').format(name))
         grouped_by_name = self.plate.groupby('Name')
         group = grouped_by_name.get_group(name)
         if conc is None:
@@ -363,7 +365,7 @@ class SourcePlate():
                 col_string = str(col_num + 1)
                 outfile.write(row_string + col_string + "\n")
 
-    def request_wells(self, n_wells):
+    def request_wells(self, n_wells, name = "None"):
         '''
         Called when an EchoSourceMaterial wants to get some wells. Returns a
         list of wells for the material, which are marked internally as used.
@@ -374,6 +376,10 @@ class SourcePlate():
         buffer welll on the right. Assign the first block run across. If the
         number of wells requested is smaller than the number of wells per row,
         also require that the entire block be able to fit in one row.
+
+        Alternatively, if the name of a material is passed, and the
+        SourcePlate object knows where that material is stored, it can assign
+        that well instead.
         '''
         if n_wells == 0:
             return []
@@ -477,7 +483,8 @@ class EchoSourceMaterial():
         usable_volume  = max_volume - dead_volume
         n_source_wells = math.ceil(float(self.total_volume_requested) \
                                          / usable_volume)
-        self.wells           = self.plate.request_wells(int(n_source_wells))
+        if self.wells == None:
+            self.wells = self.plate.request_wells(int(n_source_wells),self.name)
         self.well_volumes    = np.zeros(len(self.wells))
         self.well_volumes[0] = dead_volume
         self.current_well    = 0
@@ -795,8 +802,13 @@ class EchoRun():
                         break
                 if not plate:
                     plate = SourcePlate(SPname = plate_name)
+                if name in self.material_list.keys() \
+                   and self.material_list[name].concentration == concentration \
+                   and self.material_list[name].length == length:
+                    self.material_list[name].wells.append(well)
                 new_material = EchoSourceMaterial(name, concentration,
                                                   length, plate)
+                new_material.wells = [well]
                 self.material_list[name] = new_material
 
     def build_picklist_from_association_spreadsheet(self, input_filename,
