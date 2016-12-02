@@ -800,7 +800,9 @@ class EchoRun():
                 self.material_list[name] = new_material
 
     def build_picklist_from_association_spreadsheet(self, input_filename,
-                                                    well_column, header = True):
+                                                    well_column, header = True,
+                                                    fill_with_water = False,
+                                                    water_name = None):
         '''
         Make an Echo picklist based on an association spreadsheet, which is a
         CSV file where 1) each line is a reaction and 2) lines contains
@@ -814,8 +816,18 @@ class EchoRun():
                         int (2)
             header -- True iff there is a header row. Decides whether or not to
                         skip the first line of each file
+            fill_with_water -- If true, will fill all wells to the reaction size
+                                with water. Requires water_name argument.
+            water_name -- Determines the name of wells containing water. Must
+                            match the names given in an association spreadsheet,
+                            or otherwise defined.
         '''
         well_idx = process_column_argument(well_column)
+        if fill_with_water:
+            if not water_name:
+                raise Exception("If 'Fill with water' option selected, must " +\
+                                "set the name of wells contianing water")
+
         with open(input_filename, 'rU') as input_file:
             reader = csv.reader(input_file)
             # Skip the first row if it's a header
@@ -828,6 +840,7 @@ class EchoRun():
                 well        = row[well_idx]
                 i           = 0
                 is_name_col = True
+                volume_left = self.rxn_vol
                 while i < len(row):
                     # Ignore it if it's the well column.
                     if i == well_idx:
@@ -841,12 +854,14 @@ class EchoRun():
                     # material
                     else:
                         final_conc = float(row[i])
-                        well       = row[well_idx]
                         volume = self.rxn_vol * final_conc / source_material.nM
+                        volume_left -= volume
                         source_material.request_material(well, volume)
                         is_name_col = True
                     i += 1
-
+                if fill_with_water:
+                    water = self.material_list[water_name]
+                    water.request_material(well, volume_left)
 
     def build_dilution_series(self, dna1, dna2, dna1_final, dna2_final,
                               first_well, extract_fraction = 0.24):
