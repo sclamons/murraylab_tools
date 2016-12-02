@@ -784,7 +784,10 @@ class EchoRun():
                     length = int(floatify(row[len_idx]))
                 else:
                     length = 0
-                plate_name = row[plate_idx]
+                if plate_idx == None:
+                    plate_name = "1"
+                else:
+                    plate_name = row[plate_idx]
                 plate = None
                 for p in self.plates:
                     if p.name == plate_name:
