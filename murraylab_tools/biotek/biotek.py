@@ -56,6 +56,8 @@ def raw_to_uM(raw, protein, biotek, gain, volume):
        not gain in calibration_data[protein][biotek]:
        return None
     # Note that volume is in uL!
+    if raw == "OVRFLW":
+        raw = np.infty
     return float(raw) * 10.0 / calibration_data[protein][biotek][gain] / volume
 
 ReadSet = collections.namedtuple('ReadSet', ['name', 'excitation', 'emission',
