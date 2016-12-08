@@ -317,5 +317,4 @@ def endpoint_averages(df, window_size = 10):
     all_times = df["Time (sec)"].unique()
     start = len(all_times) - window_size
     end = len(all_times)-1
-    print("Calculating window_averages between {0} and {1}".format(start, end))
-    return window_averages(df, len(df) - window_size, len(df)-1, "index")
+    return window_averages(df, start, end, "index")
