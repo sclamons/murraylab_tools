@@ -314,4 +314,7 @@ def endpoint_averages(df, window_size = 10):
     Converts a dataframe of fluorescence data to a dataframe of endpoint
     average fluorescence. Averages taken over the last window_size points.
     '''
+    start = len(df)
+    end = len(df)-1
+    print("Calculating window_averages between {0} and {1}".format(start, end))
     return window_averages(df, len(df) - window_size, len(df)-1, "index")
