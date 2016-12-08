@@ -253,19 +253,39 @@ def background_subtract(df, negative_control_wells):
     return return_df
 
 
-def endpoint_averages(df, window_size = 10):
+def window_averages(df, start, end, units = "seconds"):
     '''
-    Converts a dataframe of fluorescence data to a dataframe of endpoint
-    average fluorescence. Averages taken over the last window_size points.
+    Converts a dataframe of fluorescence data to a dataframe of average
+    fluorescences from a specified time window. The time window can be specified
+    in seconds, hours, or index.
+
+    Args:
+        df -- Dataframe of fluorescence data
+        start -- First frame to be included (inclusively)
+        end -- Last frame to be included (also inclusively)
+        units -- Either "seconds" (default), "hours", or "index". If "seconds"
+                    or "hours", takes data within a time window (using the
+                    obvious columns). If "index", takes a slice using an index,
+                    where the first time is 0, etc.
     '''
-    # Find the last data points
-    all_times = df["Time (sec)"].unique()
-    all_times.sort()
-    last_times = all_times[-window_size:]
-    endpoint_df = df[df["Time (sec)"].isin(last_times)]
+    # Find times within the given window.
+    if units.lowercase() == "index":
+        all_times = df["Time (sec)"].unique()
+        all_times.sort()
+        window_times = all_times[start:end+1]
+        window_df = df[df["Time (sec)"].isin(window_times)]
+    else:
+        if units.lowercase() == "seconds":
+            col = "Time (sec)"
+        if units.lowercase() == "hours":
+            col = "Time (hr)"
+        else:
+            raise ValueError('Unknown unit "{0}"; units must be "seconds", ' \
+                            +'"hours", or "index"'.format(units))
+        window_times = df[(df[col] >= start) & (df[col] <= end)]
 
     # Group by channel, gain, and well
-    grouped_df = endpoint_df.groupby(["Channel", "Gain", "Well"])
+    grouped_df = window_df.groupby(["Channel", "Gain", "Well"])
 
     # Figure out which columns are numeric and which have strings.
     column_names = df.columns.values.tolist()
@@ -282,8 +302,16 @@ def endpoint_averages(df, window_size = 10):
             functions[col] = lambda x:x.iloc[0]
 
     # Calculate endpoints
-    endpoint_averages = grouped_df.agg(functions)
+    averages_df = grouped_df.agg(functions)
 
-    endpoint_averages.reset_index(inplace = True)
+    averages_df.reset_index(inplace = True)
 
-    return endpoint_averages
+    return averages_df
+
+
+def endpoint_averages(df, window_size = 10):
+    '''
+    Converts a dataframe of fluorescence data to a dataframe of endpoint
+    average fluorescence. Averages taken over the last window_size points.
+    '''
+    return window_averages(df, len(df) - window_size, len(df)-1)
