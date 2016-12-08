@@ -279,7 +279,7 @@ def endpoint_averages(df, window_size = 10):
             functions[col] = np.average
         else:
             # Non-numbers get a copy of the first value
-            functions[col] = lambda x:x.iloc[0]
+            functions[col] = lambda x:x.first()
 
     # Calculate endpoints
     endpoint_averages = grouped_df.agg(functions)
