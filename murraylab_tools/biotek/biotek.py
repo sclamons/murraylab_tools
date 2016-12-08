@@ -294,7 +294,7 @@ def window_averages(df, start, end, units = "seconds"):
         if col in ["Channel", "Gain", "Well"]:
             continue
         # Check to see if the column is numerically typed
-        if np.issubdtype(endpoint_df[col].dtype, np.number):
+        if np.issubdtype(window_df[col].dtype, np.number):
             # Numbers get averaged
             functions[col] = np.average
         else:
