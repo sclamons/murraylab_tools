@@ -280,8 +280,8 @@ def window_averages(df, start, end, units = "seconds"):
         if units.lower() == "hours":
             col = "Time (hr)"
         else:
-            raise ValueError('Unknown unit "{0}"; units must be "seconds", ' \
-                            +'"hours", or "index"'.format(units))
+            raise ValueError(('Unknown unit "{0}"; units must be "seconds", ' \
+                            +'"hours", or "index"').format(units))
         window_times = df[(df[col] >= start) & (df[col] <= end)]
 
     # Group by channel, gain, and well
@@ -314,4 +314,4 @@ def endpoint_averages(df, window_size = 10):
     Converts a dataframe of fluorescence data to a dataframe of endpoint
     average fluorescence. Averages taken over the last window_size points.
     '''
-    return window_averages(df, len(df) - window_size, len(df)-1)
+    return window_averages(df, len(df) - window_size, len(df)-1, "index")
