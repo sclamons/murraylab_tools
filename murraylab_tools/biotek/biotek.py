@@ -282,7 +282,7 @@ def window_averages(df, start, end, units = "seconds"):
         else:
             raise ValueError(('Unknown unit "{0}"; units must be "seconds", ' \
                             +'"hours", or "index"').format(units))
-        window_times = df[(df[col] >= start) & (df[col] <= end)]
+        window_df = df[(df[col] >= start) & (df[col] <= end)]
 
     # Group by channel, gain, and well
     grouped_df = window_df.groupby(["Channel", "Gain", "Well"])
