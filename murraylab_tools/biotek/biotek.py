@@ -267,10 +267,21 @@ def endpoint_averages(df, window_size = 10):
     # Group by channel, gain, and well
     grouped_df = endpoint_df.groupby(["Channel", "Gain", "Well"])
 
+    # Figure out which columns are numeric and which have strings.
+    column_names = grouped_df.columns.values.tolist()
+    functions    = []
+    for col in column_names:
+        # Check to see if the column is numerically typed
+        if np.issubdtype(endpoint_df[col].dtype, np.number):
+            # Numbers get averaged
+            functions.append(np.average)
+        else:
+            # Non-numbers get a copy of the first value
+            functions.append(lambda x:x[0])
+
     # Calculate endpoints
-    endpoint_averages = grouped_df.aggregate(np.average)
+    endpoint_averages = grouped_df.agg(functions)
 
     endpoint_averages.reset_index(inplace = True)
-
 
     return endpoint_averages
