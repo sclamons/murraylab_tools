@@ -269,15 +269,15 @@ def window_averages(df, start, end, units = "seconds"):
                     where the first time is 0, etc.
     '''
     # Find times within the given window.
-    if units.lowercase() == "index":
+    if units.lower() == "index":
         all_times = df["Time (sec)"].unique()
         all_times.sort()
         window_times = all_times[start:end+1]
         window_df = df[df["Time (sec)"].isin(window_times)]
     else:
-        if units.lowercase() == "seconds":
+        if units.lower() == "seconds":
             col = "Time (sec)"
-        if units.lowercase() == "hours":
+        if units.lower() == "hours":
             col = "Time (hr)"
         else:
             raise ValueError('Unknown unit "{0}"; units must be "seconds", ' \
