@@ -269,17 +269,17 @@ def endpoint_averages(df, window_size = 10):
 
     # Figure out which columns are numeric and which have strings.
     column_names = df.columns.values.tolist()
-    functions    = []
+    functions    = dict()
     for col in column_names:
         if col in ["Channel", "Gain", "Well"]:
             continue
         # Check to see if the column is numerically typed
         if np.issubdtype(endpoint_df[col].dtype, np.number):
             # Numbers get averaged
-            functions.append(np.average)
+            functions[col] = np.average
         else:
             # Non-numbers get a copy of the first value
-            functions.append(lambda x:x[0])
+            functions[col] = lambda x:x[0]
 
     # Calculate endpoints
     endpoint_averages = grouped_df.agg(functions)
