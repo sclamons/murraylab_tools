@@ -264,9 +264,6 @@ def endpoint_averages(df, window_size = 10):
     last_times = all_times[-window_size:]
     endpoint_df = df[df["Time (sec)"].isin(last_times)]
 
-    print("I'm DOING A THING!")
-    return 3
-
     # Group by channel, gain, and well
     grouped_df = endpoint_df.groupby(["Channel", "Gain", "Well"])
 
@@ -282,7 +279,7 @@ def endpoint_averages(df, window_size = 10):
             functions[col] = np.average
         else:
             # Non-numbers get a copy of the first value
-            functions[col] = lambda x:x.first()
+            functions[col] = lambda x:x.iloc[0]
 
     # Calculate endpoints
     endpoint_averages = grouped_df.agg(functions)
