@@ -277,7 +277,7 @@ def window_averages(df, start, end, units = "seconds"):
     else:
         if units.lower() == "seconds":
             col = "Time (sec)"
-        if units.lower() == "hours":
+        elif units.lower() == "hours":
             col = "Time (hr)"
         else:
             raise ValueError(('Unknown unit "{0}"; units must be "seconds", ' \
