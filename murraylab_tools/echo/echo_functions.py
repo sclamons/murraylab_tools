@@ -242,7 +242,7 @@ class SourcePlate():
                     "384PP_AQ_BP"
         filename -- Name of a file holding a list of used wells for this plate.
                     If that file doesn't exist yet, it will be created and
-                    populated.
+                    populated when write_to_file is called.
         '''
         if SPname == None:
             self.name = "Source[1]"
@@ -483,6 +483,10 @@ class EchoSourceMaterial():
         usable_volume  = max_volume - dead_volume
         n_source_wells = math.ceil(float(self.total_volume_requested) \
                                          / usable_volume)
+        if n_source_wells == 0:
+            raise ValueError(("Material %s is requesting 0 wells in its " +\
+                              "source plate to give %d total volume") % \
+                              self.name, self.total_volume_requested)
         if self.wells == None:
             self.wells = self.plate.request_wells(int(n_source_wells),self.name)
         self.well_volumes    = np.zeros(len(self.wells))
@@ -950,8 +954,8 @@ class EchoRun():
                             txtlMM
                 if water_vol < 0:
                     raise ValueError(("Well %s is overloaded! %s contains "+\
-                                     "%.2f uL of %s, %.2f uL of %s, and " +\
-                                     "%.2f uL of Master Mix.") % \
+                                     "%.2f nL of %s, %.2f nL of %s, and " +\
+                                     "%.2f nL of Master Mix.") % \
                                      (destination, destination, dna1_pick_vol,
                                       dna1.name, dna2_pick_vol, dna2.name,
                                       txtlMM))
