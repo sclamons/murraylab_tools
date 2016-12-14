@@ -472,7 +472,6 @@ class EchoSourceMaterial():
         '''
         actual_volume = echo_round(volume)
         self.total_volume_requested += actual_volume
-        print("Material %s requested %d nL; new volume %d nL" % (self.name, volume, self.total_volume_requested))
         self.picklist.append(Pick(self, None, destination_well, actual_volume))
 
 
