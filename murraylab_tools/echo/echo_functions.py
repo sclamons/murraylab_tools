@@ -23,6 +23,7 @@ import math
 import csv
 import collections
 import os
+import warnings
 #import openpyxl as pyxl  # Required for reading excel files
 
 __all__ = ["dna2nM_convert", "echo_round", "MasterMixMaterial",
@@ -446,6 +447,11 @@ class EchoSourceMaterial():
         self.name   = name
         self.length = length
         self.plate  = plate
+
+        # Check for commas in the name.
+        if "," in self.name:
+            warnings.warn("Material %s has comma in its name; this may bug " +
+                          "the echo when you run it.", Warning)
 
         # DNA concentration in ng/uL, or other reagent concentration in nM.
         self.concentration = concentration
