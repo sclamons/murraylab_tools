@@ -7,3 +7,28 @@ water:
 	total volume: 30.68 uL
 txtl_mm:
 	total volume: 59.00 uL
+	Tubes of extract needed: 0
+	Tubes of buffer needed: 0
+	Master Mix:
+		13.20uL Extract
+		28.05uL Buffer
+		28.05uL eSC3 Buffer
+		13.20uL eSC3 Extract
+		0.55uL Helper Protein
+CFP Plasmid:
+	stock concentration: 67.91nM (125.00 ng/uL)
+	total volume: 21.68 uL
+RFP Plasmid:
+	stock concentration: 94.04nM (189.00 ng/uL)
+	total volume: 21.45 uL
+GFP Plasmid:
+	stock concentration: 72.47nM (149.00 ng/uL)
+	total volume: 21.65 uL
+
+Instructions:
+	21.55 uL of Positive Control in well B13
+	30.68 uL of water in well B15
+	59.00 uL of txtl_mm in well B17
+	21.68 uL of CFP Plasmid in well B19
+	21.45 uL of RFP Plasmid in well B21
+	21.65 uL of GFP Plasmid in well B23

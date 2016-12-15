@@ -27,7 +27,8 @@ import warnings
 #import openpyxl as pyxl  # Required for reading excel files
 
 __all__ = ["dna2nM_convert", "echo_round", "MasterMixMaterial",
-           "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun"]
+           "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
+           "MasterMix"]
 
 dead_volume = 15000 + 6000 # Dead volume per well in an Echo source plate, in nL
 max_volume  = 65000 # Maximum Echoable volume in an Echo source plate, in nL
