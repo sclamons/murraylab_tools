@@ -724,7 +724,7 @@ class EchoRun():
 
         self.material_list   = dict()
         self.picklist        = []
-        self.make_master_mix = maseter_mix != None
+        self.make_master_mix = master_mix != None
         self.master_mix      = master_mix
 
     def define_plate(self, SPname, SPtype, DPtype):
