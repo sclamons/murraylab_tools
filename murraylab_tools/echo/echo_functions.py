@@ -458,6 +458,7 @@ class MasterMix():
         self.n_rxns = None
         self.rxn_vol = None
         self.mm_excess = mm_excess
+        self.extract_fraction = extract_fraction
         self.extract_per_aliquot = extract_per_aliquot
         self.buffer_per_aliquot = buffer_per_aliquot
         self.materials = []
