@@ -1097,7 +1097,7 @@ class EchoRun():
         # Add TX-TL master mix as a material, if applicable.
         self.master_mix.set_rxn_vol(self.rxn_vol)
         self.master_mix.set_n_rxns(n_dna1 * n_dna2 + 2)
-        total_mm_vol = self.master_mix.vol_per_rxn()
+        txtl_mm_vol = self.master_mix.vol_per_rxn()
         if self.master_mix and not "txtl_mm" in self.material_list:
             self.material_list["txtl_mm"] = EchoSourceMaterial("txtl_mm", 1, 0,
                                                                self.plates[0])
