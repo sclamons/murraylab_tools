@@ -1144,7 +1144,7 @@ class EchoRun():
         # and negative control.
         neg_ctrl_well = string.ascii_uppercase[first_row + n_dna1] \
                         + str(first_col)
-        if self.make_picklist:
+        if self.make_master_mix:
             txtl.request_material(neg_ctrl_well, txtl_mm_vol)
         water.request_material(neg_ctrl_well, self.rxn_vol - txtl_mm_vol)
 
