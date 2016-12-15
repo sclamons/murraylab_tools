@@ -1,0 +1,9 @@
+Materials used:
+Positive Control:
+	stock concentration: 8.99nM (19.00 ng/uL)
+	total volume: 21.55 uL
+water:
+	stock concentration: 0.00nM
+	total volume: 30.68 uL
+txtl_mm:
+	total volume: 59.00 uL

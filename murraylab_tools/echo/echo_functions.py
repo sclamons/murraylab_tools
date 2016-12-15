@@ -877,10 +877,12 @@ class EchoRun():
 
         first_row = 20
         last_row  = 115
+        n_rxns    = 0
         for rownum in range(first_row, last_row + 1):
             # Check to see if there's a name in this row; if not, skip it.
             if recipe_sheet[rownum, 2] == 0:
                 continue
+            n_rxns += 1
             destination_well = recipe_sheet[rownum, 1]
             if destination_well == 0:
                 raise ValueError(("Error on row for ID #%d of recipe sheet: " +\
@@ -913,6 +915,9 @@ class EchoRun():
         self.master_mix = MasterMix(extract_fraction = self.extract_fraction,
                                 mm_excess = self.mm_excess,
                                 add_txtl = True)
+        self.master_mix.set_n_rxns(n_rxns)
+        self.master_mix.set_rxn_vol(self.rxn_vol)
+
         for i in range(11,17):
             if recipe_sheet[i,4] == None or recipe_sheet[i,4] == 0:
                 continue
