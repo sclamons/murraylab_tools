@@ -492,7 +492,7 @@ class MasterMix():
         '''
         self.rxn_vol = rxn_vol
 
-    def one_rxn_recipe:
+    def one_rxn_recipe(self):
         '''
         Iterator returning descriptors of what goes in the master mix for a
         single reaction.
