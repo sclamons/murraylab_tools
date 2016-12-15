@@ -911,9 +911,7 @@ class EchoRun():
         # Now we read off the recipe for the master mix
         self.master_mix = MasterMix(extract_fraction = self.extract_fraction,
                                 mm_excess = self.mm_excess,
-                                add_txtl = True,
-                                extract_per_aliquot = self.extract_per_aliquot,
-                                buffer_per_aliquot = self.buffer_per_aliquot)
+                                add_txtl = True)
         for i in range(11,17):
             if recipe_sheet[i,4] == None or recipe_sheet[i,4] == 0:
                 continue
