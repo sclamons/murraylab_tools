@@ -1,0 +1,28 @@
+Source Plate,Source Plate Type,Source Well,Sample ID,Destination Plate Name,Destination Well,Transfer Volume,Sample Comment
+Source[1],384PP_AQ_BP,A2,primer_1R,Nunc_384_black_glassbottom,A1,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A2,primer_1R,Nunc_384_black_glassbottom,B1,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A2,primer_1R,Nunc_384_black_glassbottom,C1,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A4,primer_2R,Nunc_384_black_glassbottom,A2,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A4,primer_2R,Nunc_384_black_glassbottom,B2,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A4,primer_2R,Nunc_384_black_glassbottom,C2,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A5,primer_3F,Nunc_384_black_glassbottom,A3,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A5,primer_3F,Nunc_384_black_glassbottom,B3,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A5,primer_3F,Nunc_384_black_glassbottom,C3,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A3,primer_2F,Nunc_384_black_glassbottom,A2,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A3,primer_2F,Nunc_384_black_glassbottom,B2,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A3,primer_2F,Nunc_384_black_glassbottom,C2,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A1,primer_1F,Nunc_384_black_glassbottom,A1,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A1,primer_1F,Nunc_384_black_glassbottom,B1,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A1,primer_1F,Nunc_384_black_glassbottom,C1,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,B3,CFP plasmid,Nunc_384_black_glassbottom,C1,75,Actual concentration: 0.10 nM
+Source[1],384PP_AQ_BP,B3,CFP plasmid,Nunc_384_black_glassbottom,C2,75,Actual concentration: 0.10 nM
+Source[1],384PP_AQ_BP,B3,CFP plasmid,Nunc_384_black_glassbottom,C3,75,Actual concentration: 0.10 nM
+Source[1],384PP_AQ_BP,B2,RFP plasmid,Nunc_384_black_glassbottom,B1,50,Actual concentration: 0.09 nM
+Source[1],384PP_AQ_BP,B2,RFP plasmid,Nunc_384_black_glassbottom,B2,50,Actual concentration: 0.09 nM
+Source[1],384PP_AQ_BP,B2,RFP plasmid,Nunc_384_black_glassbottom,B3,50,Actual concentration: 0.09 nM
+Source[1],384PP_AQ_BP,A6,primer_3R,Nunc_384_black_glassbottom,A3,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A6,primer_3R,Nunc_384_black_glassbottom,B3,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,A6,primer_3R,Nunc_384_black_glassbottom,C3,2500,Actual concentration: 500.00 nM
+Source[1],384PP_AQ_BP,B1,GFP plasmid,Nunc_384_black_glassbottom,A1,75,Actual concentration: 0.11 nM
+Source[1],384PP_AQ_BP,B1,GFP plasmid,Nunc_384_black_glassbottom,A2,75,Actual concentration: 0.11 nM
+Source[1],384PP_AQ_BP,B1,GFP plasmid,Nunc_384_black_glassbottom,A3,75,Actual concentration: 0.11 nM
