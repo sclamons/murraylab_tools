@@ -4,6 +4,9 @@ import numpy as np
 
 from .. import echo_functions as ef
 
+@pytest.fixture()
+def test_dir():
+    return os.path.dirname(os.path.realpath(__file__))
 
 def gen_plate():
     fname = 'dplate.dat'
@@ -15,7 +18,7 @@ def gen_plate():
 @pytest.fixture(scope="session")
 def unused_plate():
     return gen_plate()
-    
+
 @pytest.fixture(scope="session")
 def used_plate():
     dplate = gen_plate()
@@ -37,11 +40,12 @@ def test_request_too_many_wells(unused_plate):
 def test_assigning_plate_file_corrects_object_size():
     pass
 
-def test_make_simple_picklist():
+def test_make_simple_picklist(test_dir):
     # TODO Expand on assertions
     dplate = ef.DestinationPlate()
     splate = ef.SourcePlate()
-    splate.load_well_definitions('tests/test_def_good_column_names.csv')
+    splate.load_well_definitions(os.path.join(test_dir,
+                                'test_def_good_column_names.csv'))
     rxns = [
                 [
                     ['chem', 5, 10],

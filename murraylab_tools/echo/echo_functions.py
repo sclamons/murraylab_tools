@@ -29,7 +29,7 @@ import warnings
 __all__ = ["dna2nM_convert", "echo_round", "MasterMixMaterial",
            "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun"]
 
-dead_volume = 15000 + 5000 # Dead volume per well in an Echo source plate, in nL
+dead_volume = 15000 + 6000 # Dead volume per well in an Echo source plate, in nL
 max_volume  = 65000 # Maximum Echoable volume in an Echo source plate, in nL
 usable_volume = max_volume - dead_volume # Maximum pipettable volume per well
                                          # in an Echo source plate, in nL
@@ -100,8 +100,6 @@ def process_column_argument(col):
                         "zero-indexed int (2)")
 
 
-MasterMixMaterial = collections.namedtuple('MasterMixMaterial',
-                                           ['name', 'stock', 'final'])
 class DestinationPlate():
     '''
     One Echo destination plate. Responsible for allocating wells for
@@ -427,6 +425,166 @@ class SourcePlate():
                             self.name)
 
 
+
+
+# Container class for any single material going in a master mix. Final
+# concentration is the concentration in the final reaction, not in the master
+# mix itself.
+MasterMixMaterial = collections.namedtuple('MasterMixMaterial',
+                                           ['name', 'stock', 'final'])
+
+class MasterMix():
+    '''
+    Container class for a list of materials to make up a master mix.
+    '''
+    def __init__(self, extract_fraction = 0.24, mm_excess = 1.1,
+                 add_txtl = True, extract_per_aliquot = 30000,
+                 buffer_per_aliquot = 37000):
+        '''
+        extract_fraction: If TX-TL is added, this is the fraction of the final
+                            mix made up of TX-TL extract. Default 0.24 (lowest
+                            protein concentration).
+        mm_excess: The ratio of master-mix-to-make to total-mix-needed, i.e.,
+                        mm_excess=1.1 => Make 10% excess, to account for
+                        pipetting loss.
+        add_txtl: If true, buffer and extract will automatically be added to
+                    the master mix, using an extract percentage set by
+                    extract_fraction. Default True.
+        extract_per_aliquot: Volume of TX-TL extract in one aliquot, in nL.
+                                Default 30000.
+        buffer_per_aliquot: Volume of TX-TL buffer in one aliquot, in nL.
+                                Default 37000.
+        '''
+        self.n_rxns = None
+        self.rxn_vol = None
+        self.mm_excess = mm_excess
+        self.extract_per_aliquot = extract_per_aliquot
+        self.buffer_per_aliquot = buffer_per_aliquot
+        self.materials = []
+        if add_txtl:
+            self.buffer_fraction = 0.75 - self.extract_fraction
+            self.materials.append(MasterMixMaterial("Extract", 1,
+                                                    self.extract_fraction))
+            self.materials.append(MasterMixMaterial("Buffer", 1,
+                                                    self.buffer_fraction))
+
+    def add_material(self, name, init_conc, final_conc):
+        '''
+        Adds a new material to the master mix.
+
+        name: String describing the material.
+        init_conc: Stock concentration of the material.
+        final_conc: Concentration of the material in the *final reaction*
+                        (not in the master mix).
+        '''
+        self.materials.append(MasterMixMaterial(name, init_conc, final_conc))
+
+    def set_n_rxns(self, n_rxns):
+        '''
+        Sets the number of reactions that will use this master mix.
+        '''
+        self.n_rxns = n_rxns
+
+    def set_rxn_vol(self, rxn_vol):
+        '''
+        Sets the (total) volume of each reaction that will use this master mix,
+        in nL.
+        '''
+        self.rxn_vol = rxn_vol
+
+    def one_rxn_recipe:
+        '''
+        Iterator returning descriptors of what goes in the master mix for a
+        single reaction.
+
+        self.n_rxns and self.rxn_vol must be set before calling this function
+        (preferably with set_n_rxns and set_rxn_vol). Throws an AttributeError
+        otherwise.
+        '''
+        if self.n_rxns == None:
+            raise AttributeError("n_rxns must be set using set_n_rxns before" +
+                                 " requesting a recipe.")
+        if self.rxn_vol == None:
+            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
+                                 "before requesting a recipe.")
+
+        for material in self.materials:
+            name = material.name
+            vol  = material.final * self.rxn_vol / material.stock
+            yield (name, vol)
+
+    def recipe(self):
+        '''
+        Iterator returning descriptors of what goes in the total master mix.
+
+        self.n_rxns and self.rxn_vol must be set before calling this function
+        (preferably with set_n_rxns and set_rxn_vol). Throws an AttributeError
+        otherwise.
+
+        Yields -- pairs of the form (name, vol), where 'name' is a string
+                    describing a material in the master mix and 'vol' is the
+                    volume of that material to add to the master mix, in nL.
+        '''
+        for name, vol in self.one_rxn_recipe():
+            yield (name, vol * self.n_rxns * self.mm_excess)
+
+    def vol_per_rxn(self):
+        '''
+        Returns the calculated total volume of master mix in each reaction. NOT
+        the same as self.rxn_vol (which is the *total* volume of each reaction,
+        master mix plus everything else).
+
+        self.rxn_vol must be set before calling this function
+        (preferably with set_n_rxns and set_rxn_vol).Throws an AttributeError
+        otherwise.
+        '''
+        if self.rxn_vol == None:
+            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
+                                 "before calling vol_per_rxn.")
+
+        return sum([vol for name, vol in self.one_rxn_recipe()])
+
+    def n_extract_aliquots(self):
+        '''
+        Returns the number of extract aliquots required to make this master mix.
+
+        self.n_rxns and self.rxn_vol must be set before calling this function
+        (preferably with set_n_rxns and set_rxn_vol). Throws an AttributeError
+        otherwise.
+        '''
+        if self.n_rxns == None:
+            raise AttributeError("n_rxns must be set using set_n_rxns before" +
+                                 " the number of aliquots can be calculated.")
+        if self.rxn_vol == None:
+            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
+                                 "before the number of aliquots can be " +
+                                 "calculated.")
+        for material in self.materials:
+            if material.name == "Extract":
+                return self.n_rxns * material.final * self.rxn_vol \
+                        / material.stock / self.extract_per_aliquot
+
+    def n_buffer_aliquots(self):
+        '''
+        Returns the number of buffer aliquots required to make this master mix.
+
+        self.n_rxns and self.rxn_vol must be set before calling this function
+        (preferably with set_n_rxns and set_rxn_vol). Throws an AttributeError
+        otherwise.
+        '''
+        if self.n_rxns == None:
+            raise AttributeError("n_rxns must be set using set_n_rxns before" +
+                                 " the number of aliquots can be calculated.")
+        if self.rxn_vol == None:
+            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
+                                 "before the number of aliquots can be " +
+                                 "calculated.")
+        for material in self.materials:
+            if material.name == "Buffer":
+                return self.n_rxns * material.final * self.rxn_vol \
+                        / material.stock / self.buffer_per_aliquot
+
+
 class EchoSourceMaterial():
     '''
     Container class for a single material on a source plate. Keeps track of how
@@ -549,13 +707,9 @@ class EchoRun():
         --plate: Source plate. Should be a SourcePlate object. Required for
                     TX-TL setup experiments, but not for association spreadsheet
                     experiments.
-        --extract_per_aliquot: Volume of TX-TL extract in one aliquot, in nL.
-                                Default 30000.
-        --buffer_per_aliquot: Volume of TX-TL buffer in one aliquot, in nL.
-                                Default 37000.
     '''
     def __init__(self, rxn_vol = 5, DPtype = None, plate = None,
-                 extract_per_aliquot = 30000, buffer_per_aliquot = 37000):
+                 master_mix = None):
         # The user gives the reaction volume in microliters; store it in nL
         self.rxn_vol = rxn_vol * 1e3
 
@@ -568,11 +722,10 @@ class EchoRun():
         else:
             self.plates = [plate]
 
-        self.material_list = dict()
-        self.picklist      = []
-        self.make_master_mix = False
-        self.extract_per_aliquot = extract_per_aliquot
-        self.buffer_per_aliquot  = buffer_per_aliquot
+        self.material_list   = dict()
+        self.picklist        = []
+        self.make_master_mix = maseter_mix != None
+        self.master_mix      = master_mix
 
     def define_plate(self, SPname, SPtype, DPtype):
         '''
@@ -582,6 +735,22 @@ class EchoRun():
         self.SPtype = SPtype
         self.DPtype = DPtype
 
+    def add_master_mix(self, master_mix):
+        '''
+        Add a master mix to all reactions.
+
+        master_mix: A MasterMix object describing the new master mix.
+        '''
+        self.master_mix      = master_mix
+        self.make_master_mix = True
+
+    def remove_master_mix(self):
+        '''
+        Blanks the current master mix.
+        '''
+        self.master_mix      = None
+        self.make_master_mix = False
+
     def build_picklist_from_txtl_setup_excel(self, input_filename):
         '''
         CURRENTLY NONFUNCTIONAL DO NOT USE
@@ -589,18 +758,21 @@ class EchoRun():
         Build an Echo picklist based on a TX-TL setup spreadsheet (v2.1 or
         newer).
         '''
+        raise NotImplementedError("'build_picklist_from_txtl_setup_excel' " + \
+                                  "hasn't been implemented yet. Use " + \
+                                  "'build_picklist_from_txtl_setup_csvs'.")
         # Open the workbook and identify all the important sheets
-        workbook = pyxl.load_workbook(input_filename)
-        recipe_sheet = None
-        stock_sheet = None
-        layout_sheet = None
-        for sheet in workbook:
-            if sheet.title == "Recipe":
-                recipe = sheet
-            elif sheet.title == "Stocks":
-                stocks = sheet
-            elif sheet.title == "Layout":
-                layout = sheet
+        # workbook = pyxl.load_workbook(input_filename)
+        # recipe_sheet = None
+        # stock_sheet = None
+        # layout_sheet = None
+        # for sheet in workbook:
+        #     if sheet.title == "Recipe":
+        #         recipe = sheet
+        #     elif sheet.title == "Stocks":
+        #         stocks = sheet
+        #     elif sheet.title == "Layout":
+        #         layout = sheet
 
     def build_picklist_from_txtl_setup_csvs(self, stock_filename,
                                             recipe_filename):
@@ -613,9 +785,12 @@ class EchoRun():
 
         The recipe sheet is a CSV describing the master mix and what materials
         from the stock sheet go in what destination wells, in what quantity.
+
+        This function will overwrite any previous master mix defined for this
+        EchoRun object, since the master mix is fully defined in the recipe
+        sheet.
         '''
         self.make_master_mix = True
-        self.master_mix_materials = []
 
         ####################
         # Read Input Files #
@@ -733,18 +908,19 @@ class EchoRun():
             volume = recipe_sheet[rownum, 4] * 1e3
             txtl.request_material(destination_well, volume)
 
-        # Now we know enough to determine the recipe for the master mix
+        # Now we read off the recipe for the master mix
+        self.master_mix = MasterMix(extract_fraction = self.extract_fraction,
+                                mm_excess = self.mm_excess,
+                                add_txtl = True,
+                                extract_per_aliquot = self.extract_per_aliquot,
+                                buffer_per_aliquot = self.buffer_per_aliquot)
         for i in range(11,17):
             if recipe_sheet[i,4] == None or recipe_sheet[i,4] == 0:
                 continue
             name  = recipe_sheet[i,0]
             stock = recipe_sheet[i,1]
-            # Final concentration IN THE MASTER MIX, which has to be adjusted
-            # to account for the fraction of master mix in the final solution.
-            # Assuming they all have the same master mix amount.
-            final = recipe_sheet[i,2] / (recipe_sheet[20,4] / self.rxn_vol)
-            new_mm_material = MasterMixMaterial(name, stock, final)
-            self.master_mix_materials.append(new_mm_material)
+            final = recipe_sheet[i,2]
+            self.master_mix.add_material(name, stock, final)
 
 
     def load_source_plate(self, input_filename, name_col, conc_col, len_col,
@@ -886,9 +1062,10 @@ class EchoRun():
                     water.request_material(well, volume_left)
 
     def build_dilution_series(self, dna1, dna2, dna1_final, dna2_final,
-                              first_well, extract_fraction = 0.24):
+                              first_well):
         '''Calculate TXTL volumes and automatically generate a picklist for
-        an NxN dilution matrix with two inputs.
+        an NxN dilution matrix with two inputs. If this EchoSource object has a
+        MasterMix, then add that master mix as well. Fill the rest with water.
 
         Args:
             dna1, dna2 -- First and second materials to serialy dilute
@@ -900,15 +1077,6 @@ class EchoRun():
         '''
         dna1.plate = self.plates[0]
         dna2.plate = self.plates[0]
-        self.make_master_mix      = True
-        self.master_mix_materials = []
-        self.extract_fraction     = extract_fraction
-        self.buffer_fraction      = 0.75 - self.extract_fraction
-        self.master_mix_materials.append(MasterMixMaterial("Extract", 1,
-                                                    self.extract_fraction/0.75))
-        self.master_mix_materials.append(MasterMixMaterial("Buffer", 1,
-                                                    self.buffer_fraction/0.75))
-        self.mm_excess = 1.1
 
         self.material_list["dna1"] = dna1
         self.material_list["dna2"] = dna2
@@ -917,23 +1085,20 @@ class EchoRun():
         else:
             self.material_list = EchoSourceMaterial("pos_ctrl", 19, 3202, "")'''
 
-        final_volume = self.rxn_vol
         # matrix size
         n_dna1 = len(dna1_final)
         n_dna2 = len(dna2_final)
 
-        # Final volume of mastermix should be 75% of total volume
-        # Buffer and extract are calculated separately so that it can do a final
-        # calculation on how many tubes you need.
-        txtlMM   = 0.75 * final_volume
-        num_rxns = n_dna1 * n_dna2 + 2
-        if not "txtl_mm" in self.material_list:
+        # Add TX-TL master mix as a material, if applicable.
+        self.master_mix.set_rxn_vol(self.rxn_vol)
+        self.master_mix.set_n_rxns(n_dna1 * n_dna2 + 2)
+        total_mm_vol = self.master_mix.vol_per_rxn()
+        if self.master_mix and not "txtl_mm" in self.material_list:
             self.material_list["txtl_mm"] = EchoSourceMaterial("txtl_mm", 1, 0,
                                                                self.plates[0])
         txtl = self.material_list["txtl_mm"]
 
-        # Add water as a material (if it's not already there). Assume that a row
-        # of water will do fine.
+        # Add water as a material (if it's not already there).
         if not "water" in self.material_list:
             self.material_list["water"] = EchoSourceMaterial("water", 0, 0,
                                                              self.plates[0])
@@ -948,23 +1113,23 @@ class EchoRun():
                 destination = string.ascii_uppercase[first_row + i] + \
                               str(first_col + j)
                 # DNA picks
-                dna1_pick_vol = dna1_final[i]*(final_volume/dna1.nM)
+                dna1_pick_vol = dna1_final[i]*(self.rxn_vol/dna1.nM)
                 dna1.request_material(destination, dna1_pick_vol)
 
-                dna2_pick_vol = dna2_final[j]*(final_volume/dna2.nM)
+                dna2_pick_vol = dna2_final[j]*(self.rxn_vol/dna2.nM)
                 dna2.request_material(destination, dna2_pick_vol)
                 # TX-TL Master Mix pick
-                txtl.request_material(destination, txtlMM)
+                txtl.request_material(destination, txtl_mm_vol)
                 # Water pick
                 water_vol = self.rxn_vol - dna1_pick_vol - dna2_pick_vol - \
-                            txtlMM
+                            txtl_mm_vol
                 if water_vol < 0:
                     raise ValueError(("Well %s is overloaded! %s contains "+\
                                      "%.2f nL of %s, %.2f nL of %s, and " +\
                                      "%.2f nL of Master Mix.") % \
                                      (destination, destination, dna1_pick_vol,
                                       dna1.name, dna2_pick_vol, dna2.name,
-                                      txtlMM))
+                                      txtl_mm_vol))
                 water.request_material(destination, water_vol)
 
         # Add positive control....
@@ -972,8 +1137,8 @@ class EchoRun():
         # and negative control.
         neg_ctrl_well = string.ascii_uppercase[first_row + n_dna1] \
                         + str(first_col)
-        txtl.request_material(neg_ctrl_well, txtlMM)
-        water.request_material(neg_ctrl_well, self.rxn_vol - txtlMM)
+        txtl.request_material(neg_ctrl_well, txtl_mm_vol)
+        water.request_material(neg_ctrl_well, self.rxn_vol - txtl_mm_vol)
 
     def generate_picklist(self):
         for mat in self.material_list.values():
@@ -1026,27 +1191,17 @@ class EchoRun():
                     text_file.write(" (%.2f ng/uL)" % material.concentration)
                 text_file.write("\n\ttotal volume: %.2f uL" % \
                                 (material.total_volume_requested / 1000.0))
-                if material.name == "txtl_mm":
-                    total_mm = material.total_volume_requested
-                    extract_tubes = math.ceil(total_mm * \
-                                          (self.extract_fraction/0.75) / \
-                                          self.extract_per_aliquot)
-                    buffer_tubes = math.ceil(total_mm * \
-                                          (self.buffer_fraction/0.75) / \
-                                          self.extract_per_aliquot)
+                # Rewrite with new MasterMixMaterial definitions (final concs
+                # now in terms of final reaction)
+                if material.name == "txtl_mm" and self.make_master_mix:
                     text_file.write("\n\tTubes of extract needed: %d" % \
-                                    extract_tubes)
+                                    self.master_mix.n_extract_aliquots())
                     text_file.write("\n\tTubes of buffer needed: %d" % \
-                                    buffer_tubes)
-                    if self.make_master_mix:
-                        text_file.write("\n\tMaster Mix:")
-                        for mm_material in self.master_mix_materials:
-                            vol_mm_material = total_mm * self.mm_excess * \
-                                              mm_material.final / \
-                                              mm_material.stock / 1000.0
-                            text_file.write("\n\t\t%.2fuL %s" % \
-                                            (vol_mm_material, mm_material.name))
-
+                                    self.master_mix.n_buffer_aliquots())
+                    text_file.write("\n\tMaster Mix:")
+                    for name, vol in self.master_mix.recipe():
+                        text_file.write("\n\t\t%.2fuL %s" % \
+                                        (vol, name))
             # Explicit loading instructions
             text_file.write("\n\nInstructions:")
 
