@@ -1103,6 +1103,8 @@ class EchoRun():
                 self.material_list["txtl_mm"] = EchoSourceMaterial("txtl_mm",
                                                            1, 0, self.plates[0])
             txtl = self.material_list["txtl_mm"]
+        else:
+            txtl_mm_vol = 0
 
         # Add water as a material (if it's not already there).
         if not "water" in self.material_list:
