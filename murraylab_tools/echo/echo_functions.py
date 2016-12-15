@@ -1124,8 +1124,9 @@ class EchoRun():
 
                 dna2_pick_vol = dna2_final[j]*(self.rxn_vol/dna2.nM)
                 dna2.request_material(destination, dna2_pick_vol)
-                # TX-TL Master Mix pick
-                txtl.request_material(destination, txtl_mm_vol)
+                if self.make_master_mix:
+                    # TX-TL Master Mix pick
+                    txtl.request_material(destination, txtl_mm_vol)
                 # Water pick
                 water_vol = self.rxn_vol - dna1_pick_vol - dna2_pick_vol - \
                             txtl_mm_vol
@@ -1143,7 +1144,8 @@ class EchoRun():
         # and negative control.
         neg_ctrl_well = string.ascii_uppercase[first_row + n_dna1] \
                         + str(first_col)
-        txtl.request_material(neg_ctrl_well, txtl_mm_vol)
+        if self.make_picklist:
+            txtl.request_material(neg_ctrl_well, txtl_mm_vol)
         water.request_material(neg_ctrl_well, self.rxn_vol - txtl_mm_vol)
 
     def generate_picklist(self):
