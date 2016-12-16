@@ -1225,7 +1225,7 @@ class EchoRun():
                     text_file.write("\n\tMaster Mix:")
                     for name, vol in self.master_mix.recipe():
                         text_file.write("\n\t\t%.2fuL %s" % \
-                                        (vol, name))
+                                        (vol / 1000, name))
             # Explicit loading instructions
             text_file.write("\n\nInstructions:")
 
