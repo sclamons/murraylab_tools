@@ -561,6 +561,7 @@ class MasterMix():
             if material.name == "Extract":
                 return self.n_rxns * material.final * self.rxn_vol \
                         / material.stock / self.extract_per_aliquot
+        return 0
 
     def n_buffer_aliquots(self):
         '''
@@ -581,6 +582,7 @@ class MasterMix():
             if material.name == "Buffer":
                 return self.n_rxns * material.final * self.rxn_vol \
                         / material.stock / self.buffer_per_aliquot
+        return 0
 
     def fill_with(self, name, vol_per_rxn):
         '''
