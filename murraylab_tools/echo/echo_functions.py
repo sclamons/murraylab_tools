@@ -586,6 +586,22 @@ class MasterMix():
                 return self.n_rxns * material.final * self.rxn_vol \
                         / material.stock / self.buffer_per_aliquot
 
+    def fill_with(self, name, vol_per_rxn):
+        '''
+        Adds a new material (usually going to be water) such that it fills out
+        the reaction to a specified volume.
+
+        Don't try changing the reaction volume after calling this, or you'll
+        get some weird answers.
+
+        name: String describing the material.
+        vol_per_rxn: The final volume you want of master mix, in nL, per
+                        reaction.
+        '''
+        new_material_volume = vol_per_rxn - self.vol_per_rxn()
+        dilution_factor     = new_material_volume / self.rxn_vol
+        self.add_material(name, 1, dilution_factor)
+
 
 class EchoSourceMaterial():
     '''
