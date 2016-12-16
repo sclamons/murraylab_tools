@@ -499,13 +499,9 @@ class MasterMix():
         Iterator returning descriptors of what goes in the master mix for a
         single reaction.
 
-        self.n_rxns and self.rxn_vol must be set before calling this function
-        (preferably with set_n_rxns and set_rxn_vol). Throws an AttributeError
-        otherwise.
+        self.rxn_vol must be set before calling this function(preferably with
+        set_rxn_vol). Throws an AttributeError otherwise.
         '''
-        if self.n_rxns == None:
-            raise AttributeError("n_rxns must be set using set_n_rxns before" +
-                                 " requesting a recipe.")
         if self.rxn_vol == None:
             raise AttributeError("rxn_vol must be set using set_rxn_vol " +
                                  "before requesting a recipe.")
