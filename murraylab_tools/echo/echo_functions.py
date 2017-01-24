@@ -1197,8 +1197,10 @@ class EchoRun():
 
             text_file.write("Materials used:")
             for material in self.material_list.values():
+                is_master_mix = (material.name == "txtl_mm" or \
+                                 material.name = "master_mix")
                 text_file.write("\n%s:" % material.name)
-                if not material.name == "txtl_mm":
+                if not is_master_mix:
                     text_file.write("\n\tstock concentration: %.2fnM" % \
                                     material.nM)
                 if material.length > 0:
@@ -1207,7 +1209,7 @@ class EchoRun():
                                 (material.total_volume_requested / 1000.0))
                 # Rewrite with new MasterMixMaterial definitions (final concs
                 # now in terms of final reaction)
-                if material.name == "txtl_mm" and self.make_master_mix:
+                if is_master_mix and self.make_master_mix:
                     master_mix = self.material_list["txtl_mm"]
                     text_file.write("\n\tTubes of extract needed: %d" % \
                                     master_mix.n_extract_aliquots())
