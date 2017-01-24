@@ -530,7 +530,7 @@ class EchoSourceMaterial():
 MasterMixMaterial = collections.namedtuple('MasterMixMaterial',
                                            ['name', 'stock', 'final'])
 
-class MasterMix():
+class MasterMix(EchoSourceMaterial):
     '''
     Container class for a list of materials to make up a master mix.
     '''
