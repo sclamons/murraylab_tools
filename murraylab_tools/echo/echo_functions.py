@@ -1198,7 +1198,7 @@ class EchoRun():
             text_file.write("Materials used:")
             for material in self.material_list.values():
                 is_master_mix = (material.name == "txtl_mm" or \
-                                 material.name = "master_mix")
+                                 material.name == "master_mix")
                 text_file.write("\n%s:" % material.name)
                 if not is_master_mix:
                     text_file.write("\n\tstock concentration: %.2fnM" % \
