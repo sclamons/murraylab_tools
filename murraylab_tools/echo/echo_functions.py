@@ -426,181 +426,6 @@ class SourcePlate():
                             self.name)
 
 
-
-
-# Container class for any single material going in a master mix. Final
-# concentration is the concentration in the final reaction, not in the master
-# mix itself.
-MasterMixMaterial = collections.namedtuple('MasterMixMaterial',
-                                           ['name', 'stock', 'final'])
-
-class MasterMix():
-    '''
-    Container class for a list of materials to make up a master mix.
-    '''
-    def __init__(self, extract_fraction = 0.24, mm_excess = 1.1,
-                 add_txtl = True, extract_per_aliquot = 30000,
-                 buffer_per_aliquot = 37000):
-        '''
-        extract_fraction: If TX-TL is added, this is the fraction of the final
-                            mix made up of TX-TL extract. Default 0.24 (lowest
-                            protein concentration).
-        mm_excess: The ratio of master-mix-to-make to total-mix-needed, i.e.,
-                        mm_excess=1.1 => Make 10% excess, to account for
-                        pipetting loss.
-        add_txtl: If true, buffer and extract will automatically be added to
-                    the master mix, using an extract percentage set by
-                    extract_fraction. Default True.
-        extract_per_aliquot: Volume of TX-TL extract in one aliquot, in nL.
-                                Default 30000.
-        buffer_per_aliquot: Volume of TX-TL buffer in one aliquot, in nL.
-                                Default 37000.
-        '''
-        self.n_rxns = None
-        self.rxn_vol = None
-        self.mm_excess = mm_excess
-        self.extract_fraction = extract_fraction
-        self.extract_per_aliquot = extract_per_aliquot
-        self.buffer_per_aliquot = buffer_per_aliquot
-        self.materials = []
-        if add_txtl:
-            self.buffer_fraction = 0.75 - self.extract_fraction
-            self.materials.append(MasterMixMaterial("Extract", 1,
-                                                    self.extract_fraction))
-            self.materials.append(MasterMixMaterial("Buffer", 1,
-                                                    self.buffer_fraction))
-
-    def add_material(self, name, init_conc, final_conc):
-        '''
-        Adds a new material to the master mix.
-
-        name: String describing the material.
-        init_conc: Stock concentration of the material.
-        final_conc: Concentration of the material in the *final reaction*
-                        (not in the master mix).
-        '''
-        self.materials.append(MasterMixMaterial(name, init_conc, final_conc))
-
-    def set_n_rxns(self, n_rxns):
-        '''
-        Sets the number of reactions that will use this master mix.
-        '''
-        self.n_rxns = n_rxns
-
-    def set_rxn_vol(self, rxn_vol):
-        '''
-        Sets the (total) volume of each reaction that will use this master mix,
-        in nL.
-        '''
-        self.rxn_vol = rxn_vol
-
-    def one_rxn_recipe(self):
-        '''
-        Iterator returning descriptors of what goes in the master mix for a
-        single reaction.
-
-        self.rxn_vol must be set before calling this function(preferably with
-        set_rxn_vol). Throws an AttributeError otherwise.
-        '''
-        if self.rxn_vol == None:
-            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
-                                 "before requesting a recipe.")
-
-        for material in self.materials:
-            name = material.name
-            vol  = material.final * self.rxn_vol / material.stock
-            yield (name, vol)
-
-    def recipe(self):
-        '''
-        Iterator returning descriptors of what goes in the total master mix.
-
-        self.n_rxns and self.rxn_vol must be set before calling this function
-        (preferably with set_n_rxns and set_rxn_vol). Throws an AttributeError
-        otherwise.
-
-        Yields -- pairs of the form (name, vol), where 'name' is a string
-                    describing a material in the master mix and 'vol' is the
-                    volume of that material to add to the master mix, in nL.
-        '''
-        for name, vol in self.one_rxn_recipe():
-            yield (name, vol * self.n_rxns * self.mm_excess)
-
-    def vol_per_rxn(self):
-        '''
-        Returns the calculated total volume of master mix in each reaction. NOT
-        the same as self.rxn_vol (which is the *total* volume of each reaction,
-        master mix plus everything else).
-
-        self.rxn_vol must be set before calling this function
-        (preferably with set_n_rxns and set_rxn_vol).Throws an AttributeError
-        otherwise.
-        '''
-        if self.rxn_vol == None:
-            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
-                                 "before calling vol_per_rxn.")
-
-        return sum([vol for name, vol in self.one_rxn_recipe()])
-
-    def n_extract_aliquots(self):
-        '''
-        Returns the number of extract aliquots required to make this master mix.
-
-        self.n_rxns and self.rxn_vol must be set before calling this function
-        (preferably with set_n_rxns and set_rxn_vol). Throws an AttributeError
-        otherwise.
-        '''
-        if self.n_rxns == None:
-            raise AttributeError("n_rxns must be set using set_n_rxns before" +
-                                 " the number of aliquots can be calculated.")
-        if self.rxn_vol == None:
-            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
-                                 "before the number of aliquots can be " +
-                                 "calculated.")
-        for material in self.materials:
-            if material.name == "Extract":
-                return self.n_rxns * material.final * self.rxn_vol \
-                        / material.stock / self.extract_per_aliquot
-        return 0
-
-    def n_buffer_aliquots(self):
-        '''
-        Returns the number of buffer aliquots required to make this master mix.
-
-        self.n_rxns and self.rxn_vol must be set before calling this function
-        (preferably with set_n_rxns and set_rxn_vol). Throws an AttributeError
-        otherwise.
-        '''
-        if self.n_rxns == None:
-            raise AttributeError("n_rxns must be set using set_n_rxns before" +
-                                 " the number of aliquots can be calculated.")
-        if self.rxn_vol == None:
-            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
-                                 "before the number of aliquots can be " +
-                                 "calculated.")
-        for material in self.materials:
-            if material.name == "Buffer":
-                return self.n_rxns * material.final * self.rxn_vol \
-                        / material.stock / self.buffer_per_aliquot
-        return 0
-
-    def fill_with(self, name, vol_per_rxn):
-        '''
-        Adds a new material (usually going to be water) such that it fills out
-        the reaction to a specified volume.
-
-        Don't try changing the reaction volume after calling this, or you'll
-        get some weird answers.
-
-        name: String describing the material.
-        vol_per_rxn: The final volume you want of master mix, in nL, per
-                        reaction.
-        '''
-        new_material_volume = vol_per_rxn - self.vol_per_rxn()
-        dilution_factor     = new_material_volume / self.rxn_vol
-        self.add_material(name, 1, dilution_factor)
-
-
 class EchoSourceMaterial():
     '''
     Container class for a single material on a source plate. Keeps track of how
@@ -699,6 +524,177 @@ class EchoSourceMaterial():
             yield pick
 
 
+# Container class for any single material going in a master mix. Final
+# concentration is the concentration in the final reaction, not in the master
+# mix itself.
+MasterMixMaterial = collections.namedtuple('MasterMixMaterial',
+                                           ['name', 'stock', 'final'])
+
+class MasterMix():
+    '''
+    Container class for a list of materials to make up a master mix.
+    '''
+    def __init__(self, plate, extract_fraction = 0.24, mm_excess = 1.1,
+                 add_txtl = True, extract_per_aliquot = 30000,
+                 buffer_per_aliquot = 37000):
+        '''
+        extract_fraction: If TX-TL is added, this is the fraction of the final
+                            mix made up of TX-TL extract. Default 0.24 (lowest
+                            protein concentration).
+        mm_excess: The ratio of master-mix-to-make to total-mix-needed, i.e.,
+                        mm_excess=1.1 => Make 10% excess, to account for
+                        pipetting loss.
+        add_txtl: If true, buffer and extract will automatically be added to
+                    the master mix, using an extract percentage set by
+                    extract_fraction. Default True.
+        extract_per_aliquot: Volume of TX-TL extract in one aliquot, in nL.
+                                Default 30000.
+        buffer_per_aliquot: Volume of TX-TL buffer in one aliquot, in nL.
+                                Default 37000.
+        '''
+        if add_txtl:
+            self.name = "txtl_mm"
+        else:
+            self.name = "master_mix"
+        self.length = 0
+        self.plate = plate
+        self.nM = 1   # Proxy nanomolar value
+
+        self.wells = None
+        self.picklist = []
+        self.total_volume_requested = 0
+        self.well_volumes = None
+
+        self.rxn_vol = None
+        self.mm_excess = mm_excess
+        self.extract_fraction = extract_fraction
+        self.extract_per_aliquot = extract_per_aliquot
+        self.buffer_per_aliquot = buffer_per_aliquot
+        self.materials = []
+        if add_txtl:
+            self.buffer_fraction = 0.75 - self.extract_fraction
+            self.materials.append(MasterMixMaterial("Extract", 1,
+                                                    self.extract_fraction))
+            self.materials.append(MasterMixMaterial("Buffer", 1,
+                                                    self.buffer_fraction))
+
+    def add_material(self, name, init_conc, final_conc):
+        '''
+        Adds a new material to the master mix.
+
+        name: String describing the material.
+        init_conc: Stock concentration of the material.
+        final_conc: Concentration of the material in the *final reaction*
+                        (not in the master mix).
+        '''
+        self.materials.append(MasterMixMaterial(name, init_conc, final_conc))
+
+    def set_rxn_vol(self, rxn_vol):
+        '''
+        Sets the (total) volume of each reaction that will use this master mix,
+        in nL.
+        '''
+        self.rxn_vol = rxn_vol
+
+    def one_rxn_recipe(self):
+        '''
+        Iterator returning descriptors of what goes in the master mix for a
+        single reaction.
+
+        self.rxn_vol must be set before calling this function(preferably with
+        set_rxn_vol). Throws an AttributeError otherwise.
+        '''
+        if self.rxn_vol == None:
+            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
+                                 "before requesting a recipe.")
+
+        for material in self.materials:
+            name = material.name
+            vol  = material.final * self.rxn_vol / material.stock
+            yield (name, vol)
+
+    def recipe(self):
+        '''
+        Iterator returning descriptors of what goes in the total master mix.
+
+        Yields -- pairs of the form (name, vol), where 'name' is a string
+                    describing a material in the master mix and 'vol' is the
+                    volume of that material to add to the master mix, in nL.
+        '''
+        if self.total_volume_requested != 0:
+            for material in self.materials:
+                name = material.name
+                vol  = material.final * self.total_volume_requested \
+                       / material.stock
+                yield (name, vol)
+
+
+    def vol_per_rxn(self):
+        '''
+        Returns the calculated total volume of master mix in each reaction. NOT
+        the same as self.rxn_vol (which is the *total* volume of each reaction,
+        master mix plus everything else).
+
+        self.rxn_vol must be set before calling this function
+        (preferably with set_rxn_vol).Throws an AttributeError otherwise.
+        '''
+        if self.rxn_vol == None:
+            raise AttributeError("rxn_vol must be set using set_rxn_vol " +
+                                 "before calling vol_per_rxn.")
+
+        return sum([vol for name, vol in self.one_rxn_recipe()])
+
+    def n_extract_aliquots(self):
+        '''
+        Returns the number of extract aliquots required to make this master mix.
+
+        self.total_volume_requested should be set before calling this function.
+        Throws an AttributeError otherwise. total_volume_requested is set during
+        a call to request_picklist, when picks are finalized. If
+        total_volume_requested is not set, will return 0.
+        '''
+        for material in self.materials:
+            if material.name == "Extract":
+                print("self.total_volume_requested: " + str(self.total_volume_requested))
+                print("materal.final: " + str(material.final))
+                print("material.stock: " + str(material.stock))
+                print("self.extract_per_aliquot: " + str(self.extract_per_aliquot))
+                return self.total_volume_requested * material.final \
+                        / material.stock / self.extract_per_aliquot
+        return 0
+
+    def n_buffer_aliquots(self):
+        '''
+        Returns the number of buffer aliquots required to make this master mix.
+
+        self.total_volume_requested must be set before calling this function.
+        Throws an AttributeError otherwise. total_volume_requested is set during
+        a call to request_picklist, when picks are finalized. If
+        total_volume_requested is not set, will return 0.
+        '''
+        for material in self.materials:
+            if material.name == "Buffer":
+                return self. total_volume_requested * material.final \
+                        / material.stock / self.buffer_per_aliquot
+        return 0
+
+    def fill_with(self, name, vol_per_rxn):
+        '''
+        Adds a new material (usually going to be water) such that it fills out
+        the reaction to a specified volume.
+
+        Don't try changing the reaction volume after calling this, or you'll
+        get some weird answers.
+
+        name: String describing the material.
+        vol_per_rxn: The final volume you want of master mix, in nL, per
+                        reaction.
+        '''
+        new_material_volume = vol_per_rxn - self.vol_per_rxn()
+        dilution_factor     = new_material_volume / self.rxn_vol
+        self.add_material(name, 1, dilution_factor)
+
+
 class Pick():
     '''
     Container class for making a single Echo pick from some source well to
@@ -757,15 +753,15 @@ class EchoRun():
 
         master_mix: A MasterMix object describing the new master mix.
         '''
-        self.master_mix      = master_mix
-        self.make_master_mix = True
+        self.material_list['txtl_mm'] = master_mix
+        self.make_master_mix          = True
 
     def remove_master_mix(self):
         '''
         Blanks the current master mix.
         '''
-        self.master_mix      = None
-        self.make_master_mix = False
+        self.material_list['txtl_mm'] = None
+        self.make_master_mix          = False
 
     def build_picklist_from_txtl_setup_excel(self, input_filename):
         '''
@@ -855,10 +851,14 @@ class EchoRun():
 
         # Assign source wells and register materials
         # Register TX-TL master mix
+
         if not "txtl_mm" in self.material_list:
-            self.material_list["txtl_mm"] = EchoSourceMaterial("txtl_mm", 1, 0,
-                                                               self.plates[0])
+            self.material_list['txtl_mm'] = MasterMix(self.plates[0],
+                                extract_fraction = self.extract_fraction,
+                                mm_excess = self.mm_excess,
+                                add_txtl = True)
         txtl = self.material_list["txtl_mm"]
+        txtl.set_rxn_vol(self.rxn_vol)
 
         # Register Water
         if not "water" in self.material_list:
@@ -926,20 +926,13 @@ class EchoRun():
             volume = recipe_sheet[rownum, 4] * 1e3
             txtl.request_material(destination_well, volume)
 
-        # Now we read off the recipe for the master mix
-        self.master_mix = MasterMix(extract_fraction = self.extract_fraction,
-                                mm_excess = self.mm_excess,
-                                add_txtl = True)
-        self.master_mix.set_n_rxns(n_rxns)
-        self.master_mix.set_rxn_vol(self.rxn_vol)
-
         for i in range(11,17):
             if recipe_sheet[i,4] == None or recipe_sheet[i,4] == 0:
                 continue
             name  = recipe_sheet[i,0]
             stock = recipe_sheet[i,1]
             final = recipe_sheet[i,2]
-            self.master_mix.add_material(name, stock, final)
+            txtl.master_mix.add_material(name, stock, final)
 
 
     def load_source_plate(self, input_filename, name_col, conc_col, len_col,
@@ -1110,13 +1103,11 @@ class EchoRun():
 
         # Add TX-TL master mix as a material, if applicable.
         if self.make_master_mix:
-            self.master_mix.set_rxn_vol(self.rxn_vol)
-            self.master_mix.set_n_rxns(n_dna1 * n_dna2 + 2)
-            txtl_mm_vol = self.master_mix.vol_per_rxn()
             if self.master_mix and not "txtl_mm" in self.material_list:
-                self.material_list["txtl_mm"] = EchoSourceMaterial("txtl_mm",
-                                                           1, 0, self.plates[0])
+                self.material_list["txtl_mm"] = MasterMix(self.plates[0])
             txtl = self.material_list["txtl_mm"]
+            txtl.set_rxn_vol(self.rxn_vol)
+            txtl_mm_vol = txtl.vol_per_rxn()
         else:
             txtl_mm_vol = 0
 
