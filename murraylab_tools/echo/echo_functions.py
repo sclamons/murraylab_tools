@@ -736,7 +736,6 @@ class EchoRun():
 
         self.material_list   = dict()
         self.picklist        = []
-        self.make_master_mix = False
         self.add_master_mix(master_mix) # This will set make_master_mix
 
     def define_plate(self, SPname, SPtype, DPtype):
@@ -754,7 +753,7 @@ class EchoRun():
         master_mix: A MasterMix object describing the new master mix.
         '''
         self.material_list['txtl_mm'] = master_mix
-        self.make_master_mix          = True
+        self.make_master_mix = master_mix == None
 
     def remove_master_mix(self):
         '''
