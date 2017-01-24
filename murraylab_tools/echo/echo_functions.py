@@ -1103,7 +1103,7 @@ class EchoRun():
 
         # Add TX-TL master mix as a material, if applicable.
         if self.make_master_mix:
-            if self.master_mix and not "txtl_mm" in self.material_list:
+            if not "txtl_mm" in self.material_list:
                 self.material_list["txtl_mm"] = MasterMix(self.plates[0])
             txtl = self.material_list["txtl_mm"]
             txtl.set_rxn_vol(self.rxn_vol)
@@ -1209,12 +1209,13 @@ class EchoRun():
                 # Rewrite with new MasterMixMaterial definitions (final concs
                 # now in terms of final reaction)
                 if material.name == "txtl_mm" and self.make_master_mix:
+                    master_mix = self.material_list["txtl_mm"]
                     text_file.write("\n\tTubes of extract needed: %d" % \
-                                    self.master_mix.n_extract_aliquots())
+                                    master_mix.n_extract_aliquots())
                     text_file.write("\n\tTubes of buffer needed: %d" % \
-                                    self.master_mix.n_buffer_aliquots())
+                                    master_mix.n_buffer_aliquots())
                     text_file.write("\n\tMaster Mix:")
-                    for name, vol in self.master_mix.recipe():
+                    for name, vol in master_mix.recipe():
                         text_file.write("\n\t\t%.2fuL %s" % \
                                         (vol / 1000, name))
             # Explicit loading instructions
