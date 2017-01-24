@@ -1212,12 +1212,12 @@ class EchoRun():
                 if is_master_mix and self.make_master_mix:
                     master_mix = self.material_list["txtl_mm"]
                     text_file.write("\n\tTubes of extract needed: %d" % \
-                                    master_mix.n_extract_aliquots())
+                                    math.ceil(master_mix.n_extract_aliquots()))
                     text_file.write("\n\tTubes of buffer needed: %d" % \
-                                    master_mix.n_buffer_aliquots())
+                                    math.ceil(master_mix.n_buffer_aliquots()))
                     text_file.write("\n\tMaster Mix:")
                     for name, vol in master_mix.recipe():
-                        text_file.write("\n\t\t%.2fuL %s" % \
+                        text_file.write("\n\t\t%.2f uL %s" % \
                                         (vol / 1000, name))
             # Explicit loading instructions
             text_file.write("\n\nInstructions:")
