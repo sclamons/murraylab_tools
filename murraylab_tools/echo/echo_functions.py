@@ -347,7 +347,6 @@ class SourcePlate():
                     line = line[:-1]
                 col_num = int(col_name) - 1
                 row_num = string.ascii_uppercase.find(line.upper())
-                print("Reading from plate file %s, well [%d, %d] used." % (filename, row_num, col_num))
                 self.wells_used[row_num, col_num] = True
 
     def write_to_file(self):
