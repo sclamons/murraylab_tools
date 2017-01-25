@@ -623,10 +623,6 @@ class MasterMix(EchoSourceMaterial):
                     volume of that material to add to the master mix, in nL.
         '''
         if self.total_volume_requested != 0:
-            if add_txtl:
-                mm_fraction = 0.75
-            else:
-                mm_fraction = self.buffer_fraction
             for material in self.materials:
                 name = material.name
                 vol  = material.final * self.total_volume_requested \
