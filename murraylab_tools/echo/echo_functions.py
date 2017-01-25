@@ -532,7 +532,8 @@ MasterMixMaterial = collections.namedtuple('MasterMixMaterial',
 
 class MasterMix(EchoSourceMaterial):
     '''
-    Container class for a list of materials to make up a master mix.
+    Container class for a list of materials to make up a master mix. Note that
+    this class ASSUMES THAT 75% OF THE FINAL REACTION WILL BE THIS MASTER MIX.
     '''
     def __init__(self, plate, extract_fraction = 0.24, mm_excess = 1.1,
                  add_txtl = True, extract_per_aliquot = 30000,
@@ -622,10 +623,14 @@ class MasterMix(EchoSourceMaterial):
                     volume of that material to add to the master mix, in nL.
         '''
         if self.total_volume_requested != 0:
+            if add_txtl:
+                mm_fraction = 0.75
+            else:
+                mm_fraction = self.buffer_fraction
             for material in self.materials:
                 name = material.name
                 vol  = material.final * self.total_volume_requested \
-                       / material.stock
+                       / material.stock / 0.75
                 yield (name, vol)
 
 
@@ -655,10 +660,6 @@ class MasterMix(EchoSourceMaterial):
         '''
         for material in self.materials:
             if material.name == "Extract":
-                print("self.total_volume_requested: " + str(self.total_volume_requested))
-                print("materal.final: " + str(material.final))
-                print("material.stock: " + str(material.stock))
-                print("self.extract_per_aliquot: " + str(self.extract_per_aliquot))
                 return self.total_volume_requested * material.final \
                         / material.stock / self.extract_per_aliquot
         return 0
