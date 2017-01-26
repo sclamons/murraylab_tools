@@ -617,6 +617,7 @@ class MasterMix(EchoSourceMaterial):
     def recipe(self):
         '''
         Iterator returning descriptors of what goes in the total master mix.
+        This is where the excess fraction is added in.
 
         Yields -- pairs of the form (name, vol), where 'name' is a string
                     describing a material in the master mix and 'vol' is the
@@ -626,7 +627,7 @@ class MasterMix(EchoSourceMaterial):
             for material in self.materials:
                 name = material.name
                 vol  = material.final * self.total_volume_requested \
-                       / material.stock / 0.75
+                       / material.stock / 0.75 * self.mm_excess
                 yield (name, vol)
 
 
@@ -656,8 +657,10 @@ class MasterMix(EchoSourceMaterial):
         '''
         for material in self.materials:
             if material.name == "Extract":
-                return self.total_volume_requested * material.final \
-                        / material.stock / self.extract_per_aliquot
+                extract_vol = self.total_volume_requested * material.final \
+                                / material.stock
+                return extract_vol / self.extract_per_aliquot \
+                        * self.mm_excess
         return 0
 
     def n_buffer_aliquots(self):
@@ -672,7 +675,9 @@ class MasterMix(EchoSourceMaterial):
         for material in self.materials:
             if material.name == "Buffer":
                 return self. total_volume_requested * material.final \
-                        / material.stock / self.buffer_per_aliquot
+                        / material.stock / self.buffer_per_aliquot \
+                        * self.mm_excess
+
         return 0
 
     def fill_with(self, name, vol_per_rxn):
