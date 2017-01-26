@@ -664,7 +664,7 @@ class MasterMix(EchoSourceMaterial):
                 print("stock: " + str(material.stock))
                 print("extract_vol: " + str(extract_vol))
                 print("extract_per_aliquot: " + str(self.extract_per_aliquot))
-                print("mm_excess: " + str(mm_excess))
+                print("mm_excess: " + str(self.mm_excess))
                 return extract_vol / self.extract_per_aliquot \
                         * self.mm_excess
         return 0
