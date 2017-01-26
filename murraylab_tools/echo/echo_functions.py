@@ -658,7 +658,7 @@ class MasterMix(EchoSourceMaterial):
         for material in self.materials:
             if material.name == "Extract":
                 extract_vol = self.total_volume_requested * material.final \
-                                / material.stock
+                                / material.stock / 0.75
                 print("total_volume_requested: " + str(self.total_volume_requested))
                 print("final: " + str(material.final))
                 print("stock: " + str(material.stock))
@@ -681,7 +681,7 @@ class MasterMix(EchoSourceMaterial):
         for material in self.materials:
             if material.name == "Buffer":
                 buffer_vol = self.total_volume_requested * material.final \
-                                / material.stock
+                                / material.stock / 0.75
                 return buffer_vol / self.buffer_per_aliquot \
                         * self.mm_excess
 
