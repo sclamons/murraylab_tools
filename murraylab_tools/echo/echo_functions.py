@@ -659,6 +659,12 @@ class MasterMix(EchoSourceMaterial):
             if material.name == "Extract":
                 extract_vol = self.total_volume_requested * material.final \
                                 / material.stock
+                print("total_volume_requested: " + str(self.total_volume_requested))
+                print("final: " + str(material.final))
+                print("stock: " + str(material.stock))
+                print("extract_vol: " + str(extract_vol))
+                print("extract_per_aliquot: " + str(self.extract_per_aliquot))
+                print("mm_excess: " + str(mm_excess))
                 return extract_vol / self.extract_per_aliquot \
                         * self.mm_excess
         return 0
