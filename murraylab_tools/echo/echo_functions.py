@@ -674,8 +674,9 @@ class MasterMix(EchoSourceMaterial):
         '''
         for material in self.materials:
             if material.name == "Buffer":
-                return self. total_volume_requested * material.final \
-                        / material.stock / self.buffer_per_aliquot \
+                buffer_vol = self.total_volume_requested * material.final \
+                                / material.stock
+                return buffer_vol / self.buffer_per_aliquot \
                         * self.mm_excess
 
         return 0
@@ -1217,7 +1218,7 @@ class EchoRun():
                                     math.ceil(master_mix.n_extract_aliquots()))
                     text_file.write("\n\tTubes of buffer needed: %d" % \
                                     math.ceil(master_mix.n_buffer_aliquots()))
-                    text_file.write("\n\tMaster Mix:")
+                    text_file.write("\n\tMaster Mix (including excess:")
                     for name, vol in master_mix.recipe():
                         text_file.write("\n\t\t%.2f uL %s" % \
                                         (vol / 1000, name))
