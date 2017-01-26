@@ -3,7 +3,7 @@ Tools for Common Murray Lab Protocols
 
 Code for common tasks in the Murray lab. Currently supported in Python 2.7.
 
-Install with the following (probably requires sudo): pip install git+git://github.com/sclamons/murray_echo.git@master
+Install with the following (probably requires sudo): pip install git+git://github.com/sclamons/murraylab_tools.git@master
 
 Currently includes the following subpackages:
 
