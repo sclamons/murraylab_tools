@@ -535,12 +535,12 @@ class MasterMix(EchoSourceMaterial):
     Container class for a list of materials to make up a master mix. Note that
     this class ASSUMES THAT 75% OF THE FINAL REACTION WILL BE THIS MASTER MIX.
     '''
-    def __init__(self, plate, extract_fraction = 0.24, mm_excess = 1.1,
+    def __init__(self, plate, extract_fraction = 0.33, mm_excess = 1.1,
                  add_txtl = True, extract_per_aliquot = 30000,
                  buffer_per_aliquot = 37000):
         '''
         extract_fraction: If TX-TL is added, this is the fraction of the final
-                            mix made up of TX-TL extract. Default 0.24 (lowest
+                            mix made up of TX-TL extract. Default 0.33 (lowest
                             protein concentration).
         mm_excess: The ratio of master-mix-to-make to total-mix-needed, i.e.,
                         mm_excess=1.1 => Make 10% excess, to account for
