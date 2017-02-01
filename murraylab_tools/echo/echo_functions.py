@@ -1175,8 +1175,8 @@ class EchoRun():
         other necessary directions for the user.
         '''
         # Write picklist.
-        with open((outputname + '_EchoInput.csv'), 'wb') as outcsv:
-            writer = csv.writer(outcsv)
+        with open((outputname + '_EchoInput.csv'), 'w') as outcsv:
+            writer = csv.writer(outcsv, lineterminator = "\n")
 
             # Write header
             writer.writerow(["Source Plate","Source Plate Type","Source Well",
