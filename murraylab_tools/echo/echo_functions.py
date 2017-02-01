@@ -533,7 +533,8 @@ MasterMixMaterial = collections.namedtuple('MasterMixMaterial',
 class MasterMix(EchoSourceMaterial):
     '''
     Container class for a list of materials to make up a master mix. Note that
-    this class ASSUMES THAT 75% OF THE FINAL REACTION WILL BE THIS MASTER MIX.
+    this class assumes that 75% of the final reaction volume will be extract +
+    buffer.
     '''
     def __init__(self, plate, extract_fraction = 0.33, mm_excess = 1.1,
                  add_txtl = True, extract_per_aliquot = 30000,
@@ -624,11 +625,19 @@ class MasterMix(EchoSourceMaterial):
                     volume of that material to add to the master mix, in nL.
         '''
         if self.total_volume_requested != 0:
-            for material in self.materials:
-                name = material.name
-                vol  = material.final * self.total_volume_requested \
-                       / material.stock / 0.75 * self.mm_excess
-                yield (name, vol)
+            ingredients = self.one_rxn_recipe()
+            one_rxn_vol = self.vol_per_rxn()
+            for (name, vol) in ingredients:
+                ingredient_fraction = vol / one_rxn_vol
+                yield (name, self.mm_excess * ingredient_fraction \
+                             * self.total_volume_requested)
+
+        # if self.total_volume_requested != 0:
+        #     for material in self.materials:
+        #         name = material.name
+        #         vol  = material.final * self.total_volume_requested \
+        #                / material.stock / 0.75 * self.mm_excess
+        #         yield (name, vol)
 
 
     def vol_per_rxn(self):
@@ -1169,6 +1178,10 @@ class EchoRun():
         other necessary directions for the user.
         '''
         # Write picklist.
+        # NOTE! This MUST come before writing the comment file; comments require
+        # accurate count of total_volume_requested of each material, which is
+        # only calculated once all of the picks are finalized and wells are
+        # committed (which happens in this block).
         with open((outputname + '_EchoInput.csv'), 'w') as outcsv:
             writer = csv.writer(outcsv, lineterminator = "\n")
 
@@ -1218,7 +1231,8 @@ class EchoRun():
                                     math.ceil(master_mix.n_extract_aliquots()))
                     text_file.write("\n\tTubes of buffer needed: %d" % \
                                     math.ceil(master_mix.n_buffer_aliquots()))
-                    text_file.write("\n\tMaster Mix (including excess):")
+                    text_file.write("\n\tMaster Mix (including %.2f \% excess):"\
+                                    %(master_mix.mm_excess-1) * 100)
                     for name, vol in master_mix.recipe():
                         text_file.write("\n\t\t%.2f uL %s" % \
                                         (vol / 1000, name))
