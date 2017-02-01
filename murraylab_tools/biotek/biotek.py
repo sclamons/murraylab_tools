@@ -298,10 +298,10 @@ def window_averages(df, start, end, units = "seconds"):
             # Numbers get averaged
             functions[col] = np.average
         else:
-            # Non-numbers get a copy of the first value
-            functions[col] = lambda x:x.iloc[0]
+            # Non-numbers get a copy of the last value
+            functions[col] = lambda x:x.iloc[-1]
 
-    # Calculate endpoints
+    # Calculate windowed average
     averages_df = grouped_df.agg(functions)
 
     averages_df.reset_index(inplace = True)

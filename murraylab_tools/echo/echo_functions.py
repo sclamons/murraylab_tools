@@ -940,7 +940,7 @@ class EchoRun():
             name  = recipe_sheet[i,0]
             stock = recipe_sheet[i,1]
             final = recipe_sheet[i,2]
-            txtl.master_mix.add_material(name, stock, final)
+            txtl.add_material(name, stock, final)
 
 
     def load_source_plate(self, input_filename, name_col, conc_col, len_col,
@@ -1175,7 +1175,7 @@ class EchoRun():
         other necessary directions for the user.
         '''
         # Write picklist.
-        with open((outputname + '_EchoInput.csv'), 'w') as outcsv:
+        with open((outputname + '_EchoInput.csv'), 'wb') as outcsv:
             writer = csv.writer(outcsv)
 
             # Write header
