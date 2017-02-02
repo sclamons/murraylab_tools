@@ -10,16 +10,16 @@ ATc:
 	total volume: 34.50 uL
 txtl_mm:
 	total volume: 354.75 uL
-	Tubes of extract needed: 2
-	Tubes of buffer needed: 4
-	Master Mix:
-		81840.00uL Extract
-		173910.00uL Buffer
+	Tubes of extract needed: 6
+	Tubes of buffer needed: 6
+	Master Mix (including 10% excess):
+		171.70 uL Extract
+		218.53 uL Buffer
 
 Instructions:
-	26.25 uL of GFP Plasmid in well C22
-	65.00 uL of water in wells D01
-	34.50 uL of water in well D02
-	34.50 uL of ATc in well D04
-	65.00 uL of txtl_mm in wells D06, D07, D08, D09, D10
-	29.75 uL of txtl_mm in well D11
+	26.25 uL of GFP Plasmid in well C24
+	65.00 uL of water in wells D13
+	34.50 uL of water in well D14
+	34.50 uL of ATc in well D16
+	65.00 uL of txtl_mm in wells D18, D19, D20, D21, D22
+	29.75 uL of txtl_mm in well D23

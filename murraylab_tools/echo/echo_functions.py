@@ -843,7 +843,7 @@ class EchoRun():
                         recipe_sheet[rownum, colnum] = element
 
         # Set some magic numbers based on the recipe file
-        self.rxn_vol = float(recipe_sheet[11,10])
+        self.rxn_vol = float(recipe_sheet[11,10]) * 1e3
         self.extract_fraction = float(recipe_sheet[12,2])
         self.buffer_fraction  = 0.75 - self.extract_fraction
         self.mm_excess = float(recipe_sheet[11,12])
@@ -1194,11 +1194,12 @@ class EchoRun():
             # Write picks
             for pick in self.generate_picklist():
                 if pick.source_material.name == "txtl_mm" \
-                    or pick.source_material.name == "water":
+                   or pick.source_material.name == "water":
                     comment = ""
                 else:
                     comment = "Actual concentration: %.2f nM" % \
-                              (pick.source_material.nM*pick.volume/self.rxn_vol)
+                              (pick.source_material.nM * pick.volume \
+                              /self.rxn_vol)
                 plate = pick.source_material.plate
                 row = [plate.name, plate.type, pick.source_well,
                        pick.source_material.name, self.DPtype,
