@@ -8,6 +8,7 @@ import collections
 import pandas as pd
 import numpy as np
 import warnings
+import scipy.interpolate
 
 ####################
 # Plate Reader IDs #
@@ -318,3 +319,37 @@ def endpoint_averages(df, window_size = 10):
     start = len(all_times) - window_size
     end = len(all_times)-1
     return window_averages(df, start, end, "index")
+
+
+def spline_fit(df):
+    '''
+    Adds a spline fit of the uM traces of a dataframe of the type made by
+    tidy_biotek_data.
+    '''
+    # Fit 3rd order spline
+    grouped_df = df.groupby(["Channel", "Gain", "Well"])
+    splined_df = pd.DataFrame()
+    for name, group in grouped_df:
+        spline = scipy.interpolate.UnivariateSpline(group["Time (sec)"],
+                                                    group.uM)
+        group["uM spline fit"] = spline(group["Time (sec)"])
+        splined_df = splined_df.append(group)
+    return splined_df
+
+def smoothed_derivatives(df):
+    '''
+    Calculates a smoothed derivative of the time traces in a dataframe. First
+    fits a spline, then adds the derivatives of the spline to a copy of the
+    DataFrame, which is returned.
+
+    Args:
+        df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
+    '''
+    splined_df = spline_fit(df)
+    grouped_df = splined_df.groupby(["Channel", "Gain", "Well"])
+    deriv_df   = pd.DataFrame()
+    for name, group in grouped_df:
+        group["duM/dt"] = np.gradient(group["uM spline fit"])
+        deriv_df = deriv_df.append(derivative)
+    return deriv_df
+
