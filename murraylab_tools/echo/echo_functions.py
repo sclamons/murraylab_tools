@@ -1101,8 +1101,8 @@ class EchoRun():
         dna1.plate = self.plates[0]
         dna2.plate = self.plates[0]
 
-        self.material_list["dna1"] = dna1
-        self.material_list["dna2"] = dna2
+        self.material_list[dna1.name] = dna1
+        self.material_list[dna2.name] = dna2
         '''if dna1.name == "pos_ctrl":
             self.material_list["pos_ctrl"] = dna1
         else:
