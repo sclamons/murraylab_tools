@@ -350,6 +350,6 @@ def smoothed_derivatives(df):
     deriv_df   = pd.DataFrame()
     for name, group in grouped_df:
         group["duM/dt"] = np.gradient(group["uM spline fit"])
-        deriv_df = deriv_df.append(derivative)
+        deriv_df = deriv_df.append(group)
     return deriv_df
 
