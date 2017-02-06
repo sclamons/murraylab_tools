@@ -1168,6 +1168,8 @@ class EchoRun():
 
     def generate_picklist(self):
         for mat in self.material_list.values():
+            if mat == None:
+                continue
             picks = mat.request_picklist()
             for pick in picks:
                 yield pick
