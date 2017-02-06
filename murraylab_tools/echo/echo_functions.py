@@ -764,8 +764,9 @@ class EchoRun():
 
         master_mix: A MasterMix object describing the new master mix.
         '''
-        self.material_list['txtl_mm'] = master_mix
         self.make_master_mix = master_mix != None
+        if self.make_master_mix:
+            self.material_list['txtl_mm'] = master_mix
 
     def remove_master_mix(self):
         '''
