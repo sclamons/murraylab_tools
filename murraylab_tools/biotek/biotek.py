@@ -163,15 +163,25 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 info = line[0].strip()
                 if info in ["Layout", "Results"]:
                     continue
-                read_name = info.split(":")[0]
-                if not info.endswith(']'):
-                    read_idx = 0
+                if info.strip() == "OD600":
+                    reading_OD = True
                 else:
-                    read_idx = int(info.split('[')[-1][:-1]) - 1
-                read_properties = read_sets[read_name][read_idx]
-                gain            = read_properties.gain
-                excitation      = read_properties.excitation
-                emission        = read_properties.emission
+                    reading_OD = False
+                if reading_OD:
+                    read_name = "OD600"
+                    excitation = 600
+                    emission   = -1
+                    gain       = -1
+                else:
+                    read_name = info.split(":")[0]
+                    if not info.endswith(']'):
+                        read_idx = 0
+                    else:
+                        read_idx = int(info.split('[')[-1][:-1]) - 1
+                    read_properties = read_sets[read_name][read_idx]
+                    gain            = read_properties.gain
+                    excitation      = read_properties.excitation
+                    emission        = read_properties.emission
 
                 line = reader.next() # Skip a line
                 line = reader.next() # Chart title line
@@ -194,9 +204,12 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         # Check for overflow
                         if afu.upper() == "OVRFLW":
                             afu = np.infty
-                        uM_conc   = raw_to_uM(line[i],
-                                              standard_channel_name(read_name),
-                                              plate_reader_id, gain, volume)
+                        if reading_OD:
+                            uM_conc = afu
+                        else:
+                            uM_conc = raw_to_uM(line[i],
+                                            standard_channel_name(read_name),
+                                            plate_reader_id, gain, volume)
                         if uM_conc == None:
                             uM_conc = -1
                         row = [read_name, gain, time_secs, time_hrs, well_name,
@@ -321,17 +334,26 @@ def endpoint_averages(df, window_size = 10):
     return window_averages(df, start, end, "index")
 
 
-def spline_fit(df):
+def spline_fit(df, smoothing_factor = None):
     '''
     Adds a spline fit of the uM traces of a dataframe of the type made by
     tidy_biotek_data.
+
+    Params:
+        df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
+        smoothing_factor - Parameter determining the tightness of the fit.
+                            Default is the number of time points. Smaller
+                            smoothing factor produces tighter fit; 0 smoothing
+                            factor interpolates every point. See parameter 's'
+                            in scipy.interpolate.UnivariateSpline.
     '''
     # Fit 3rd order spline
     grouped_df = df.groupby(["Channel", "Gain", "Well"])
     splined_df = pd.DataFrame()
     for name, group in grouped_df:
         spline = scipy.interpolate.UnivariateSpline(group["Time (sec)"],
-                                                    group.uM)
+                                                    group.uM,
+                                                    s = smoothing_factor)
         group["uM spline fit"] = spline(group["Time (sec)"])
         splined_df = splined_df.append(group)
     return splined_df
