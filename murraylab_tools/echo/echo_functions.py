@@ -478,7 +478,7 @@ class EchoSourceMaterial():
         actual_volume = echo_round(volume)
         if actual_volume == 0:
             warnings.warn("Requesting 0 volume from material " + self.name + \
-                          " into well " + self.well + "; are you sure you want to"+ \
+                          " into well " + destination_well + "; are you sure you want to"+ \
                           " do this?")
         else:
             self.total_volume_requested += actual_volume
