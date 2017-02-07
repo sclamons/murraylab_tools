@@ -511,6 +511,8 @@ class EchoSourceMaterial():
                 self.current_well += 1
                 self.total_volume_requested += dead_volume
                 if self.current_well >= len(self.wells):
+                    print("self.wells: " + str(self.wells))
+                    print("self.current_well: " + str(self.current_well))
                     raise ValueError(("Material %s has been asked to donate " +\
                                       "too much material with a call for " +\
                                       "%d nL") % \
@@ -1046,7 +1048,7 @@ class EchoRun():
             fill_with_water -- If true, will fill all wells to the reaction size
                                 with water. Requires water_name argument.
             water_name -- Determines the name of wells containing water. Must
-                            match the names given in an association spreadsheet,
+                            match the name given in an association spreadsheet,
                             or otherwise defined.
         '''
         well_idx = process_column_argument(well_column)
