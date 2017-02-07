@@ -476,8 +476,13 @@ class EchoSourceMaterial():
         destionations.
         '''
         actual_volume = echo_round(volume)
-        self.total_volume_requested += actual_volume
-        self.picklist.append(Pick(self, None, destination_well, actual_volume))
+        if actual_volume == 0:
+            warnings.warn("Requesting 0 volume from material " + self.name + \
+                          "; are you sure you want to do this?")
+        else:
+            self.total_volume_requested += actual_volume
+            self.picklist.append(Pick(self, None, destination_well,
+                                      actual_volume))
 
 
     def request_picklist(self):
@@ -834,7 +839,6 @@ class EchoRun():
                     stock_sheet[rownum, colnum] = element
 
         # Read in recipe file
-        print("Changed!")
         recipe_sheet = np.zeros(shape = (384+2, 16), dtype = object)
         with open(recipe_filename, 'rU') as recipe_file:
             recipe_reader = csv.reader(recipe_file)
