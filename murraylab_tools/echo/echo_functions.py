@@ -1019,6 +1019,13 @@ class EchoRun():
                         break
                 if not plate:
                     plate = SourcePlate(SPname = plate_name)
+                print("For material " + str(name) + " in well " + str(well) + ":")
+                print("\tname: " + str(name))
+                print("\tconcentration: " + str(concentration))
+                print("\tlength: " + str(length))
+                if name in self.material_list.keys():
+                    print("\tself.material_list[name].concentration: " + str(self.material_list[name].concentration))
+                    print("\tself.material_list[name].length: " + str(self.material_list[name].length))
                 if name in self.material_list.keys() \
                    and self.material_list[name].concentration == concentration \
                    and self.material_list[name].length == length:
