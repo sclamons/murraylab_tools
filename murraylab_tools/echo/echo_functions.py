@@ -992,7 +992,7 @@ class EchoRun():
             reader = csv.reader(input_file)
             # Skip first row if it's a header
             if header:
-                reader.next()
+                next(reader)
             for row in reader:
                 name          = row[name_idx]
                 concentration = floatify(row[conc_idx])
@@ -1054,7 +1054,7 @@ class EchoRun():
             reader = csv.reader(input_file)
             # Skip the first row if it's a header
             if header:
-                reader.next()
+                next(reader)
             for row in reader:
                 if well_idx >= len(row):
                     raise ValueError("Well column out of bounds for row '%s'" %\
