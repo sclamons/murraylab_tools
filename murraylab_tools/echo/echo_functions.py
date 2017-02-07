@@ -489,9 +489,9 @@ class EchoSourceMaterial():
         n_source_wells = math.ceil(float(self.total_volume_requested) \
                                          / usable_volume)
         if n_source_wells == 0:
-            raise ValueError(("Material %s is requesting 0 wells in its " +\
-                              "source plate to give %f total volume") % \
-                              (self.name, self.total_volume_requested))
+            print(("Warning: Material %s is requesting 0 wells in its " +\
+                  "source plate to give %f total volume") % \
+                  (self.name, self.total_volume_requested))
         if self.wells == None:
             self.wells = self.plate.request_wells(int(n_source_wells),self.name)
         self.well_volumes    = np.zeros(len(self.wells))
