@@ -832,6 +832,7 @@ class EchoRun():
                     stock_sheet[rownum, colnum] = element
 
         # Read in recipe file
+        print("Changed!")
         recipe_sheet = np.zeros(shape = (384+21, 16), dtype = object)
         with open(recipe_filename, 'rU') as recipe_file:
             recipe_reader = csv.reader(recipe_file)
