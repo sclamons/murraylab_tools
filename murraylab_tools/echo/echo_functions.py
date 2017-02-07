@@ -1023,6 +1023,9 @@ class EchoRun():
                 print("\tname: " + str(name))
                 print("\tconcentration: " + str(concentration))
                 print("\tlength: " + str(length))
+                print("\tboolean: " + str(name in self.material_list.keys() \
+                   and self.material_list[name].concentration == concentration \
+                   and self.material_list[name].length == length))
                 if name in self.material_list.keys():
                     print("\tself.material_list[name].concentration: " + str(self.material_list[name].concentration))
                     print("\tself.material_list[name].length: " + str(self.material_list[name].length))
