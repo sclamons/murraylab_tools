@@ -835,7 +835,7 @@ class EchoRun():
 
         # Read in recipe file
         print("Changed!")
-        recipe_sheet = np.zeros(shape = (384+21, 16), dtype = object)
+        recipe_sheet = np.zeros(shape = (384+2, 16), dtype = object)
         with open(recipe_filename, 'rU') as recipe_file:
             recipe_reader = csv.reader(recipe_file)
             rownum = -1
@@ -845,6 +845,7 @@ class EchoRun():
                     print("Warning -- You are trying to add to more than 384 "+\
                           "wells in the destination plate. Extra wells will " +\
                           "be clipped.")
+                    break
                 for colnum in range(len(row)):
                     element = floatify(row[colnum])
                     if element:
@@ -1035,11 +1036,11 @@ class EchoRun():
                     print("\tBoolean true: adding well to list " + str(self.material_list[name].wells))
                     self.material_list[name].wells.append(well)
                     print("\tNew well list: " + str(self.material_list[name].wells))
-
-                new_material = EchoSourceMaterial(name, concentration,
-                                                  length, plate)
-                new_material.wells = [well]
-                self.material_list[name] = new_material
+                else:
+                    new_material = EchoSourceMaterial(name, concentration,
+                                                      length, plate)
+                    new_material.wells = [well]
+                    self.material_list[name] = new_material
 
     def build_picklist_from_association_spreadsheet(self, input_filename,
                                                     well_column, header = True,
