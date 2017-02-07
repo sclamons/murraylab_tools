@@ -881,7 +881,7 @@ class EchoRun():
             self.material_list['txtl_mm'] = MasterMix(self.plates[0],
                                 extract_fraction = self.extract_fraction,
                                 mm_excess = self.mm_excess,
-                                add_txtl = True)
+                                add_txtl = False)
         txtl = self.material_list["txtl_mm"]
         txtl.set_rxn_vol(self.rxn_vol)
 
