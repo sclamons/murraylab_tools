@@ -3,7 +3,9 @@ Tools for Common Murray Lab Protocols
 
 Code for common tasks in the Murray lab. Currently supported in Python 2.7.
 
-Install with the following (probably requires sudo): pip install --upgrade git+git://github.com/sclamons/murraylab_tools.git@master
+Install with the following (probably requires sudo): pip install git+git://github.com/sclamons/murraylab_tools.git@master
+
+To update, run (also with superuser privilige): pip install --upgrade --no-deps git+git://github.com/sclamons/murraylab_tools.git@master
 
 Currently includes the following subpackages:
 
