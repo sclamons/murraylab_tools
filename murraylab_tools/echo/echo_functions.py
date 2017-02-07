@@ -835,7 +835,7 @@ class EchoRun():
 
         # Read in recipe file
         print("Changed!")
-        recipe_sheet = np.zeros(shape = (384+20, 16), dtype = object)
+        recipe_sheet = np.zeros(shape = (384+21, 16), dtype = object)
         with open(recipe_filename, 'rU') as recipe_file:
             recipe_reader = csv.reader(recipe_file)
             rownum = -1
@@ -1032,7 +1032,10 @@ class EchoRun():
                 if name in self.material_list.keys() \
                    and self.material_list[name].concentration == concentration \
                    and self.material_list[name].length == length:
+                    print("\tBoolean true: adding well to list " + str(self.material_list[name].wells))
                     self.material_list[name].wells.append(well)
+                    print("\tNew well list: " + str(self.material_list[name].wells))
+
                 new_material = EchoSourceMaterial(name, concentration,
                                                   length, plate)
                 new_material.wells = [well]
