@@ -200,6 +200,12 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         if line[i].strip() == "":
                             break
                         well_name = well_names[i]
+                        # Check to see if there's any supplementary information
+                        # on this well.
+                        if not well_name in supplementary_data.keys()[0]:
+                            warnings.warn("No supplementary data for well " + \
+                                          "%; throwing out data for that well.")
+                            continue
                         afu       = line[i]
                         # Check for overflow
                         if afu.upper() == "OVRFLW":
@@ -346,6 +352,9 @@ def spline_fit(df, smoothing_factor = None):
                             smoothing factor produces tighter fit; 0 smoothing
                             factor interpolates every point. See parameter 's'
                             in scipy.interpolate.UnivariateSpline.
+    Returns:
+        A DataFrame of df augmented with columns for a spline fit
+        ("uM spline fit").
     '''
     # Fit 3rd order spline
     grouped_df = df.groupby(["Channel", "Gain", "Well"])
@@ -358,7 +367,7 @@ def spline_fit(df, smoothing_factor = None):
         splined_df = splined_df.append(group)
     return splined_df
 
-def smoothed_derivatives(df):
+def smoothed_derivatives(df, smoothing_factor = None):
     '''
     Calculates a smoothed derivative of the time traces in a dataframe. First
     fits a spline, then adds the derivatives of the spline to a copy of the
@@ -366,12 +375,52 @@ def smoothed_derivatives(df):
 
     Args:
         df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
+        smoothing_factor - Parameter determining the tightness of the spline
+                            fit made before derivative calculation.
+                            Default is the number of time points. Smaller
+                            smoothing factor produces tighter fit; 0 smoothing
+                            factor interpolates every point. See parameter 's'
+                            in scipy.interpolate.UnivariateSpline.
+    Returns:
+        A DataFrame of df augmented with columns for a spline fit
+        ("uM spline fit") and a derivative ("um/sec")
     '''
-    splined_df = spline_fit(df)
+    splined_df = spline_fit(df, smoothing_factor)
     grouped_df = splined_df.groupby(["Channel", "Gain", "Well"])
     deriv_df   = pd.DataFrame()
     for name, group in grouped_df:
         group["uM/sec"] = np.gradient(group["uM spline fit"])
         deriv_df = deriv_df.append(group)
     return deriv_df
+
+def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
+    '''
+    Normalize expression measurements by dividing each measurement by the value
+    of a reference channel at that time (default OD600).
+
+    Args:
+        df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
+        norm_channel - Name of a channel to normalize by. Default "OD600"
+        norm_channel_gain - Gain of the channel you want to normalize by.
+                            Default -1 (for OD600)
+    Returns:
+        A DataFrame of df augmented with columns for normalized AFU
+        ("AFU/<norm_channel>").
+    '''
+    # Do some kind of check to make sure the norm channel exists with the given
+    # channel...
+    if not norm_channel in df.Channel:
+        raise ValueError("No data for channel '%s' in dataframe." % \
+                         norm_channel)
+    if not norm_channel_gain in df[df.Channel == norm_channel].Gain:
+        raise ValueError("Channel %s does not use gain %d." % \
+                         (norm_channel, norm_channel_gain))
+
+    # Iterate over channels/gains, applying normalization
+    grouped_df = df.groupby(["Channel", "Gain", "Well"])
+    normalized_df = pd.DataFrame()
+    for name, group in grouped_df:
+        group["AFU/" + norm_channel] = group["AFU"] / group[norm_channel]
+        normalized_df = normalized_df.append(group)
+    return normalized_df
 
