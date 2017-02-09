@@ -2,7 +2,7 @@ import os
 import pytest
 import numpy as np
 
-from .. import echo_functions as ef
+from ..echo import echo_functions as ef
 
 @pytest.fixture()
 def test_dir():

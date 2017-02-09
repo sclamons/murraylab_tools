@@ -353,6 +353,9 @@ class SourcePlate():
         '''
         Writes which wells have been used to a data file. The well-use file
         lists wells that have been used, with one line per well used.
+
+        Note that if no filename is given to the source plate, no well-use file
+        will be written and this function will return silently.
         '''
         if not self.used_well_file:
             return

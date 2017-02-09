@@ -1,13 +1,28 @@
 import os
 import pytest
 
-from .. import echo_functions as ef
+from ..echo import echo_functions as ef
 
 class TestSourcePlate():
 
     test_plate = ef.SourcePlate(filename='testplate.dat')
 
     test_dir = os.path.dirname(os.path.realpath(__file__))
+
+    def test_sanity(self):
+        assert 0
+
+    def test_load_from_file(self):
+        assert 0
+
+    def test_write_to_file(self):
+        assert 0
+
+    def test_request_wells(self):
+        assert 0
+
+    def test_increment_position(self):
+        assert 0
 
     def test_load_csv_fails_for_missing_column_names(self):
         with pytest.raises(AssertionError):
@@ -17,7 +32,7 @@ class TestSourcePlate():
     def test_load_csv_passes_for_necessary_column_names(self):
         try:
             self.test_plate.load_well_definitions(os.path.join(self.test_dir,
-                                             'test_def_bad_column_names.csv'))
+                                             'test_def_good_column_names.csv'))
         except AssertionError:
             assert 0
         assert 1
