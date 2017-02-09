@@ -478,13 +478,12 @@ class EchoSourceMaterial():
         actual_volume = echo_round(volume)
         if actual_volume == 0:
             warnings.warn("Requesting 0 volume from material " + self.name + \
-                          " into well " + destination_well + "; are you sure you want to"+ \
-                          " do this?")
+                          " into well " + destination_well + "; are you sure "+\
+                          "you want to do this?")
         else:
             self.total_volume_requested += actual_volume
             self.picklist.append(Pick(self, None, destination_well,
                                       actual_volume))
-
 
     def request_picklist(self):
         '''
@@ -749,10 +748,21 @@ class EchoRun():
             self.DPtype = "Nunc_384_black_glassbottom"
         else:
             self.DPtype = DPtype
+        if '384' in self.Dtype:
+            self.rows = 16
+            self.cols = 24
+        elif '96' in self.DPtype:
+            self.rows = 8
+            self.cols = 12
+        else:
+            raise ValueError(("Unrecognized plate type %s. If this is a " + \
+                              "valid plate type, contact a murraylab_tools " +\
+                              "developer to have it added.") % self.DPtype)
         if plate == None:
             self.plates = [SourcePlate("Source[1]", "384PP_AQ_BP")]
         else:
             self.plates = [plate]
+
 
         self.material_list   = dict()
         self.picklist        = []
@@ -1099,33 +1109,41 @@ class EchoRun():
                     water = self.material_list[water_name]
                     water.request_material(well, volume_left)
 
-    def build_dilution_series(self, dna1, dna2, dna1_final, dna2_final,
+    def build_dilution_series(self, material_1, material_2,
+                              material_1_final, material_2_final,
                               first_well):
         '''Calculate TXTL volumes and automatically generate a picklist for
         an NxN dilution matrix with two inputs. If this EchoSource object has a
         MasterMix, then add that master mix as well. Fill the rest with water.
 
         Args:
-            dna1, dna2 -- First and second materials to serialy dilute
-                          (EchoSourceMaterials)
-            dna1_final, dna2_final -- Lists (or numpy array) defining the final
-                                      concentrations of each material.
+            material_1, material_2 -- First and second materials to serialy
+                                        dilute (EchoSourceMaterials)
+            material_1_final, material_1_final -- Lists (or numpy array)
+                                                    defining the final
+                                                    concentrations of each
+                                                    material.
             first_well -- The upper-left-most corner of the block on the
                           destination plate you want to spit into.
         '''
-        dna1.plate = self.plates[0]
-        dna2.plate = self.plates[0]
+        material_1.plate = self.plates[0]
+        material_2.plate = self.plates[0]
 
-        self.material_list[dna1.name] = dna1
-        self.material_list[dna2.name] = dna2
-        '''if dna1.name == "pos_ctrl":
-            self.material_list["pos_ctrl"] = dna1
-        else:
-            self.material_list = EchoSourceMaterial("pos_ctrl", 19, 3202, "")'''
+        self.material_list[material_1.name] = material_1
+        self.material_list[material_2.name] = material_2
 
-        # matrix size
-        n_dna1 = len(dna1_final)
-        n_dna2 = len(dna2_final)
+        # matrix size -- check to make sure it isn't going off the plate.
+        n_material_1 = len(material_1_final)
+        n_material_2 = len(material_2_final)
+        first_row = string.ascii_uppercase.find(first_well[0])
+        first_col = int(first_well[1:])
+        if first_row + n_material_1 + 1 > self.rows \
+            or first_col + n_material_2 > self.cols:
+            raise ValueError(("Dilution series of size %dx%d starting in " + \
+                              "well %s runs off the edge of plate of type %s") \
+                             % (n_material_1, n_material_2, first_well,
+                                self.DPtype))
+
 
         # Add TX-TL master mix as a material, if applicable.
         if self.make_master_mix:
@@ -1144,38 +1162,40 @@ class EchoRun():
         water = self.material_list["water"]
 
         # Fill in matrix with picks.
-        first_row = string.ascii_uppercase.find(first_well[0])
-        first_col = int(first_well[1:])
-        for i in range(n_dna1):
-            for j in range(n_dna2):
+
+        for i in range(n_material_1):
+            for j in range(n_material_2):
                 # Well name
                 destination = string.ascii_uppercase[first_row + i] + \
                               str(first_col + j)
-                # DNA picks
-                dna1_pick_vol = dna1_final[i]*(self.rxn_vol/dna1.nM)
-                dna1.request_material(destination, dna1_pick_vol)
+                # Diluted material picks
+                material_1_pick_vol = material_1_final[i] \
+                                     * (self.rxn_vol / material_1.nM)
+                material_1.request_material(destination, material_1_pick_vol)
 
-                dna2_pick_vol = dna2_final[j]*(self.rxn_vol/dna2.nM)
-                dna2.request_material(destination, dna2_pick_vol)
+                material_2_pick_vol = material_2_final[j] \
+                                     *(self.rxn_vol / material_2.nM)
+                material_2.request_material(destination, material_2_pick_vol)
                 if self.make_master_mix:
                     # TX-TL Master Mix pick
                     txtl.request_material(destination, txtl_mm_vol)
                 # Water pick
-                water_vol = self.rxn_vol - dna1_pick_vol - dna2_pick_vol - \
-                            txtl_mm_vol
+                water_vol = self.rxn_vol - material_1_pick_vol \
+                            - material_2_pick_vol - txtl_mm_vol
                 if water_vol < 0:
                     raise ValueError(("Well %s is overloaded! %s contains "+\
                                      "%.2f nL of %s, %.2f nL of %s, and " +\
                                      "%.2f nL of Master Mix.") % \
-                                     (destination, destination, dna1_pick_vol,
-                                      dna1.name, dna2_pick_vol, dna2.name,
-                                      txtl_mm_vol))
+                                     (destination, destination,
+                                      material_1_pick_vol,
+                                      material_1.name, material_2_pick_vol,
+                                      material_2.name, txtl_mm_vol))
                 water.request_material(destination, water_vol)
 
         # Add positive control....
 
         # and negative control.
-        neg_ctrl_well = string.ascii_uppercase[first_row + n_dna1] \
+        neg_ctrl_well = string.ascii_uppercase[first_row + n_material_1] \
                         + str(first_col)
         if self.make_master_mix:
             txtl.request_material(neg_ctrl_well, txtl_mm_vol)
