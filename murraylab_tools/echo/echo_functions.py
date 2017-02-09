@@ -751,7 +751,7 @@ class EchoRun():
             self.DPtype = "Nunc_384_black_glassbottom"
         else:
             self.DPtype = DPtype
-        if '384' in self.Dtype:
+        if '384' in self.DPtype:
             self.rows = 16
             self.cols = 24
         elif '96' in self.DPtype:
