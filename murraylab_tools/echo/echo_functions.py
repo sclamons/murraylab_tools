@@ -937,6 +937,7 @@ class EchoRun():
 
         # Register Water
         self.add_material(EchoSourceMaterial("water", 0, 0, self.plates[0]))
+        water = self.material_list["water"]
 
         # Register other materials
         stocks = []
