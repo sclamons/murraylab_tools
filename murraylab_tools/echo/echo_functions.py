@@ -1190,6 +1190,7 @@ class EchoRun():
 
         # Add water as a material (if it's not already there).
         self.add_material(EchoSourceMaterial("water", 0, 0, self.plates[0]))
+        water = self.material_list["water"]
 
         # Fill in matrix with picks.
 
