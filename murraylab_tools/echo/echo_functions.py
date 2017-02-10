@@ -815,7 +815,7 @@ class EchoRun():
         so the new material was not added.
         '''
         if material.name in self.material_list.keys():
-            prior_mat = self.material_list[key]
+            prior_mat = self.material_list[material.name]
             if prior_mat.name == material.name \
                and prior_mat.concentration == material.concentration \
                and prior_mat.length == material.length \

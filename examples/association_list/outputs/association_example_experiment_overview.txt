@@ -28,12 +28,12 @@ GFP plasmid:
 	total volume: 21.23 uL
 
 Instructions:
-	28.50 uL of primer_1R in well A2
-	28.50 uL of primer_2R in well A4
-	28.50 uL of primer_3F in well A5
-	28.50 uL of primer_2F in well A3
-	28.50 uL of primer_1F in well A1
-	21.23 uL of CFP plasmid in well B3
-	21.15 uL of RFP plasmid in well B2
-	28.50 uL of primer_3R in well A6
-	21.23 uL of GFP plasmid in well B1
+	28.50 uL of primer_1R in well A01
+	28.50 uL of primer_2R in well A01
+	28.50 uL of primer_3F in well A01
+	28.50 uL of primer_2F in well A01
+	28.50 uL of primer_1F in well A01
+	21.23 uL of CFP plasmid in well A01
+	21.15 uL of RFP plasmid in well A01
+	28.50 uL of primer_3R in well A01
+	21.23 uL of GFP plasmid in well A01
