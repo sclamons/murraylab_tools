@@ -1,8 +1,11 @@
 import os
 import pytest
 import numpy as np
+import sys
+sys.path.append(os.path.dirname(os.path.join("..")))
+print(sys.path)
 
-from ..echo import echo_functions as ef
+from echo import echo_functions as ef
 
 @pytest.fixture()
 def test_dir():

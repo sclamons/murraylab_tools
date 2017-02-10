@@ -1,7 +1,10 @@
 import os
 import pytest
+import numpy as np
+import sys
+sys.path.append(os.path.join("..", ".."))
 
-from ..echo import echo_functions as ef
+echo import echo_functions as ef
 
 class TestSourcePlate():
 

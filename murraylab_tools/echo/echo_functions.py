@@ -796,6 +796,43 @@ class EchoRun():
         self.material_list['txtl_mm'] = None
         self.make_master_mix          = False
 
+    def add_material(self, material):
+        '''
+        Add a material to the materials list for this EchoRun, if an identical
+        material is not already in the list. Attempting to add a material with
+        the same name but different properties as another material already in
+        this object's material list will raise a ValueError.
+
+        Doesn't handle objects of class MasterMix or other subclasses of
+        EchoSourceMaterial. Add these to the master mix manually, i.e.,
+
+        self.master_mix.append(material)
+
+        after whatever check is required to avoid duplications.
+
+        Returns 0 if the material was added successfully; returns 1 if an
+        identical material was already in this EchoRun object's material list,
+        so the new material was not added.
+        '''
+        if material.name in self.material_list.keys():
+            prior_mat = self.material_list[key]
+            if prior_mat.name == material.name \
+               and prior_mat.concentration == material.concentration \
+               and prior_mat.length == material.length \
+               and prior_mat.plate  == material.plate:
+                return 1
+            else:
+                raise ValueError("Tried to add material " + material.name +    \
+                    " with concentration " + str(material.concentration) +     \
+                    ", length " + str(material.length) + ", and plate " +      \
+                     str(material.plate) + "; that material already exists " + \
+                     "with concentration " + str(prior_mat.concentration) +    \
+                     ", length " str(prior_mat.length) + ", and plate " +      \
+                     str(prior_mat.plate) + ".")
+        else:
+            self.material_list.append(prior_mat)
+            return 0
+
     def build_picklist_from_txtl_setup_excel(self, input_filename):
         '''
         CURRENTLY NONFUNCTIONAL DO NOT USE
@@ -899,10 +936,7 @@ class EchoRun():
         txtl.set_rxn_vol(self.rxn_vol)
 
         # Register Water
-        if not "water" in self.material_list:
-            self.material_list['water'] = EchoSourceMaterial("water", 0, 0,
-                                                              self.plates[0])
-        water = self.material_list["water"]
+        self.add_material(EchoSourceMaterial("water", 0, 0, self.plates[0]))
 
         # Register other materials
         stocks = []
@@ -912,17 +946,13 @@ class EchoRun():
             material_name          = stock_sheet[i+2,1]
             material_concentration = stock_sheet[i+2, 2]
             material_length        = stock_sheet[i+2, 3]
-            if material_name in self.material_list:
-                existing_mat = self.material_list[material_name]
-                if existing_mat.concentration == material_concentration and \
-                   existing_mat.length == material_length:
-                   continue
-            self.material_list[material_name] = EchoSourceMaterial(\
-                                                         material_name,
-                                                         material_concentration,
-                                                         material_length,
-                                                         self.plates[0])
-            stocks.append(self.material_list[material_name])
+            new_material           = EchoSourceMaterial(material_name,
+                                                        material_concentration,
+                                                        material_length,
+                                                        self.plates[0])
+            is_duplicate_material = self.add_material(new_material)
+            if not is_duplicate_material:
+                stocks.append(new_material)
 
         ##################
         # Register picks #
@@ -1038,15 +1068,14 @@ class EchoRun():
                         break
                 if not plate:
                     plate = SourcePlate(SPname = plate_name)
-                if name in self.material_list.keys() \
-                   and self.material_list[name].concentration == concentration \
-                   and self.material_list[name].length == length:
-                    self.material_list[name].wells.append(well)
+                material = EchoSourceMaterial(name, concentration,
+                                              length, plate)
+                is_new_material = self.add_material(material)
+                if is_new_material:
+                    material.wells = [well]
                 else:
-                    new_material = EchoSourceMaterial(name, concentration,
-                                                      length, plate)
-                    new_material.wells = [well]
-                    self.material_list[name] = new_material
+                    self.material_list[name].wells.append(well)
+
 
     def build_picklist_from_association_spreadsheet(self, input_filename,
                                                     well_column, header = True,
@@ -1132,8 +1161,8 @@ class EchoRun():
         material_1.plate = self.plates[0]
         material_2.plate = self.plates[0]
 
-        self.material_list[material_1.name] = material_1
-        self.material_list[material_2.name] = material_2
+        self.add_material(material_1)
+        self.add_material(material_2)
 
         # matrix size -- check to make sure it isn't going off the plate.
         n_material_1 = len(material_1_final)
@@ -1142,7 +1171,7 @@ class EchoRun():
         first_col = int(first_well[1:])
         if first_row + n_material_1 + 1 > self.rows \
             or first_col + n_material_2 > self.cols:
-            raise ValueError(("Dilution series of size %dx%d starting in " + \
+            raise ValueError(("Dilution series of size %dx%d starting in " +   \
                               "well %s runs off the edge of plate of type %s") \
                              % (n_material_1, n_material_2, first_well,
                                 self.DPtype))
@@ -1159,10 +1188,7 @@ class EchoRun():
             txtl_mm_vol = 0
 
         # Add water as a material (if it's not already there).
-        if not "water" in self.material_list:
-            self.material_list["water"] = EchoSourceMaterial("water", 0, 0,
-                                                             self.plates[0])
-        water = self.material_list["water"]
+        self.add_material(EchoSourceMaterial("water", 0, 0, self.plates[0]))
 
         # Fill in matrix with picks.
 
