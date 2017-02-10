@@ -827,7 +827,7 @@ class EchoRun():
                     ", length " + str(material.length) + ", and plate " +      \
                      str(material.plate) + "; that material already exists " + \
                      "with concentration " + str(prior_mat.concentration) +    \
-                     ", length " str(prior_mat.length) + ", and plate " +      \
+                     ", length " + str(prior_mat.length) + ", and plate " +    \
                      str(prior_mat.plate) + ".")
         else:
             self.material_list.append(prior_mat)
