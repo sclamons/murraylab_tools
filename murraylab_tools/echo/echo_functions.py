@@ -1071,9 +1071,9 @@ class EchoRun():
                     plate = SourcePlate(SPname = plate_name)
                 material = EchoSourceMaterial(name, concentration,
                                               length, plate)
-                is_new_material = self.add_material(material)
-                if is_new_material:
-                    material.wells = [well]
+                self.add_material(material)
+                if self.material_list[name].wells == None:
+                    self..wells = [well]
                 else:
                     self.material_list[name].wells.append(well)
 

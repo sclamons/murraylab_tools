@@ -1,10 +1,10 @@
 Materials used:
-GFP Plasmid:
-	stock concentration: 139.12nM (294.00 ng/uL)
-	total volume: 26.25 uL
 water:
 	stock concentration: 0.00nM
 	total volume: 99.50 uL
+GFP Plasmid:
+	stock concentration: 139.12nM (294.00 ng/uL)
+	total volume: 26.25 uL
 ATc:
 	stock concentration: 1000.00nM
 	total volume: 34.50 uL
@@ -17,9 +17,9 @@ txtl_mm:
 		218.53 uL Buffer
 
 Instructions:
-	26.25 uL of GFP Plasmid in well C24
-	65.00 uL of water in wells D13
-	34.50 uL of water in well D14
-	34.50 uL of ATc in well D16
-	65.00 uL of txtl_mm in wells D18, D19, D20, D21, D22
-	29.75 uL of txtl_mm in well D23
+	65.00 uL of water in wells E01
+	34.50 uL of water in well E02
+	26.25 uL of GFP Plasmid in well E04
+	34.50 uL of ATc in well E06
+	65.00 uL of txtl_mm in wells E08, E09, E10, E11, E12
+	29.75 uL of txtl_mm in well E13
