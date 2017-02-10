@@ -830,7 +830,7 @@ class EchoRun():
                      ", length " + str(prior_mat.length) + ", and plate " +    \
                      str(prior_mat.plate) + ".")
         else:
-            self.material_list.append(prior_mat)
+            self.material_list[material.name] = material
             return 0
 
     def build_picklist_from_txtl_setup_excel(self, input_filename):
