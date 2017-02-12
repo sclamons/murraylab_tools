@@ -502,6 +502,10 @@ class EchoSourceMaterial():
                   (self.name, self.total_volume_requested))
         if self.wells == None:
             self.wells = self.plate.request_wells(int(n_source_wells),self.name)
+        if len(self.wells) < 1:
+            raise ValueError(("Material %s is requesting materials but has " + \
+                              "no wells allocated on its source plate!") %
+                             self.name)
         self.well_volumes    = np.zeros(len(self.wells))
         self.well_volumes[0] = dead_volume
         self.current_well    = 0
