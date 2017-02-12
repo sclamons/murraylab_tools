@@ -1251,7 +1251,7 @@ class EchoRun():
         start_row = string.ascii_uppercase.find(top_left[0])
         end_row   = string.ascii_uppercase.find(bottom_right[0])
         start_col = int(top_left[1:])-1
-        end_col   = int(bottom_right)-1
+        end_col   = int(bottom_right[1:])-1
 
         for row in range(start_row, end_row+1):
             for col in range(start_col, end_col+1):
