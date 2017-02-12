@@ -1247,6 +1247,7 @@ class EchoRun():
             bottom_right - bottom-right-most well of the block to add to.
         '''
         self.add_material(material)
+        material.plate = self.plates[0]
 
         start_row = string.ascii_uppercase.find(top_left[0])
         end_row   = string.ascii_uppercase.find(bottom_right[0])
