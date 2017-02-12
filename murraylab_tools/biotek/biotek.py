@@ -384,7 +384,7 @@ def smoothed_derivatives(df, smoothing_factor = None):
                             in scipy.interpolate.UnivariateSpline.
     Returns:
         A DataFrame of df augmented with columns for a spline fit
-        ("uM spline fit") and a derivative ("um/sec")
+        ("uM spline fit") and a derivative ("uM/sec")
     '''
     splined_df = spline_fit(df, smoothing_factor)
     grouped_df = splined_df.groupby(["Channel", "Gain", "Well"])

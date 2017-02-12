@@ -1232,6 +1232,33 @@ class EchoRun():
             txtl.request_material(neg_ctrl_well, txtl_mm_vol)
         water.request_material(neg_ctrl_well, self.rxn_vol - txtl_mm_vol)
 
+    def add_material_to_block(self, material, final_conc,
+                              top_left, bottom_right):
+        '''
+        Add a single material, at a single concentration, to every well in a
+        block on the destination plate.
+
+        Parameters:
+            material - An EchoSourceMaterial object representing the material
+                        to add.
+            final_conc - The final concentration of material, in nM (or the
+                            same units as the material)
+            top_left - top-left-most well of the block to add to.
+            bottom_right - bottom-right-most well of the block to add to.
+        '''
+        self.add_material(material)
+
+        start_row = ascii_uppercase.find(top_left[0])
+        end_row   = ascii_uppercase.find(bottom_right[0])
+        start_col = int(top_left[1:])-1
+        end_col   = int(bottom_right)-1
+
+        for row in range(start_row, end_row+1):
+            for col in range(start_col, end_col+1):
+                destination = ascii_uppercase[row] + str(col+1)
+                vol = final_conc * (self.rxn_vol / material.nM)
+                material.request_material(destination, vol)
+
     def generate_picklist(self):
         for mat in self.material_list.values():
             if mat:
