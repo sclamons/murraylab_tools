@@ -1248,14 +1248,14 @@ class EchoRun():
         '''
         self.add_material(material)
 
-        start_row = ascii_uppercase.find(top_left[0])
-        end_row   = ascii_uppercase.find(bottom_right[0])
+        start_row = string.ascii_uppercase.find(top_left[0])
+        end_row   = string.ascii_uppercase.find(bottom_right[0])
         start_col = int(top_left[1:])-1
         end_col   = int(bottom_right)-1
 
         for row in range(start_row, end_row+1):
             for col in range(start_col, end_col+1):
-                destination = ascii_uppercase[row] + str(col+1)
+                destination = string.ascii_uppercase[row] + str(col+1)
                 vol = final_conc * (self.rxn_vol / material.nM)
                 material.request_material(destination, vol)
 
