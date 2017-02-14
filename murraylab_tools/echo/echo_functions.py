@@ -1347,6 +1347,7 @@ class EchoRun():
                 vol_list = material.well_volumes
                 if material.current_well < 0:
                     text_file.write("\n\t%s not used!" % material.name)
+                    continue
                 if material.current_well != 0:
                     text_file.write("\n\t%.2f uL of %s in wells " % \
                                     (max_volume/1000.0, material.name))
