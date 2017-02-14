@@ -504,8 +504,8 @@ class EchoSourceMaterial():
         if self.wells == None:
             self.wells = self.plate.request_wells(int(n_source_wells),self.name)
         if len(self.wells) < 1:
-            warnings.warn("Material %s has requested no wells. Are you sure " +\
-                          "this is correct?")
+            warnings.warn(("Material %s has requested no wells. Are you sure "+\
+                          "this is correct?") % self.name)
             raise StopIteration
         self.well_volumes    = np.zeros(len(self.wells))
         self.well_volumes[0] = dead_volume
