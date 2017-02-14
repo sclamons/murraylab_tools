@@ -466,6 +466,7 @@ class EchoSourceMaterial():
         self.picklist = []
         self.total_volume_requested = 0
         self.well_volumes = None
+        self.current_well = 0
 
     def request_material(self, destination_well, volume):
         '''
@@ -508,7 +509,7 @@ class EchoSourceMaterial():
             raise StopIteration
         self.well_volumes    = np.zeros(len(self.wells))
         self.well_volumes[0] = dead_volume
-        self.current_well    = 0
+        #self.current_well    = 0
         self.total_volume_requested += dead_volume
 
 
