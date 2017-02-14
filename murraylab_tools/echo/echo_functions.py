@@ -503,9 +503,9 @@ class EchoSourceMaterial():
         if self.wells == None:
             self.wells = self.plate.request_wells(int(n_source_wells),self.name)
         if len(self.wells) < 1:
-            raise ValueError(("Material %s is requesting materials but has " + \
-                              "no wells allocated on its source plate!") %
-                             self.name)
+            warnings.warn("Material %s has requested no wells. Are you sure " +\
+                          "this is correct?")
+            raise StopIteration
         self.well_volumes    = np.zeros(len(self.wells))
         self.well_volumes[0] = dead_volume
         self.current_well    = 0
@@ -1239,6 +1239,9 @@ class EchoRun():
     def add_material_to_block(self, material, final_conc,
                               top_left, bottom_right):
         '''
+        WARNING: Currently bugged. Will add material IN ADDITION TO the full
+        reaction volume, not up to.
+
         Add a single material, at a single concentration, to every well in a
         block on the destination plate.
 
