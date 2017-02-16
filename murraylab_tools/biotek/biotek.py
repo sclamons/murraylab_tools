@@ -366,7 +366,7 @@ def spline_fit(df, column = "uM", smoothing_factor = None):
         spline = scipy.interpolate.UnivariateSpline(group["Time (sec)"],
                                                     group[column],
                                                     s = smoothing_factor)
-        group["uM spline fit"] = spline(group["Time (sec)"])
+        group[column + " spline fit"] = spline(group["Time (sec)"])
         splined_df = splined_df.append(group)
     return splined_df
 
