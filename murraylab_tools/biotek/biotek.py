@@ -389,7 +389,7 @@ def smoothed_derivatives(df, column = "uM", smoothing_factor = None):
         A DataFrame of df augmented with columns for a spline fit
         ("uM spline fit") and a derivative ("uM/sec")
     '''
-    splined_df = spline_fit(df, channel, smoothing_factor)
+    splined_df = spline_fit(df, column, smoothing_factor)
     grouped_df = splined_df.groupby(["Channel", "Gain", "Well"])
     deriv_df   = pd.DataFrame()
     for name, group in grouped_df:
