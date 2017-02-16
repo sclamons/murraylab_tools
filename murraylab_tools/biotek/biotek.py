@@ -342,13 +342,14 @@ def endpoint_averages(df, window_size = 10):
     return window_averages(df, start, end, "index")
 
 
-def spline_fit(df, smoothing_factor = None):
+def spline_fit(df, column = "uM", smoothing_factor = None):
     '''
     Adds a spline fit of the uM traces of a dataframe of the type made by
     tidy_biotek_data.
 
     Params:
         df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
+        column - Column to find spline fit over. Defaults to "uM".
         smoothing_factor - Parameter determining the tightness of the fit.
                             Default is the number of time points. Smaller
                             smoothing factor produces tighter fit; 0 smoothing
@@ -363,13 +364,13 @@ def spline_fit(df, smoothing_factor = None):
     splined_df = pd.DataFrame()
     for name, group in grouped_df:
         spline = scipy.interpolate.UnivariateSpline(group["Time (sec)"],
-                                                    group.uM,
+                                                    group[column],
                                                     s = smoothing_factor)
         group["uM spline fit"] = spline(group["Time (sec)"])
         splined_df = splined_df.append(group)
     return splined_df
 
-def smoothed_derivatives(df, smoothing_factor = None):
+def smoothed_derivatives(df, column = "uM", smoothing_factor = None):
     '''
     Calculates a smoothed derivative of the time traces in a dataframe. First
     fits a spline, then adds the derivatives of the spline to a copy of the
@@ -377,6 +378,7 @@ def smoothed_derivatives(df, smoothing_factor = None):
 
     Args:
         df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
+        column - Column to fit derivatives to. Defaults to "uM"
         smoothing_factor - Parameter determining the tightness of the spline
                             fit made before derivative calculation.
                             Default is the number of time points. Smaller
@@ -387,11 +389,11 @@ def smoothed_derivatives(df, smoothing_factor = None):
         A DataFrame of df augmented with columns for a spline fit
         ("uM spline fit") and a derivative ("uM/sec")
     '''
-    splined_df = spline_fit(df, smoothing_factor)
+    splined_df = spline_fit(df, channel, smoothing_factor)
     grouped_df = splined_df.groupby(["Channel", "Gain", "Well"])
     deriv_df   = pd.DataFrame()
     for name, group in grouped_df:
-        group["uM/sec"] = np.gradient(group["uM spline fit"])
+        group[channel + "/sec"] = np.gradient(group[channel + " spline fit"])
         deriv_df = deriv_df.append(group)
     return deriv_df
 
