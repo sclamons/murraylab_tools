@@ -356,8 +356,7 @@ def spline_fit(df, column = "uM", smoothing_factor = None):
                             factor interpolates every point. See parameter 's'
                             in scipy.interpolate.UnivariateSpline.
     Returns:
-        A DataFrame of df augmented with columns for a spline fit
-        ("uM spline fit").
+        A DataFrame of df augmented with columns for a spline fit.
     '''
     # Fit 3rd order spline
     grouped_df = df.groupby(["Channel", "Gain", "Well"])
@@ -386,8 +385,8 @@ def smoothed_derivatives(df, column = "uM", smoothing_factor = None):
                             factor interpolates every point. See parameter 's'
                             in scipy.interpolate.UnivariateSpline.
     Returns:
-        A DataFrame of df augmented with columns for a spline fit
-        ("uM spline fit") and a derivative ("uM/sec")
+        A DataFrame of df augmented with columns for a spline fit and a
+        derivative
     '''
     splined_df = spline_fit(df, column, smoothing_factor)
     grouped_df = splined_df.groupby(["Channel", "Gain", "Well"])
