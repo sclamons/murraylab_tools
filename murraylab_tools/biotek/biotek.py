@@ -134,6 +134,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     if line[1] in plate_reader_ids:
                         plate_reader_id = plate_reader_ids[line[1]]
                     else:
+
                         warnings.warn(("Unknown plate reader id '%s'; will " + \
                                       "not attempt to calculate molarity " + \
                                       "concentrations.") % line[1])
@@ -152,7 +153,9 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             excitation = int(lineparts[0].split(":")[-1].split("/")[0].strip())
                             emission = int(lineparts[1].split(":")[-1].split("/")[0].strip())
                             line = reader.next()
-                            gain = int(line[1].split(",")[-1].split(":")[-1].strip())
+                            gain = line[1].split(",")[-1].split(":")[-1].strip()
+                            if gain != "AutoScale":
+                                gain = int(gain)
                             if not read_name in read_sets:
                                 read_sets[read_name] = []
                             read_sets[read_name].append(ReadSet(read_name,
