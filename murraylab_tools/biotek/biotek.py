@@ -16,7 +16,6 @@ import scipy.interpolate
 plate_reader_ids = {"268449":'b1',
                     "271275":'b2',
                     "1402031D":'b3'}
-print("Hi")
 
 ####################
 # Calibration Data #
