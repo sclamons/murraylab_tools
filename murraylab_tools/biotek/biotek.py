@@ -187,6 +187,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         read_idx = 0
                     else:
                         read_idx = int(info.split('[')[-1][:-1]) - 1
+                    print("read_name: " + str(read_name))
+                    print("read_idx: " + str(read_idx))
                     read_properties = read_sets[read_name][read_idx]
                     gain            = read_properties.gain
                     excitation      = read_properties.excitation
