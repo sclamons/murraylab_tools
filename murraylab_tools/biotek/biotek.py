@@ -149,8 +149,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         if line[1].startswith("Filter Set"):
                             line = reader.next()
                             lineparts = line[1].split(",")
-                            excitation = int(lineparts[0].split(":")[-1].strip())
-                            emission = int(lineparts[1].split(":")[-1].strip())
+                            excitation = int(lineparts[0].split(":")[-1].split("/")[0].strip())
+                            emission = int(lineparts[1].split(":")[-1].split("/")[0].strip())
                             line = reader.next()
                             gain = int(line[1].split(",")[-1].split(":")[-1].strip())
                             if not read_name in read_sets:
