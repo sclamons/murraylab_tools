@@ -129,7 +129,6 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             read_sets = dict()
             for line in reader:
                 if line[0].strip() == "Reader Serial Number:":
-                    print("thing here")
                     if line[1] in plate_reader_ids:
                         plate_reader_id = plate_reader_ids[line[1]]
                     else:
