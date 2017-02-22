@@ -52,7 +52,6 @@ def standard_channel_name(fp_name, suppress_name_warning = False):
 
 
 def raw_to_uM(raw, protein, biotek, gain, volume):
-    print("hi")
     if not protein in calibration_data or \
        not biotek in calibration_data[protein] or \
        not gain in calibration_data[protein][biotek]:
