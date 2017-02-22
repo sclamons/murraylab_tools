@@ -132,9 +132,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     if line[1] in plate_reader_ids:
                         plate_reader_id = plate_reader_ids[line[1]]
                     else:
-                        warnings.warn(("Unknown plate reader id '%s'; will " + \
-                                      "not attempt to calculate molarity " + \
-                                      "concentrations.") % line[1])
+                        raise ValueError("Unknown plate reader id '%s'" % \
+                                         line[1])
                     continue
                 if line[0] == "Read":
                     read_name = line[1]
@@ -357,7 +356,8 @@ def spline_fit(df, column = "uM", smoothing_factor = None):
                             factor interpolates every point. See parameter 's'
                             in scipy.interpolate.UnivariateSpline.
     Returns:
-        A DataFrame of df augmented with columns for a spline fit.
+        A DataFrame of df augmented with columns for a spline fit
+        ("uM spline fit").
     '''
     # Fit 3rd order spline
     grouped_df = df.groupby(["Channel", "Gain", "Well"])
@@ -386,8 +386,8 @@ def smoothed_derivatives(df, column = "uM", smoothing_factor = None):
                             factor interpolates every point. See parameter 's'
                             in scipy.interpolate.UnivariateSpline.
     Returns:
-        A DataFrame of df augmented with columns for a spline fit and a
-        derivative
+        A DataFrame of df augmented with columns for a spline fit
+        ("uM spline fit") and a derivative ("uM/sec")
     '''
     splined_df = spline_fit(df, column, smoothing_factor)
     grouped_df = splined_df.groupby(["Channel", "Gain", "Well"])
