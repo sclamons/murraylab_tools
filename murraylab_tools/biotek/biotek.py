@@ -134,10 +134,10 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     if line[1] in plate_reader_ids:
                         plate_reader_id = plate_reader_ids[line[1]]
                     else:
-
                         warnings.warn(("Unknown plate reader id '%s'; will " + \
                                       "not attempt to calculate molarity " + \
                                       "concentrations.") % line[1])
+                        plate_reader_id = None
                     continue
                 if line[0].strip() == "Read":
                     if line[1].strip() == "Fluorescence Endpoint":
