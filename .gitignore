@@ -1,6 +1,8 @@
 # Miscellaneous #
 #################
 reinstall_murraylab_tools.sh
+just_reinstall_murraylab_tools.sh
+.ipynb_checkpoints
 
 # Compiled source #
 ###################
