@@ -4,6 +4,9 @@ reinstall_murraylab_tools.sh
 just_reinstall_murraylab_tools.sh
 .ipynb_checkpoints
 
+# Pip installation junk #
+#########################
+
 # Compiled source #
 ###################
 *.com
