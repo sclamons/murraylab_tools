@@ -202,7 +202,7 @@ class DestinationPlate():
         used_well_rows = used_well_indices[0]
         used_well_cols = used_well_indices[1]
         with open(self.used_well_file, 'w+') as outfile:
-            outfile.write("# Wells added on " + str(datetime.now()))
+            outfile.write("# Wells added on " + str(datetime.now()) + "\n")
             for row_num, col_num in zip(used_well_rows, used_well_cols):
                 row_string = string.ascii_uppercase[row_num]
                 col_string = str(col_num + 1)
