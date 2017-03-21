@@ -376,7 +376,7 @@ class SourcePlate():
         Current logic is as follows: Scan from the top-left corner to the
         bottom-right corner, left to right, top to bottom, for a consecutive set
         of wells separated from used wells by a buffer well on the right and a
-        buffer welll on the right. Assign the first block run across. If the
+        buffer welll on the right. Assign the first block so discovered. If the
         number of wells requested is smaller than the number of wells per row,
         also require that the entire block be able to fit in one row.
 
@@ -547,13 +547,11 @@ MasterMixMaterial = collections.namedtuple('MasterMixMaterial',
 
 class MasterMix(EchoSourceMaterial):
     '''
-    Container class for a list of materials to make up a master mix. Note that
-    this class assumes that 75% of the final reaction volume will be extract +
-    buffer.
+    Container class for a list of materials to make up a master mix.
     '''
     def __init__(self, plate, extract_fraction = 0.33, mm_excess = 1.1,
                  add_txtl = True, extract_per_aliquot = 30000,
-                 buffer_per_aliquot = 37000):
+                 buffer_per_aliquot = 37000, mm_fraction = 0.75):
         '''
         extract_fraction: If TX-TL is added, this is the fraction of the final
                             mix made up of TX-TL extract. Default 0.33 (lowest
@@ -568,6 +566,8 @@ class MasterMix(EchoSourceMaterial):
                                 Default 30000.
         buffer_per_aliquot: Volume of TX-TL buffer in one aliquot, in nL.
                                 Default 37000.
+        mm_fraction: Determines how much of the final reaction volume will be
+                        taken up by buffer + extract. Default 0.75 (75%).
         '''
         if add_txtl:
             self.name = "txtl_mm"
@@ -646,14 +646,6 @@ class MasterMix(EchoSourceMaterial):
                 ingredient_fraction = vol / one_rxn_vol
                 yield (name, self.mm_excess * ingredient_fraction \
                              * self.total_volume_requested)
-
-        # if self.total_volume_requested != 0:
-        #     for material in self.materials:
-        #         name = material.name
-        #         vol  = material.final * self.total_volume_requested \
-        #                / material.stock / 0.75 * self.mm_excess
-        #         yield (name, vol)
-
 
     def vol_per_rxn(self):
         '''
@@ -895,7 +887,7 @@ class EchoRun():
                     stock_sheet[rownum, colnum] = element
 
         # Read in recipe file
-        recipe_sheet = np.zeros(shape = (384+2, 16), dtype = object)
+        recipe_sheet = np.zeros(shape = (384+25, 16), dtype = object)
         with open(recipe_filename, 'rU') as recipe_file:
             recipe_reader = csv.reader(recipe_file)
             rownum = -1
