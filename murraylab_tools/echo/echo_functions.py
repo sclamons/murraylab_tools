@@ -24,6 +24,7 @@ import csv
 import collections
 import os
 import warnings
+import datetime
 #import openpyxl as pyxl  # Required for reading excel files
 
 __all__ = ["dna2nM_convert", "echo_round", "MasterMixMaterial",
@@ -180,7 +181,7 @@ class DestinationPlate():
         with open(filename, 'r') as infile:
             for line in infile:
                 line = line.strip()
-                if line == "":
+                if line == "" or line.startswith("#"):
                     continue
                 col_name = ""
                 while line[-1] in string.digits:
@@ -201,6 +202,7 @@ class DestinationPlate():
         used_well_rows = used_well_indices[0]
         used_well_cols = used_well_indices[1]
         with open(self.used_well_file, 'w+') as outfile:
+            outfile.write("# Wells added on " + str(datetime.now()))
             for row_num, col_num in zip(used_well_rows, used_well_cols):
                 row_string = string.ascii_uppercase[row_num]
                 col_string = str(col_num + 1)
@@ -887,7 +889,7 @@ class EchoRun():
                     stock_sheet[rownum, colnum] = element
 
         # Read in recipe file
-        recipe_sheet = np.zeros(shape = (384+25, 16), dtype = object)
+        recipe_sheet = np.zeros(shape = (384+20, 16), dtype = object)
         with open(recipe_filename, 'rU') as recipe_file:
             recipe_reader = csv.reader(recipe_file)
             rownum = -1
@@ -957,9 +959,8 @@ class EchoRun():
         ##################
 
         first_row = 20
-        last_row  = recipe_sheet.shape[0]
         n_rxns    = 0
-        for rownum in range(first_row, last_row + 1):
+        for rownum in range(first_row, recipe_sheet.shape[0]):
             # Check to see if there's a name in this row; if not, skip it.
             if recipe_sheet[rownum, 2] == 0:
                 continue
