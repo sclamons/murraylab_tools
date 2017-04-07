@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from echo_source_material import EchoSourceMaterial
+
 class Reaction(object):
     '''
     Container class for mixes of liquids.
