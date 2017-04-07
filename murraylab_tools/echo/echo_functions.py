@@ -28,10 +28,10 @@ import os
 import warnings
 #import openpyxl as pyxl  # Required for reading excel files
 
-from scratchpad import Reaction
+from echo_source_material import EchoSourceMaterial
+from scratchpad import Reaction, WellReaction, MasterMix
 from destination_plate import DestinationPlate
 from source_plate import SourcePlate
-from echo_source_material import EchoSourceMaterial
 from pick import Pick
 from echo_run import EchoRun
 
