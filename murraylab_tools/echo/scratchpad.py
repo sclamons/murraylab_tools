@@ -196,8 +196,8 @@ class MasterMix(Reaction, EchoSourceMaterial):
             self.buffer_fraction = self.txtl_fraction - self.extract_fraction
             txtl_extract = EchoSourceMaterial("Extract", 1, 0, None)
             txtl_buffer  = EchoSourceMaterial("Buffer",  1, 0, None)
-            self.materials.append(txtl_extract, self.extract_fraction))
-            self.materials.append(txtl_buffer, self.buffer_fraction))
+            self.materials.append(txtl_extract, self.extract_fraction)
+            self.materials.append(txtl_buffer, self.buffer_fraction)
 
     def one_rxn_recipe(self, finalize = True):
         '''
