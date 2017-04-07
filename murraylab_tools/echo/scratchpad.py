@@ -58,7 +58,7 @@ class Reaction(object):
             error_string += "ingredients:"
             for material, conc in self.materials:
                 material_vol = conc * self.rxn_vol / material.nM
-                error_string += "\n\t%d nL of %s" % (?, material)
+                error_string += "\n\t%d nL of %s" % (material_vol, material)
             raise ValueError(error_string)
         if current_vol < self.rxn_vol:
             warn_string = "Reaction "
