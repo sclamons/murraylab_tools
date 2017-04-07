@@ -69,7 +69,7 @@ class Reaction(object):
             warn_string += "ingredients. Are you sure you want to underfill " \
                             + "this reaction?"
 
-            warnings.warn(, Warning)
+            warnings.warn(warn_string, Warning)
 
         self.finalized = True
 
