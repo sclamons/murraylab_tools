@@ -22,6 +22,13 @@ class Reaction(object):
         '''
         self.materials.append(material, final_conc)
 
+    def add_volume_of_material(self, material, vol):
+        '''
+        Add a fixed volume of a material (in nL).
+        '''
+        final_conc = material.nM * vol / self.rxn_vol
+        self.materials.append(material, final_conc)
+
     def current_vol(self):
         '''
         Calculates the total volume of all of the materials currently in the
@@ -114,6 +121,13 @@ class WellReaction(Reaction):
 
         self.materials.append(material, actual_conc)
 
+    def add_volume_of_material(self, material, vol):
+        '''
+        Add a fixed volume of a material (in nL).
+        '''
+        actual_vol = echo_round(vol)
+        self.materials.append(material, actual_vol)
+
     def finalize_reaction(self):
         '''
         Checks reaction for consistency, throwing a ValueError if the reaction
@@ -158,7 +172,7 @@ class MasterMix(Reaction, EchoSourceMaterial):
     is in turn put into an Echo source well.
     '''
     def __init__(self, plate, extract_fraction = 0.33, mm_excess = 1.1,
-                 rxn_vol = 10, add_txtl = True, extract_per_aliquot = 30000,
+                 rxn_vol = 10000, add_txtl = True, extract_per_aliquot = 30000,
                  buffer_per_aliquot = 37000):
         '''
         extract_fraction: If TX-TL is added, this is the fraction of the final
@@ -167,7 +181,7 @@ class MasterMix(Reaction, EchoSourceMaterial):
         mm_excess: The ratio of master-mix-to-make to total-mix-needed, i.e.,
                         mm_excess=1.1 => Make 10% excess, to account for
                         pipetting loss.
-        rxn_vol: Total volume of a single reaction using this master mix.
+        rxn_vol: Total volume of a single reaction using this master mix, in nL
         add_txtl: If true, buffer and extract will automatically be added to
                     the master mix, using an extract percentage set by
                     extract_fraction. Default True.

@@ -39,6 +39,7 @@ class EchoRun():
 
 
         self.material_list   = dict()
+        self.reactions       = dict()
         self.picklist        = []
         self.add_master_mix(master_mix) # This will set make_master_mix
 
@@ -202,9 +203,9 @@ class EchoRun():
             self.material_list['txtl_mm'] = MasterMix(self.plates[0],
                                 extract_fraction = self.extract_fraction,
                                 mm_excess = self.mm_excess,
-                                add_txtl = False)
+                                add_txtl = False,
+                                rxn_vol = self.rxn_vol)
         txtl = self.material_list["txtl_mm"]
-        txtl.set_rxn_vol(self.rxn_vol)
 
         # Register Water
         self.add_material(EchoSourceMaterial("water", 0, 0, self.plates[0]))
@@ -238,11 +239,15 @@ class EchoRun():
             if recipe_sheet[rownum, 2] == 0:
                 continue
             n_rxns += 1
-            destination_well = recipe_sheet[rownum, 1]
-            if destination_well == 0:
+            well = recipe_sheet[rownum, 1]
+            if well == 0:
                 raise ValueError(("Error on row for ID #%d of recipe sheet: " +\
                                  "Must have a destination well.") % \
                                  (rownum - 21))
+            if self.reactions[well]:
+                raise ValueError("Well %s already has a reaction!" \
+                                 % well)
+            self.reactions[well] = WellReaction(self.rxn_vol, well)
 
             # Material picks (magic number warning -- magic numbers define
             # positions of relevant blocks in the recipe sheet)
@@ -254,17 +259,18 @@ class EchoRun():
                         raise ValueError("Tried to pick a material that " + \
                                          "wasn't named in the stock sheet.")
                     source_material = stocks[mat_num]
-                    source_material.request_material(destination_well, volume)
+                    self.reactions[well].add_volume_of_material(source_material,
+                                                                volume)
 
             # Water picks (magic number warning -- magic number defines
             # positions of relevant blocks in the recipe sheet)
             volume = recipe_sheet[rownum, 3] * 1e3
-            water.request_material(destination_well, volume)
+            self.reactions[well].add_volume_of_material(water, volume)
 
             # Master Mix picks (magic number warning -- magic number defines
             # positions of relevant blocks in the recipe sheet)
             volume = recipe_sheet[rownum, 4] * 1e3
-            txtl.request_material(destination_well, volume)
+            self.reactions[well].add_volume_of_material(txtl, volume)
 
         for i in range(11,17):
             if recipe_sheet[i,4] == None or recipe_sheet[i,4] == 0:
@@ -387,8 +393,10 @@ class EchoRun():
                 if well_idx >= len(row):
                     raise ValueError("Well column out of bounds for row '%s'" %\
                                      str(row))
-                well        = row[well_idx]
-                i           = 0
+                well = row[well_idx]
+                if not self.reactions[well]:
+                    self.reactions[well] = WellReaction(self.rxn_vol, well)
+                i = 0
                 is_name_col = True
                 volume_left = self.rxn_vol
                 while i < len(row):
@@ -404,18 +412,17 @@ class EchoRun():
                     # material
                     else:
                         final_conc = float(row[i])
-                        volume = self.rxn_vol * final_conc / source_material.nM
-                        volume_left -= volume
-                        source_material.request_material(well, volume)
+                        self.reactions[well].add_material(source_material,
+                                                          final_conc)
                         is_name_col = True
                     i += 1
                 if fill_with_water:
                     water = self.material_list[water_name]
-                    water.request_material(well, volume_left)
+                    self.reactions[well].fill_with(water)
 
     def build_dilution_series(self, material_1, material_2,
                               material_1_final, material_2_final,
-                              first_well):
+                              first_well, fill_with_water = True):
         '''Calculate TXTL volumes and automatically generate a picklist for
         an NxN dilution matrix with two inputs. If this EchoSource object has a
         MasterMix, then add that master mix as well. Fill the rest with water.
@@ -429,6 +436,11 @@ class EchoRun():
                                                     material.
             first_well -- The upper-left-most corner of the block on the
                           destination plate you want to spit into.
+            fill_with_water -- Iff true, fills out any space left in the
+                                reaction after adding master mix and materials
+                                with water. Set to "False" if you want to do
+                                other things to these reactions before using
+                                them.
         '''
         material_1.plate = self.plates[0]
         material_2.plate = self.plates[0]
@@ -452,47 +464,34 @@ class EchoRun():
         # Add TX-TL master mix as a material, if applicable.
         if self.make_master_mix:
             if not "txtl_mm" in self.material_list:
-                self.material_list["txtl_mm"] = MasterMix(self.plates[0])
+                self.material_list["txtl_mm"] = MasterMix(self.plates[0],
+                                                         rxn_vol = self.rxn_vol)
             txtl = self.material_list["txtl_mm"]
-            txtl.set_rxn_vol(self.rxn_vol)
-            txtl_mm_vol = txtl.vol_per_rxn()
-        else:
-            txtl_mm_vol = 0
+            txtl_mm_vol = txtl.current_vol_per_rxn()
 
         # Add water as a material (if it's not already there).
         self.add_material(EchoSourceMaterial("water", 0, 0, self.plates[0]))
         water = self.material_list["water"]
 
         # Fill in matrix with picks.
-
         for i in range(n_material_1):
             for j in range(n_material_2):
-                # Well name
-                destination = string.ascii_uppercase[first_row + i] + \
+                # Initialize the reaction.
+                well = string.ascii_uppercase[first_row + i] + \
                               str(first_col + j)
+                if not self.reactions[well]:
+                    self.reactions[well] = WellReaction(self.rxn_vol, well)
                 # Diluted material picks
-                material_1_pick_vol = material_1_final[i] \
-                                     * (self.rxn_vol / material_1.nM)
-                material_1.request_material(destination, material_1_pick_vol)
-
-                material_2_pick_vol = material_2_final[j] \
-                                     *(self.rxn_vol / material_2.nM)
-                material_2.request_material(destination, material_2_pick_vol)
+                self.reactions[well].add_material(material_1,
+                                                  material_1_final[i])
+                self.reactions[well].add_material(material_2,
+                                                  material_2_final[j])
                 if self.make_master_mix:
-                    # TX-TL Master Mix pick
-                    txtl.request_material(destination, txtl_mm_vol)
+                    self.reactions[well].add_volume_of_material(txtl,
+                                                                txtl_mm_vol)
                 # Water pick
-                water_vol = self.rxn_vol - material_1_pick_vol \
-                            - material_2_pick_vol - txtl_mm_vol
-                if water_vol < 0:
-                    raise ValueError(("Well %s is overloaded! %s contains "+\
-                                     "%.2f nL of %s, %.2f nL of %s, and " +\
-                                     "%.2f nL of Master Mix.") % \
-                                     (destination, destination,
-                                      material_1_pick_vol,
-                                      material_1.name, material_2_pick_vol,
-                                      material_2.name, txtl_mm_vol))
-                water.request_material(destination, water_vol)
+                if fill_with_water:
+                    self.reactions[well].fill_with(water)
 
         # Add positive control....
 
@@ -500,8 +499,10 @@ class EchoRun():
         neg_ctrl_well = string.ascii_uppercase[first_row + n_material_1] \
                         + str(first_col)
         if self.make_master_mix:
-            txtl.request_material(neg_ctrl_well, txtl_mm_vol)
-        water.request_material(neg_ctrl_well, self.rxn_vol - txtl_mm_vol)
+            self.reactions[neg_ctrl_well].add_volume_of_material(txtl,
+                                                                 txtl_mm_vol)
+        if fill_with_water:
+            self.reactions[neg_ctrl_well].fill_with(water)
 
     def add_material_to_block(self, material, final_conc,
                               top_left, bottom_right):
@@ -532,7 +533,7 @@ class EchoRun():
             for col in range(start_col, end_col+1):
                 destination = string.ascii_uppercase[row] + str(col+1)
                 vol = final_conc * (self.rxn_vol / material.nM)
-                material.request_material(destination, vol)
+                self.reactions[well].add_material(material, final_conc)
 
     def generate_picklist(self):
         for mat in self.material_list.values():
@@ -546,6 +547,10 @@ class EchoRun():
         Write this EchoCSVMaker's protocol to an Echo picklist, and print any
         other necessary directions for the user.
         '''
+        # Finalize all of the reactions.
+        for reaction in self.reactions.values():
+            reaction.finalize_reaction()
+
         # Write picklist.
         # NOTE! This MUST come before writing the comment file; comments require
         # accurate count of total_volume_requested of each material, which is
