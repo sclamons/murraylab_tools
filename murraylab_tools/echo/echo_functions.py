@@ -26,9 +26,11 @@ import os
 import warnings
 #import openpyxl as pyxl  # Required for reading excel files
 
+from scratchpad import Reaction
+
 __all__ = ["dna2nM_convert", "echo_round", "MasterMixMaterial",
            "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
-           "MasterMix"]
+           "MasterMix", "Reaction"]
 
 dead_volume = 15000 + 6000 # Dead volume per well in an Echo source plate, in nL
 max_volume  = 65000 # Maximum Echoable volume in an Echo source plate, in nL
@@ -45,8 +47,16 @@ def dna2nM_convert(dnaconc, dnalength):
     return (dnaconc*1e6)/(660*dnalength)
 
 def echo_round(x, base = 25):
-    '''Round a volume to the nearest 25 nl)'''
-    return int(base *round(float(x)/base))
+    '''
+    Round a volume to an exact number the Echo can pipette
+
+    Arguments:
+        x - Desired volume.
+        base - Size of an Echo drop, in units of the volume (default nL).
+
+    Returns: x rounded to the nearest multiple of base.
+    '''
+    return int(base * round(float(x)/base))
 
 def floatify(element):
     '''
@@ -452,8 +462,8 @@ class EchoSourceMaterial():
 
         # Check for commas in the name.
         if "," in self.name:
-            warnings.warn("Material %s has comma in its name; this may bug " +
-                          "the echo when you run it.", Warning)
+            warnings.warn(("Material %s has comma in its name; this may bug " +
+                          "the echo when you run it.") % self.name, Warning)
 
         # DNA concentration in ng/uL, or other reagent concentration in nM.
         self.concentration = concentration
@@ -467,6 +477,13 @@ class EchoSourceMaterial():
         self.total_volume_requested = 0
         self.well_volumes = None
         self.current_well = -1
+
+    def __str__(self):
+        if self.length > 0:
+            conc_string = "ng/µL"
+        else:
+            conc_string = "nM"
+        return "%s (.3f %s)" % (self.name, self.nM, conc_string)
 
     def request_material(self, destination_well, volume):
         '''
@@ -739,7 +756,7 @@ class EchoRun():
     Defines and prints an Echo picklist from one of several algorithms.
 
     Parameters:
-        -- rxn_vol: Volume of a single TX-TL reaction, in uL. Default 5.
+        -- rxn_vol: Volume of a single TX-TL reaction, in nL. Default 5000.
         -- DPtype: Destination plate type. Should be a string recognizable by
                     the Echo Plate Reformat software, though that is not
                     enforced in this code. Default "Nunc_384_black_glassbottom"
@@ -747,10 +764,10 @@ class EchoRun():
                     TX-TL setup experiments, but not for association spreadsheet
                     experiments.
     '''
-    def __init__(self, rxn_vol = 5, DPtype = None, plate = None,
+    def __init__(self, rxn_vol = 5000, DPtype = None, plate = None,
                  master_mix = None):
         # The user gives the reaction volume in microliters; store it in nL
-        self.rxn_vol = rxn_vol * 1e3
+        self.rxn_vol = rxn_vol
 
         if DPtype == None:
             self.DPtype = "Nunc_384_black_glassbottom"
