@@ -1,4 +1,5 @@
 # coding=utf-8
+from echo_source_material import EchoSourceMaterial
 
 class EchoRun():
     '''

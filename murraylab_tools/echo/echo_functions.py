@@ -36,9 +36,9 @@ from pick import Pick
 from echo_run import EchoRun
 
 
-__all__ = ["dna2nM_convert", "echo_round", "MasterMixMaterial",
-           "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
-           "MasterMix", "Reaction", "DestinationPlate"]
+__all__ = ["dna2nM_convert", "echo_round", "Reaction", "WellReaction",
+           "MasterMix", "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
+           "DestinationPlate"]
 
 dead_volume = 15000 + 6000 # Dead volume per well in an Echo source plate, in nL
 max_volume  = 65000 # Maximum Echoable volume in an Echo source plate, in nL
