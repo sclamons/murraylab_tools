@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # TODO:
 #       --Add optional user-set source wells
 #       --Positive control reaction on 2D dilution series
