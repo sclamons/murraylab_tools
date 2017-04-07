@@ -1,3 +1,5 @@
+# coding=utf-8
+
 class EchoSourceMaterial():
     '''
     Container class for a single material on a source plate. Keeps track of how

@@ -1,3 +1,5 @@
+# coding=utf-8
+
 class Reaction(object):
     '''
     Container class for mixes of liquids.

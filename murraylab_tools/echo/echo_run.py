@@ -1,3 +1,5 @@
+# coding=utf-8
+
 class EchoRun():
     '''
     Defines and prints an Echo picklist from one of several algorithms.
