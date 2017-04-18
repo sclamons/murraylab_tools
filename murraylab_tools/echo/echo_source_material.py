@@ -1,5 +1,14 @@
 # coding=utf-8
 
+import numpy as np
+import pandas as pd
+import string
+import math
+import csv
+import collections
+import os
+import warnings
+
 class EchoSourceMaterial():
     '''
     Container class for a single material on a source plate. Keeps track of how

@@ -1,3 +1,12 @@
+import numpy as np
+import pandas as pd
+import string
+import math
+import csv
+import collections
+import os
+import warnings
+
 class SourcePlate():
     '''
     One Echo source plate. Responsible for allocating wells for
