@@ -504,12 +504,22 @@ class EchoRun():
         if fill_with_water:
             self.reactions[neg_ctrl_well].fill_with(water)
 
+    def add_material_to_well(self, material, final_conc, well):
+        '''
+        Add a single material, at a single concentration, to a single well.
+
+        Parameters:
+            material - An EchoSourceMaterial object representing the material
+                        to add.
+            final_conc - The final concentration of material, in nM (or the
+                            same units as the material)
+            well - Name of the well to add to.
+        '''
+        self.add_material_to_block(material, final_conc, well, well)
+
     def add_material_to_block(self, material, final_conc,
                               top_left, bottom_right):
         '''
-        WARNING: Currently bugged. Will add material IN ADDITION TO the full
-        reaction volume, not up to.
-
         Add a single material, at a single concentration, to every well in a
         block on the destination plate.
 

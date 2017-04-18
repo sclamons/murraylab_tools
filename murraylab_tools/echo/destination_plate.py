@@ -64,9 +64,11 @@ class DestinationPlate():
                 else:
                     c_conc = None
                 c_well = source.get_location(c_name, c_conc)
-                picklist.append([c_well, c_name, well, c_vol, source.name, source.type, self.name])
+                picklist.append([c_well, c_name, well, c_vol, source.name,
+                                 source.type, self.name])
         header = ["Source Well", "Sample Name", "Destination Well",
-                  "Transfer Volume", "Source Plate Name", "Source Plate Type", "Destination Plate Name"]
+                  "Transfer Volume", "Source Plate Name", "Source Plate Type",
+                  "Destination Plate Name"]
         return picklist, header
 
     def load_from_file(self, filename):
