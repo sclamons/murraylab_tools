@@ -1,0 +1,7 @@
+{
+  "murraylab_tools/tests/echo_tests/test_echorun.py": true, 
+  "murraylab_tools/tests/echo_tests/test_echosourcematerial.py": true, 
+  "murraylab_tools/tests/echo_tests/test_mastermix.py": true, 
+  "murraylab_tools/tests/echo_tests/test_misc_echo_functions.py": true, 
+  "murraylab_tools/tests/echo_tests/test_sourceplate.py": true
+}
