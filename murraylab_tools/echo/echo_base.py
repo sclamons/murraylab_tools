@@ -34,7 +34,7 @@ from destination_plate import DestinationPlate
 from source_plate import SourcePlate
 from pick import Pick
 from echo_run import EchoRun
-from echo_funtions import dna2nM_convert, echo_round, floatify, \
+from echo_functions import dna2nM_convert, echo_round, floatify, \
                            process_column_argument
 
 
