@@ -6,6 +6,7 @@ import csv
 import collections
 import os
 import warnings
+from echo_functions import *
 
 class SourcePlate():
     '''
