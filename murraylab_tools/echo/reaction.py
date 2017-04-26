@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from echo_source_material import EchoSourceMaterial
+from echo_funtions import *
 
 __all__ = ["Reaction", "WellReaction", "MasterMix"]
 
