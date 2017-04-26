@@ -291,7 +291,8 @@ class EchoRun():
             name  = recipe_sheet[i,0]
             stock = recipe_sheet[i,1]
             final = recipe_sheet[i,2]
-            txtl.add_material(name, stock, final)
+            material = EchoSourceMaterial(name, stock, 0, self.plates[0])
+            txtl.add_material(material, final)
 
 
     def load_source_plate(self, input_filename, name_col, conc_col, len_col,
