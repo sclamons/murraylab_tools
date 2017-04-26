@@ -221,7 +221,7 @@ class EchoRun():
         txtl = self.material_list["txtl_mm"]
 
         # Register Water
-        self.add_material(EchoSourceMaterial("water", 0, 0, self.plates[0]))
+        self.add_material(EchoSourceMaterial("water", 1, 0, self.plates[0]))
         water = self.material_list["water"]
 
         # Register other materials
@@ -484,7 +484,7 @@ class EchoRun():
             txtl_mm_vol = txtl.current_vol_per_rxn()
 
         # Add water as a material (if it's not already there).
-        self.add_material(EchoSourceMaterial("water", 0, 0, self.plates[0]))
+        self.add_material(EchoSourceMaterial("water", 1, 0, self.plates[0]))
         water = self.material_list["water"]
 
         # Fill in matrix with picks.
