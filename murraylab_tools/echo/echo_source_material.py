@@ -56,7 +56,7 @@ class EchoSourceMaterial():
             conc_string = "ng/µL"
         else:
             conc_string = "nM"
-        return "%s (.3f %s)" % (self.name, self.nM, conc_string)
+        return "%s (%.3f %s)" % (self.name, self.nM, conc_string)
 
     def request_material(self, destination_well, volume):
         '''
