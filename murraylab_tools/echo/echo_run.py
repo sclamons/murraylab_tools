@@ -257,7 +257,7 @@ class EchoRun():
                 raise ValueError(("Error on row for ID #%d of recipe sheet: " +\
                                  "Must have a destination well.") % \
                                  (rownum - 21))
-            if self.reactions[well]:
+            if well in self.reactions.keys():
                 raise ValueError("Well %s already has a reaction!" \
                                  % well)
             self.reactions[well] = WellReaction(self.rxn_vol, well)
