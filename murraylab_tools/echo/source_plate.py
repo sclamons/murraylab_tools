@@ -8,6 +8,8 @@ import os
 import warnings
 from echo_functions import *
 
+__all__ = ["SourcePlate"]
+
 class SourcePlate():
     '''
     One Echo source plate. Responsible for allocating wells for

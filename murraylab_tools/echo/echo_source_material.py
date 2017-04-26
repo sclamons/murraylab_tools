@@ -10,6 +10,8 @@ import os
 import warnings
 from echo_functions import *
 
+__all__ = ["EchoSourceMaterial"]
+
 class EchoSourceMaterial():
     '''
     Container class for a single material on a source plate. Keeps track of how

@@ -2,6 +2,8 @@
 
 from echo_source_material import EchoSourceMaterial
 
+__all__ = ["Reaction", "WellReaction", "MasterMix"]
+
 class Reaction(object):
     '''
     Container class for mixes of liquids.

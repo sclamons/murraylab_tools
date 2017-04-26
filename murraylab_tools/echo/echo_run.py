@@ -9,6 +9,9 @@ import collections
 import os
 import warnings
 from echo_functions import *
+from echo_source_material import *
+from reaction import *
+from source_plate import *
 
 class EchoRun():
     '''
