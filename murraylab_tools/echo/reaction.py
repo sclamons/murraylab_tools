@@ -23,14 +23,14 @@ class Reaction(object):
         finalize_reaction is called (happens automatically when recipe is
         called).
         '''
-        self.materials.append(material, final_conc)
+        self.materials.append((material, final_conc))
 
     def add_volume_of_material(self, material, vol):
         '''
         Add a fixed volume of a material (in nL).
         '''
         final_conc = material.nM * vol / self.rxn_vol
-        self.materials.append(material, final_conc)
+        self.materials.append((material, final_conc))
 
     def current_vol(self):
         '''
@@ -122,14 +122,14 @@ class WellReaction(Reaction):
         actual_vol  = echo_round(target_vol)
         actual_conc = actual_vol * material.nM / self.rxn_vol
 
-        self.materials.append(material, actual_conc)
+        self.materials.append((material, actual_conc))
 
     def add_volume_of_material(self, material, vol):
         '''
         Add a fixed volume of a material (in nL).
         '''
         actual_vol = echo_round(vol)
-        self.materials.append(material, actual_vol)
+        self.materials.append((material, actual_vol))
 
     def finalize_reaction(self):
         '''
@@ -217,8 +217,8 @@ class MasterMix(Reaction, EchoSourceMaterial):
             self.buffer_fraction = self.txtl_fraction - self.extract_fraction
             txtl_extract = EchoSourceMaterial("Extract", 1, 0, None)
             txtl_buffer  = EchoSourceMaterial("Buffer",  1, 0, None)
-            self.materials.append(txtl_extract, self.extract_fraction)
-            self.materials.append(txtl_buffer, self.buffer_fraction)
+            self.materials.append((txtl_extract, self.extract_fraction))
+            self.materials.append((txtl_buffer, self.buffer_fraction))
 
     def one_rxn_recipe(self, finalize = True):
         '''
