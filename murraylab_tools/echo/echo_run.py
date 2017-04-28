@@ -577,7 +577,7 @@ class EchoRun():
                 print("Picks for material " + str(mat) + ":")
                 picks = mat.request_picklist()
                 for pick in picks:
-                    print("\t" + str(pick))
+                    print("\t" + str(pick))fr
 
         # Finalize all of the reactions.
         for reaction in self.reactions.values():

@@ -8,6 +8,7 @@ import csv
 import collections
 import os
 import warnings
+import echo_base
 from echo_functions import *
 from echo_base import *
 

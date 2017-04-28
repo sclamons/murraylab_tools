@@ -27,6 +27,7 @@ import collections
 import os
 import warnings
 #import openpyxl as pyxl  # Required for reading excel files
+import echo_source_material
 
 from echo_source_material import EchoSourceMaterial
 from reaction import Reaction, WellReaction, MasterMix
