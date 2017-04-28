@@ -9,6 +9,7 @@ import collections
 import os
 import warnings
 from echo_functions import *
+from echo_base import *
 
 __all__ = ["EchoSourceMaterial"]
 
