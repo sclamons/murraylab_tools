@@ -777,14 +777,6 @@ class EchoRun():
         Write this EchoCSVMaker's protocol to an Echo picklist, and print any
         other necessary directions for the user.
         '''
-        print("material_list: " + str(self.material_list))
-        for mat in self.material_list.values():
-            if mat:
-                print("Picks for material " + str(mat) + ":")
-                picks = mat.request_picklist()
-                for pick in picks:
-                    print("\t" + str(pick))
-
         # Finalize all of the reactions.
         for reaction in self.reactions.values():
             reaction.finalize_reaction()
