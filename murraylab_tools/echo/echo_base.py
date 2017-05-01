@@ -18,14 +18,7 @@
 #   -- Picks from plates defined by CSVs, to wells defined by other CSVs
 
 
-import numpy as np
-import pandas as pd
-import string
-import math
-import csv
-import collections
-import os
-import warnings
+
 #import openpyxl as pyxl  # Required for reading excel files
 
 from echo_source_material import EchoSourceMaterial
@@ -38,14 +31,6 @@ from echo_functions import dna2nM_convert, echo_round, floatify, \
                            process_column_argument
 
 
-__all__ = ["dna2nM_convert", "echo_round", "Reaction", "WellReaction",
-           "MasterMix", "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
-           "DestinationPlate", "dead_volume", "max_volume", "usable_volume"]
-
-dead_volume = 15000 + 6000 # Dead volume per well in an Echo source plate, in nL
-max_volume  = 65000 # Maximum Echoable volume in an Echo source plate, in nL
-usable_volume = max_volume - dead_volume # Maximum pipettable volume per well
-                                         # in an Echo source plate, in nL
 
 
 
