@@ -682,6 +682,7 @@ class EchoRun():
         # Add TX-TL master mix as a material, if applicable.
         if self.make_master_mix:
             if not "txtl_mm" in self.material_dict:
+                print("Just before creating master mix, self.rxn_vol = " + str(self.rxn_vol))
                 self.material_dict["txtl_mm"] = MasterMix(self.plates[0],
                                                          rxn_vol = self.rxn_vol)
             txtl = self.material_dict["txtl_mm"]
