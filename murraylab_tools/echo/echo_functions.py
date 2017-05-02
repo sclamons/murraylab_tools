@@ -175,6 +175,7 @@ class EchoSourceMaterial():
         Commit to wells, and return a list of finalized picks from this
         material.
         '''
+        print("Material " + self.name + " is having its picklist requested.")
         usable_volume  = max_volume - dead_volume
         n_source_wells = math.ceil(float(self.total_volume_requested) \
                                          / usable_volume)
@@ -778,7 +779,6 @@ class EchoRun():
         for mat_name in self.material_dict:
             mat = self.material_dict[mat_name]
             print("material named \'" + mat_name + "' is " + str(mat))
-
             if mat:
                 picks = mat.request_picklist()
                 for pick in picks:
@@ -1043,6 +1043,7 @@ class WellReaction(Reaction):
 
         for material, conc in self.materials:
             vol = conc * self.rxn_vol / material.nM
+            print("While finalizing reaction " + self.well + ", requesting material " + str(material) + "; material.nM = " + str(material.nM) + "; conc = " + str(conc) + "; self.rxn_vol = " +str(self.rxn_vol) + "; vol = " + str(vol))
             material.request_material(self.well, vol)
 
         self.finalized = True

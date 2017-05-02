@@ -15,7 +15,7 @@ txtl_mm:
 	Master Mix (including 10% excess):
 
 Instructions:
-	41.00 uL of water in well G08
-	32.00 uL of GFP Plasmid in well G10
-	48.00 uL of ATc in well G12
+	41.00 uL of water in well G14
+	32.00 uL of GFP Plasmid in well G16
+	48.00 uL of ATc in well G18
 	txtl_mm not used!
