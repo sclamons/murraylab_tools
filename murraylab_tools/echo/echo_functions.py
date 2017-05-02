@@ -699,7 +699,7 @@ class EchoRun():
                 # Initialize the reaction.
                 well = string.ascii_uppercase[first_row + i] + \
                               str(first_col + j)
-                if not self.reactions[well]:
+                if well not in self.reactions:
                     self.reactions[well] = WellReaction(self.rxn_vol, well)
                 # Diluted material picks
                 self.reactions[well].add_material(material_1,
@@ -887,6 +887,7 @@ class Reaction(object):
         called).
         '''
         self.materials.append((material, final_conc))
+        self.finalized = False
 
     def add_volume_of_material(self, material, vol):
         '''
@@ -894,6 +895,8 @@ class Reaction(object):
         '''
         final_conc = material.nM * vol / self.rxn_vol
         self.materials.append((material, final_conc))
+        self.finalized = False
+
 
     def current_vol(self):
         '''
@@ -911,6 +914,7 @@ class Reaction(object):
         dilution_factor     = fill_volume / self.rxn_vol
         material_final_conc = material.nM * dilution_factor
         self.add_material(material, material_final_conc)
+        self.finalized = False
 
     def finalize_reaction(self):
         '''
@@ -986,6 +990,7 @@ class WellReaction(Reaction):
         actual_conc = actual_vol * material.nM / self.rxn_vol
 
         self.materials.append((material, actual_conc))
+        self.finalized = False
 
     def add_volume_of_material(self, material, vol):
         '''
@@ -993,6 +998,7 @@ class WellReaction(Reaction):
         '''
         actual_vol = echo_round(vol)
         self.materials.append((material, actual_vol))
+        self.finalized = False
 
     def finalize_reaction(self):
         '''
@@ -1068,6 +1074,7 @@ class MasterMix(Reaction, EchoSourceMaterial):
         self.picklist = []
         self.total_volume_requested = 0
         self.well_volumes = None
+        self.finalized = False
 
         self.rxn_vol   = rxn_vol
         self.mm_excess = mm_excess
