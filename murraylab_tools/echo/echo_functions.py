@@ -913,6 +913,7 @@ class Reaction(object):
         '''
         fill_volume         = self.rxn_vol - self.current_vol()
         material_final_conc = material.nM * fill_volume / self.rxn_vol
+        print("when filling with " + str(material) + ": fill_water = " +str(fill_volume) + "; material.nM = " + str(material.nM) + "; self.rxn_vol = " + str(self.rxn_vol) + "; material.material_final_conc = " + str(material_final_conc))
         self.add_material(material, material_final_conc)
         self.finalized = False
 
