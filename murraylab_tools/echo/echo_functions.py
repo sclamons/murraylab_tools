@@ -1003,7 +1003,7 @@ class WellReaction(Reaction):
         Add a fixed volume of a material (in nL).
         '''
         actual_vol = echo_round(vol)
-        self.materials.append((material, actual_vol))
+        super(WellReaction, self).add_volume_of_material(material, actual_vol)
         self.finalized = False
 
     def finalize_reaction(self):
