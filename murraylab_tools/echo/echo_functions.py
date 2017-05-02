@@ -913,7 +913,7 @@ class Reaction(object):
         '''
         fill_volume         = self.rxn_vol - self.current_vol()
         material_final_conc = material.nM * fill_volume / self.rxn_vol
-        print("when filling with " + str(material) + ": fill_water = " +str(fill_volume) + "; material.nM = " + str(material.nM) + "; self.rxn_vol = " + str(self.rxn_vol) + "; material.material_final_conc = " + str(material_final_conc))
+        #print("when filling with " + str(material) + ": fill_volume = " +str(fill_volume) + "; material.nM = " + str(material.nM) + "; self.rxn_vol = " + str(self.rxn_vol) + "; material.material_final_conc = " + str(material_final_conc))
         self.add_material(material, material_final_conc)
         self.finalized = False
 
@@ -1078,6 +1078,7 @@ class MasterMix(Reaction, EchoSourceMaterial):
         self.finalized = False
 
         self.rxn_vol   = rxn_vol
+        print("When txtl Master Mix created, rxn_vol = " + str(rxn_vol) + "; self.rxn_vol = " + str(self.rxn_vol))
         self.mm_excess = mm_excess
         self.extract_fraction = extract_fraction
         self.extract_per_aliquot = extract_per_aliquot
