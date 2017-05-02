@@ -687,6 +687,7 @@ class EchoRun():
                 self.material_dict["txtl_mm"] = MasterMix(self.plates[0],
                                                          rxn_vol = self.rxn_vol)
             txtl = self.material_dict["txtl_mm"]
+            print("Master mix volume = " + str(txtl_mm_vol))
             txtl_mm_vol = txtl.current_vol_per_rxn()
 
         # Add water as a material (if it's not already there).
