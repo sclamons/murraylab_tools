@@ -1071,8 +1071,6 @@ class MasterMix(EchoSourceMaterial, Reaction):
         buffer_per_aliquot: Volume of TX-TL buffer in one aliquot, in nL.
                                 Default 37000.
         '''
-        super(MasterMix, self).__init__(rxn_vol = rxn_vol)
-
         if add_txtl:
             self.name = "txtl_mm"
         else:
@@ -1095,6 +1093,7 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.buffer_per_aliquot = buffer_per_aliquot
         self.txtl_fraction = 0.75
         self.materials = []
+        self.current_well = -1
         if add_txtl:
             self.buffer_fraction = self.txtl_fraction - self.extract_fraction
             txtl_extract = EchoSourceMaterial("Extract", 1, 0, None)
