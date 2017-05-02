@@ -718,6 +718,9 @@ class EchoRun():
         # and negative control.
         neg_ctrl_well = string.ascii_uppercase[first_row + n_material_1] \
                         + str(first_col)
+        if neg_ctrl_well not in self.reactions:
+            self.reactions[neg_ctrl_well] = WellReaction(self.rxn_vol,
+                                                         neg_ctrl_well)
         if self.make_master_mix:
             self.reactions[neg_ctrl_well].add_volume_of_material(txtl,
                                                                  txtl_mm_vol)
