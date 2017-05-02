@@ -1154,10 +1154,10 @@ class MasterMix(Reaction, EchoSourceMaterial):
         a call to request_picklist, when picks are finalized. If
         total_volume_requested is not set, will return 0.
         '''
-        for material in self.materials:
+        for material, conc in self.materials:
             if material.name == "Extract":
-                extract_vol = self.total_volume_requested * material.final \
-                                / material.stock / self.txtl_fraction
+                extract_vol = self.total_volume_requested * conc \
+                                / material.nM / self.txtl_fraction
                 return extract_vol / self.extract_per_aliquot \
                         * self.mm_excess
         return 0
@@ -1170,10 +1170,10 @@ class MasterMix(Reaction, EchoSourceMaterial):
         a call to request_picklist, when picks are finalized. If
         total_volume_requested is not set, will return 0.
         '''
-        for material in self.materials:
+        for material, conc in self.materials:
             if material.name == "Buffer":
-                buffer_vol = self.total_volume_requested * material.final \
-                                / material.stock / self.txtl_fraction
+                buffer_vol = self.total_volume_requested * conc \
+                                / material.nM / self.txtl_fraction
                 return buffer_vol / self.buffer_per_aliquot \
                         * self.mm_excess
 
