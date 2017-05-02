@@ -205,8 +205,6 @@ class EchoSourceMaterial():
                 self.current_well += 1
                 self.total_volume_requested += dead_volume
                 if self.current_well >= len(self.wells):
-                    print("self.wells: " + str(self.wells))
-                    print("self.current_well: " + str(self.current_well))
                     raise ValueError(("Material %s has been asked to donate " +\
                                       "too much material with a call for " +\
                                       "%d nL") % \
@@ -688,7 +686,6 @@ class EchoRun():
                                                          rxn_vol = self.rxn_vol)
             txtl = self.material_dict["txtl_mm"]
             txtl_mm_vol = txtl.current_vol_per_rxn()
-            print("Master mix volume = " + str(txtl_mm_vol))
 
 
         # Add water as a material (if it's not already there).
@@ -899,7 +896,6 @@ class Reaction(object):
         Add a fixed volume of a material (in nL).
         '''
         final_conc = material.nM * vol / self.rxn_vol
-        print("in add_volume_of_material for " + str(material) + ": material.nM = " + str(material.nM) + "; vol = " + str(vol) + "; self.rxn_vol = " + str(self.rxn_vol))
         self.materials.append((material, final_conc))
         self.finalized = False
 
@@ -916,7 +912,6 @@ class Reaction(object):
         water).
         '''
         fill_volume         = self.rxn_vol - self.current_vol()
-        #print("For material " + str(material) + ", fill_volume = " + str(fill_volume) + "; rxn_vol = " + str(self.rxn_vol) + "; current_vol() = " + str(self.current_vol()))
         material_final_conc = material.nM * fill_volume / self.rxn_vol
         self.add_material(material, material_final_conc)
         self.finalized = False
@@ -967,7 +962,6 @@ class Reaction(object):
 
         for material, final_conc in self.materials:
             name = str(material)
-            #print(" in recipe, material " + name + " has final_conc = " + str(final_conc) + "; rxn_vol = " + str(self.rxn_vol) + "; material.nM = " + str(material.nM))
             vol  = final_conc * self.rxn_vol / material.nM
             yield (name, vol)
 
