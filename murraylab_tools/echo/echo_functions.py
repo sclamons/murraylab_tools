@@ -222,7 +222,7 @@ class EchoRun():
     Defines and prints an Echo picklist from one of several algorithms.
 
     Parameters:
-        -- rxn_vol: Volume of a single TX-TL reaction, in nL. Default 5000.
+        -- rxn_vol: Volume of a single TX-TL reaction, in nL. Default 10000.
         -- DPtype: Destination plate type. Should be a string recognizable by
                     the Echo Plate Reformat software, though that is not
                     enforced in this code. Default "Nunc_384_black_glassbottom"
@@ -230,7 +230,7 @@ class EchoRun():
                     TX-TL setup experiments, but not for association spreadsheet
                     experiments.
     '''
-    def __init__(self, rxn_vol = 5000, DPtype = None, plate = None,
+    def __init__(self, rxn_vol = 10000, DPtype = None, plate = None,
                  master_mix = None):
         # The user gives the reaction volume in microliters; store it in nL
         self.rxn_vol = rxn_vol
@@ -276,6 +276,12 @@ class EchoRun():
         '''
         self.make_master_mix = master_mix != None
         if self.make_master_mix:
+            if master_mix.rxn_vol != self.rxn_vol:
+                raise ValueError("Assigned MasterMix with reaction volume " + \
+                                 master_mix.rxn_vol + "nL; this EchoRun " +   \
+                                 " object has reaction volume " +             \
+                                 str(self.rxn_vol) + "; reaction volumes must"+\
+                                 " match.")
             self.material_dict['txtl_mm'] = master_mix
 
     def remove_master_mix(self):
