@@ -915,7 +915,7 @@ class Reaction(object):
         water).
         '''
         fill_volume         = self.rxn_vol - self.current_vol()
-        print("For material " + str(material) + ", fill_volume = " + str(fill_volume) + "; rxn_vol = " + str(self.rxn_vol) + "; current_vol() = " + str(self.current_vol()))
+        #print("For material " + str(material) + ", fill_volume = " + str(fill_volume) + "; rxn_vol = " + str(self.rxn_vol) + "; current_vol() = " + str(self.current_vol()))
         material_final_conc = material.nM * fill_volume / self.rxn_vol
         self.add_material(material, material_final_conc)
         self.finalized = False
@@ -966,7 +966,7 @@ class Reaction(object):
 
         for material, final_conc in self.materials:
             name = str(material)
-            print(" in recipe, material " + name + " has final_conc = " + str(final_conc) + "; rxn_vol = " + str(self.rxn_vol) + "; material.nM = " + str(material.nM))
+            #print(" in recipe, material " + name + " has final_conc = " + str(final_conc) + "; rxn_vol = " + str(self.rxn_vol) + "; material.nM = " + str(material.nM))
             vol  = final_conc * self.rxn_vol / material.nM
             yield (name, vol)
 
