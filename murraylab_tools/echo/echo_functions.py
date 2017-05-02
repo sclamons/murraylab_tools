@@ -1081,7 +1081,7 @@ class MasterMix(EchoSourceMaterial, Reaction):
             self.name = "master_mix"
         self.length = 0
         self.plate = plate
-        self.nM = 1   # Proxy nanomolar value
+        self.nM = 1.0   # Proxy nanomolar value
 
         self.wells    = None
         self.picklist = []
