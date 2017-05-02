@@ -776,8 +776,9 @@ class EchoRun():
 
     def generate_picklist(self):
         for mat_name in self.material_dict:
-            print("material named \'" + mat_name + "' is " + str(mat))
             mat = self.material_dict[mat_name]
+            print("material named \'" + mat_name + "' is " + str(mat))
+
             if mat:
                 picks = mat.request_picklist()
                 for pick in picks:
