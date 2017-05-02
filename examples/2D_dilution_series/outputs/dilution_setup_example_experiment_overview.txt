@@ -18,3 +18,4 @@ Instructions:
 	41.00 uL of water in well G08
 	32.00 uL of GFP Plasmid in well G10
 	48.00 uL of ATc in well G12
+	txtl_mm not used!

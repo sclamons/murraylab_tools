@@ -140,7 +140,7 @@ class EchoSourceMaterial():
         self.picklist = []
         self.total_volume_requested = 0
         self.well_volumes = None
-        self.current_well = -1
+        self.current_well = None
 
     def __str__(self):
         if self.length > 0:
@@ -775,7 +775,9 @@ class EchoRun():
                 self.reactions[well].add_material(material, final_conc)
 
     def generate_picklist(self):
-        for mat in self.material_dict.values():
+        for mat_name in self.material_dict:
+            print("material named \'" + mat_name + "' is " + str(mat))
+            mat = self.material_dict[mat_name]
             if mat:
                 picks = mat.request_picklist()
                 for pick in picks:
@@ -1093,7 +1095,7 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.buffer_per_aliquot = buffer_per_aliquot
         self.txtl_fraction = 0.75
         self.materials = []
-        self.current_well = -1
+        self.current_well = None
         if add_txtl:
             self.buffer_fraction = self.txtl_fraction - self.extract_fraction
             txtl_extract = EchoSourceMaterial("Extract", 1, 0, None)
