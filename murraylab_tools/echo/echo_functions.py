@@ -964,6 +964,7 @@ class Reaction(object):
 
         for material, final_conc in self.materials:
             name = str(material)
+            print(" in recipe, material " + name + " has final_conc = " + str(final_conc) + "; rxn_vol = " + str(self.rxn_vol) + "; material.nM = " + str(material.nM))
             vol  = final_conc * self.rxn_vol / material.nM
             yield (name, vol)
 
