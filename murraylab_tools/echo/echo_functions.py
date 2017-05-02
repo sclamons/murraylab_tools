@@ -821,9 +821,9 @@ class EchoRun():
 
         # Write comment file
         with open((outputname+'_experiment_overview.txt'), 'w') as text_file:
-            all_destination_wells = map(lambda pick:pick.destination_well,
-                                        self.picklist)
-            rxn_num = len(set(all_destination_wells))
+            # all_destination_wells = map(lambda pick:pick.destination_well,
+            #                             self.picklist)
+            # rxn_num = len(set(all_destination_wells))
 
             text_file.write("Materials used:")
             for material in self.material_dict.values():

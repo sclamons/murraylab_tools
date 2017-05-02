@@ -1,25 +1,20 @@
 Materials used:
 water:
-	stock concentration: 0.00nM
-	total volume: 99.50 uL
+	stock concentration: 1.00nM
+	total volume: 41.00 uL
 GFP Plasmid:
 	stock concentration: 139.12nM (294.00 ng/uL)
-	total volume: 26.25 uL
+	total volume: 32.00 uL
 ATc:
 	stock concentration: 1000.00nM
-	total volume: 34.50 uL
+	total volume: 48.00 uL
 txtl_mm:
-	total volume: 354.75 uL
-	Tubes of extract needed: 6
-	Tubes of buffer needed: 6
+	total volume: 0.00 uL
+	Tubes of extract needed: 0
+	Tubes of buffer needed: 0
 	Master Mix (including 10% excess):
-		171.70 uL Extract
-		218.53 uL Buffer
 
 Instructions:
-	65.00 uL of water in wells F19
-	34.50 uL of water in well F20
-	26.25 uL of GFP Plasmid in well F22
-	34.50 uL of ATc in well F24
-	65.00 uL of txtl_mm in wells G01, G02, G03, G04, G05
-	29.75 uL of txtl_mm in well G06
+	41.00 uL of water in well G08
+	32.00 uL of GFP Plasmid in well G10
+	48.00 uL of ATc in well G12
