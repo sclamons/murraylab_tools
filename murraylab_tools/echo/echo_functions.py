@@ -900,7 +900,6 @@ class Reaction(object):
         self.materials.append((material, final_conc))
         self.finalized = False
 
-
     def current_vol(self):
         '''
         Calculates the total volume of all of the materials currently in the
@@ -914,8 +913,8 @@ class Reaction(object):
         water).
         '''
         fill_volume         = self.rxn_vol - self.current_vol()
-        dilution_factor     = fill_volume / self.rxn_vol
-        material_final_conc = material.nM * dilution_factor
+        print("For material " + str(material) + ", fill_volume = " + str(fill_volume) + "; rxn_vol = " + str(self.rxn_vol) + "; current_vol() = " + str(self.current_vol()))
+        material_final_conc = material.nM * fill_volume / self.rxn_vol
         self.add_material(material, material_final_conc)
         self.finalized = False
 
