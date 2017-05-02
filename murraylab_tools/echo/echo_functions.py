@@ -821,6 +821,7 @@ class EchoRun():
 
         # Write comment file
         with open((outputname+'_experiment_overview.txt'), 'w') as text_file:
+            # V DELETE THIS V
             # all_destination_wells = map(lambda pick:pick.destination_well,
             #                             self.picklist)
             # rxn_num = len(set(all_destination_wells))
@@ -1045,7 +1046,7 @@ class WellReaction(Reaction):
 
 
 
-class MasterMix(Reaction, EchoSourceMaterial):
+class MasterMix(EchoSourceMaterial, Reaction):
     '''
     Container class for a list of materials that make up a master mix. This
     is any mix of materials that are combined into one single material that
@@ -1070,6 +1071,8 @@ class MasterMix(Reaction, EchoSourceMaterial):
         buffer_per_aliquot: Volume of TX-TL buffer in one aliquot, in nL.
                                 Default 37000.
         '''
+        super(MasterMix, self).__init__(rxn_vol = rxn_vol)
+
         if add_txtl:
             self.name = "txtl_mm"
         else:
