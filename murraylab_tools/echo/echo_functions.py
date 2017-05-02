@@ -257,7 +257,7 @@ class EchoRun():
             self.plates = [plate]
 
 
-        self.material_list   = dict()
+        self.material_dict   = dict()
         self.reactions       = dict()
         self.picklist        = []
         self.add_master_mix(master_mix) # This will set make_master_mix
@@ -278,13 +278,13 @@ class EchoRun():
         '''
         self.make_master_mix = master_mix != None
         if self.make_master_mix:
-            self.material_list['txtl_mm'] = master_mix
+            self.material_dict['txtl_mm'] = master_mix
 
     def remove_master_mix(self):
         '''
         Blanks the current master mix.
         '''
-        self.material_list['txtl_mm'] = None
+        self.material_dict['txtl_mm'] = None
         self.make_master_mix          = False
 
     def add_material(self, material):
@@ -305,8 +305,8 @@ class EchoRun():
         identical material was already in this EchoRun object's material list,
         so the new material was not added.
         '''
-        if material.name in self.material_list.keys():
-            prior_mat = self.material_list[material.name]
+        if material.name in self.material_dict.keys():
+            prior_mat = self.material_dict[material.name]
             if prior_mat.name == material.name \
                and prior_mat.concentration == material.concentration \
                and prior_mat.length == material.length \
@@ -321,7 +321,7 @@ class EchoRun():
                      ", length " + str(prior_mat.length) + ", and plate " +    \
                      str(prior_mat.plate) + ".")
         else:
-            self.material_list[material.name] = material
+            self.material_dict[material.name] = material
             return 0
 
     def build_picklist_from_txtl_setup_excel(self, input_filename):
@@ -418,17 +418,17 @@ class EchoRun():
         # Assign source wells and register materials
         # Register TX-TL master mix
 
-        if not "txtl_mm" in self.material_list:
-            self.material_list['txtl_mm'] = MasterMix(self.plates[0],
+        if not "txtl_mm" in self.material_dict:
+            self.material_dict['txtl_mm'] = MasterMix(self.plates[0],
                                 extract_fraction = self.extract_fraction,
                                 mm_excess = self.mm_excess,
                                 add_txtl = False,
                                 rxn_vol = self.rxn_vol)
-        txtl = self.material_list["txtl_mm"]
+        txtl = self.material_dict["txtl_mm"]
 
         # Register Water
         self.add_material(EchoSourceMaterial("water", 1, 0, self.plates[0]))
-        water = self.material_list["water"]
+        water = self.material_dict["water"]
 
         # Register other materials
         stocks = []
@@ -569,10 +569,10 @@ class EchoRun():
                 material = EchoSourceMaterial(name, concentration,
                                               length, plate)
                 self.add_material(material)
-                if self.material_list[name].wells == None:
+                if self.material_dict[name].wells == None:
                     self.wells = [well]
                 else:
-                    self.material_list[name].wells.append(well)
+                    self.material_dict[name].wells.append(well)
 
 
     def build_picklist_from_association_spreadsheet(self, input_filename,
@@ -626,7 +626,7 @@ class EchoRun():
                         continue
                     # First column of each pair is the material
                     if is_name_col:
-                        source_material = self.material_list[row[i]]
+                        source_material = self.material_dict[row[i]]
                         is_name_col     = False
                     # Second column of each pair is the final concentration of
                     # material
@@ -637,7 +637,7 @@ class EchoRun():
                         is_name_col = True
                     i += 1
                 if fill_with_water:
-                    water = self.material_list[water_name]
+                    water = self.material_dict[water_name]
                     self.reactions[well].fill_with(water)
 
     def build_dilution_series(self, material_1, material_2,
@@ -683,15 +683,15 @@ class EchoRun():
 
         # Add TX-TL master mix as a material, if applicable.
         if self.make_master_mix:
-            if not "txtl_mm" in self.material_list:
-                self.material_list["txtl_mm"] = MasterMix(self.plates[0],
+            if not "txtl_mm" in self.material_dict:
+                self.material_dict["txtl_mm"] = MasterMix(self.plates[0],
                                                          rxn_vol = self.rxn_vol)
-            txtl = self.material_list["txtl_mm"]
+            txtl = self.material_dict["txtl_mm"]
             txtl_mm_vol = txtl.current_vol_per_rxn()
 
         # Add water as a material (if it's not already there).
         self.add_material(EchoSourceMaterial("water", 1, 0, self.plates[0]))
-        water = self.material_list["water"]
+        water = self.material_dict["water"]
 
         # Fill in matrix with picks.
         for i in range(n_material_1):
@@ -769,7 +769,7 @@ class EchoRun():
                 self.reactions[well].add_material(material, final_conc)
 
     def generate_picklist(self):
-        for mat in self.material_list.values():
+        for mat in self.material_dict.values():
             if mat:
                 picks = mat.request_picklist()
                 for pick in picks:
@@ -820,7 +820,7 @@ class EchoRun():
             rxn_num = len(set(all_destination_wells))
 
             text_file.write("Materials used:")
-            for material in self.material_list.values():
+            for material in self.material_dict.values():
                 is_master_mix = (material.name == "txtl_mm" or \
                                  material.name == "master_mix")
                 text_file.write("\n%s:" % material.name)
@@ -834,7 +834,7 @@ class EchoRun():
                 # Rewrite with new MasterMixMaterial definitions (final concs
                 # now in terms of final reaction)
                 if is_master_mix and self.make_master_mix:
-                    master_mix = self.material_list["txtl_mm"]
+                    master_mix = self.material_dict["txtl_mm"]
                     text_file.write("\n\tTubes of extract needed: %d" % \
                                     math.ceil(master_mix.n_extract_aliquots()))
                     text_file.write("\n\tTubes of buffer needed: %d" % \
@@ -847,7 +847,7 @@ class EchoRun():
             # Explicit loading instructions
             text_file.write("\n\nInstructions:")
 
-            for material in self.material_list.values():
+            for material in self.material_dict.values():
                 vol_list = material.well_volumes
                 if material.current_well < 0:
                     text_file.write("\n\t%s not used!" % material.name)
