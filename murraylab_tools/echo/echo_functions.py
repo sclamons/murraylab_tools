@@ -899,6 +899,7 @@ class Reaction(object):
         Add a fixed volume of a material (in nL).
         '''
         final_conc = material.nM * vol / self.rxn_vol
+        print("in add_volume_of_material for " + str(material) + ": material.nM = " + str(material.nM) + "; vol = " + str(vol) + "; self.rxn_vol = " + str(self.rxn_vol))
         self.materials.append((material, final_conc))
         self.finalized = False
 
