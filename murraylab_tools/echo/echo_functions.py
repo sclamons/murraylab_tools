@@ -7,6 +7,8 @@ import collections
 import os
 import warnings
 
+print("On branch association_fix")
+
 __all__ = ["dna2nM_convert", "echo_round", "Reaction", "WellReaction",
            "MasterMix", "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
            "DestinationPlate", "dead_volume", "max_volume", "usable_volume"]
@@ -279,7 +281,7 @@ class EchoRun():
         if self.make_master_mix:
             if master_mix.rxn_vol != self.rxn_vol:
                 raise ValueError("Assigned MasterMix with reaction volume " + \
-                                 master_mix.rxn_vol + "nL; this EchoRun " +   \
+                                 str(master_mix.rxn_vol) + "nL; this EchoRun "+\
                                  " object has reaction volume " +             \
                                  str(self.rxn_vol) + "; reaction volumes must"+\
                                  " match.")
@@ -619,7 +621,7 @@ class EchoRun():
                     raise ValueError("Well column out of bounds for row '%s'" %\
                                      str(row))
                 well = row[well_idx]
-                if not self.reactions[well]:
+                if well not in self.reactions:
                     self.reactions[well] = WellReaction(self.rxn_vol, well)
                 i = 0
                 is_name_col = True
