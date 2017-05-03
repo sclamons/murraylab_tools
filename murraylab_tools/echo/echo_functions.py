@@ -176,7 +176,6 @@ class EchoSourceMaterial():
         Commit to wells, and return a list of finalized picks from this
         material.
         '''
-        print("Material " + self.name + " is having its picklist requested.")
         usable_volume  = max_volume - dead_volume
         n_source_wells = math.ceil(float(self.total_volume_requested) \
                                          / usable_volume)
@@ -690,7 +689,6 @@ class EchoRun():
         # Add TX-TL master mix as a material, if applicable.
         if self.make_master_mix:
             if not "txtl_mm" in self.material_dict:
-                print("Just before creating master mix, self.rxn_vol = " + str(self.rxn_vol))
                 self.material_dict["txtl_mm"] = MasterMix(self.plates[0],
                                                          rxn_vol = self.rxn_vol)
             txtl = self.material_dict["txtl_mm"]
@@ -779,7 +777,6 @@ class EchoRun():
     def generate_picklist(self):
         for mat_name in self.material_dict:
             mat = self.material_dict[mat_name]
-            print("material named \'" + mat_name + "' is " + str(mat))
             if mat:
                 picks = mat.request_picklist()
                 for pick in picks:
@@ -925,7 +922,6 @@ class Reaction(object):
         '''
         fill_volume         = self.rxn_vol - self.current_vol()
         material_final_conc = material.nM * fill_volume / self.rxn_vol
-        #print("when filling with " + str(material) + ": fill_volume = " +str(fill_volume) + "; material.nM = " + str(material.nM) + "; self.rxn_vol = " + str(self.rxn_vol) + "; material.material_final_conc = " + str(material_final_conc))
         self.add_material(material, material_final_conc)
         self.finalized = False
 
@@ -946,7 +942,7 @@ class Reaction(object):
                 error_string += "\n\t%d nL of %s" % (material_vol, material)
             raise ValueError(error_string)
 
-        if current_vol < self.rxn_vol:
+        if current_vol < self.rxn_vol and self.well != "Master Mix":
             warn_string = "Reaction "
             warn_string += "%s has %d nL volume but only contains %.2f nL of " \
                             % (self.well, self.rxn_vol, current_vol)
@@ -1044,7 +1040,6 @@ class WellReaction(Reaction):
 
         for material, conc in self.materials:
             vol = conc * self.rxn_vol / material.nM
-            print("While finalizing reaction " + self.well + ", requesting material " + str(material) + "; material.nM = " + str(material.nM) + "; conc = " + str(conc) + "; self.rxn_vol = " +str(self.rxn_vol) + "; vol = " + str(vol))
             material.request_material(self.well, vol)
 
         self.finalized = True
@@ -1092,7 +1087,6 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.finalized = False
 
         self.rxn_vol   = rxn_vol
-        print("When txtl Master Mix created, rxn_vol = " + str(rxn_vol) + "; self.rxn_vol = " + str(self.rxn_vol))
         self.mm_excess = mm_excess
         self.extract_fraction = extract_fraction
         self.extract_per_aliquot = extract_per_aliquot
