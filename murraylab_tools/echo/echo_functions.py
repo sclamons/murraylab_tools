@@ -7,8 +7,6 @@ import collections
 import os
 import warnings
 
-print("On branch association_fix")
-
 __all__ = ["dna2nM_convert", "echo_round", "Reaction", "WellReaction",
            "MasterMix", "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
            "DestinationPlate", "dead_volume", "max_volume", "usable_volume"]
