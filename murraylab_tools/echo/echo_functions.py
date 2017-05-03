@@ -621,7 +621,7 @@ class EchoRun():
                     raise ValueError("Well column out of bounds for row '%s'" %\
                                      str(row))
                 well = row[well_idx]
-                if not self.reactions[well]:
+                if well not in self.reactions:
                     self.reactions[well] = WellReaction(self.rxn_vol, well)
                 i = 0
                 is_name_col = True
