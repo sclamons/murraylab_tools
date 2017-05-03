@@ -281,7 +281,7 @@ class EchoRun():
         if self.make_master_mix:
             if master_mix.rxn_vol != self.rxn_vol:
                 raise ValueError("Assigned MasterMix with reaction volume " + \
-                                 master_mix.rxn_vol + "nL; this EchoRun " +   \
+                                 str(master_mix.rxn_vol) + "nL; this EchoRun "+\
                                  " object has reaction volume " +             \
                                  str(self.rxn_vol) + "; reaction volumes must"+\
                                  " match.")
