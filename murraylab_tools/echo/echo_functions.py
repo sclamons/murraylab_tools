@@ -130,6 +130,7 @@ class EchoSourceMaterial():
                           "the echo when you run it.") % self.name, Warning)
 
         # DNA concentration in ng/uL, or other reagent concentration in nM.
+        concentration = float(concentration)
         self.concentration = concentration
         if length > 0:
             self.nM = dna2nM_convert(concentration, length)
