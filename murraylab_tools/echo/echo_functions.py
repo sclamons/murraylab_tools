@@ -948,8 +948,8 @@ class Reaction(object):
 
         if current_vol < self.rxn_vol:
             warn_string = "Reaction "
-            warn_string += "has %d nL volume but only contains %.2f nL of " \
-                            % (self.rxn_vol, current_vol)
+            warn_string += "%s has %d nL volume but only contains %.2f nL of " \
+                            % (self.well, self.rxn_vol, current_vol)
             warn_string += "ingredients. Are you sure you want to underfill " \
                             + "this reaction?"
             warnings.warn(warn_string, Warning)
