@@ -938,8 +938,8 @@ class Reaction(object):
         current_vol = self.current_vol()
         if current_vol > self.rxn_vol:
             error_string = "Reaction "
-            error_string += "has %d nL volume but contains %.2f nL of " \
-                            % (self.rxn_vol, current_vol)
+            error_string += "%s has %d nL volume but contains %.2f nL of " \
+                            % (self.well, self.rxn_vol, current_vol)
             error_string += "ingredients:"
             for material, conc in self.materials:
                 material_vol = conc * self.rxn_vol / material.nM
