@@ -10,23 +10,3 @@ master_mix:
 	Tubes of extract needed: 0
 	Tubes of buffer needed: 0
 	Master Mix (including 10% excess):
-		43.55 uL eSC3 Buffer (1.000 nM)
-		20.49 uL eSC3 Extract (1.000 nM)
-		0.85 uL Helper Protein (100.000 nM)
-CFP Plasmid:
-	stock concentration: 67.91nM (125.00 ng/uL)
-	total volume: 21.68 uL
-RFP Plasmid:
-	stock concentration: 94.04nM (189.00 ng/uL)
-	total volume: 21.45 uL
-GFP Plasmid:
-	stock concentration: 72.47nM (149.00 ng/uL)
-	total volume: 21.65 uL
-
-Instructions:
-	21.55 uL of Positive Control in well N01
-	30.68 uL of water in well N03
-	59.00 uL of master_mix in well N05
-	21.68 uL of CFP Plasmid in well N07
-	21.45 uL of RFP Plasmid in well N09
-	21.65 uL of GFP Plasmid in well N11
