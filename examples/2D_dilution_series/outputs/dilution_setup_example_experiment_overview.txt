@@ -17,9 +17,9 @@ txtl_mm:
 		424.12 uL Buffer (1.000 nM)
 
 Instructions:
-	65.00 uL of water in wells L21, L22
-	47.50 uL of water in well L23
-	32.00 uL of GFP Plasmid in well M01
-	48.00 uL of ATc in well M03
-	65.00 uL of txtl_mm in wells M05, M06, M07, M08, M09, M10, M11, M12, M13, M14
-	38.50 uL of txtl_mm in well M15
+	65.00 uL of water in wells A01, A02
+	47.50 uL of water in well A03
+	32.00 uL of GFP Plasmid in well A05
+	48.00 uL of ATc in well A07
+	65.00 uL of txtl_mm in wells A09, A10, A11, A12, A13, A14, A15, A16, A17, A18
+	38.50 uL of txtl_mm in well A19
