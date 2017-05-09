@@ -100,7 +100,7 @@ class Pick():
         self.source_material   = source_material
         self.source_well       = source_well
         self.destination_well  = destination_well
-        self.volume            = volume
+        self.volume            = int(volume)
 
 
 class EchoSourceMaterial():
@@ -823,11 +823,6 @@ class EchoRun():
 
         # Write comment file
         with open((outputname+'_experiment_overview.txt'), 'w') as text_file:
-            # V DELETE THIS V
-            # all_destination_wells = map(lambda pick:pick.destination_well,
-            #                             self.picklist)
-            # rxn_num = len(set(all_destination_wells))
-
             text_file.write("Materials used:")
             for material in self.material_dict.values():
                 is_master_mix = (material.name == "txtl_mm" or \
@@ -1044,6 +1039,7 @@ class WellReaction(Reaction):
                 material_vol = conc * self.rxn_vol / material.nM
                 error_string += "\n\t%d nL of %s" % (material_vol, material)
             raise ValueError(error_string)
+
         if self.fill_material:
             fill_volume         = self.rxn_vol - self.current_vol()
             fill_mat_final_conc = self.fill_material.nM * fill_volume \
