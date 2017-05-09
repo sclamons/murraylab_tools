@@ -17,9 +17,9 @@ water:
 	total volume: 177.50 uL
 
 Instructions:
-	65.00 uL of txtl_mm in wells C13, C14, C15, C16, C17, C18, C19, C20, C21, C22
-	38.50 uL of txtl_mm in well C23
-	32.00 uL of GFP Plasmid in well D01
-	48.00 uL of ATc in well D03
-	65.00 uL of water in wells D05, D06
-	47.50 uL of water in well D07
+	65.00 uL of txtl_mm in wells E05, E06, E07, E08, E09, E10, E11, E12, E13, E14
+	38.50 uL of txtl_mm in well E15
+	32.00 uL of GFP Plasmid in well E17
+	48.00 uL of ATc in well E19
+	65.00 uL of water in wells E21, E22
+	47.50 uL of water in well E23

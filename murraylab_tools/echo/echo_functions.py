@@ -260,6 +260,7 @@ class EchoRun():
         self.reactions       = dict()
         self.picklist        = []
         self.add_master_mix(master_mix) # This will set make_master_mix
+        self.fill_material   = None
 
     def define_plate(self, SPname, SPtype, DPtype):
         '''
@@ -888,6 +889,7 @@ class Reaction(object):
         self.well      = well
         self.finalized = False
         self.materials = []
+        self.fill_material = None
 
     def add_material(self, material, final_conc):
         '''
@@ -918,19 +920,25 @@ class Reaction(object):
     def fill_with(self, material):
         '''
         Fill all unfilled volume in the reaction with some material (usually
-        water).
+        water). If another material was assigned to fill this well, it will
+        be overwritten by this call.
         '''
-        fill_volume         = self.rxn_vol - self.current_vol()
-        material_final_conc = material.nM * fill_volume / self.rxn_vol
-        self.add_material(material, material_final_conc)
+        self.fill_material = material
         self.finalized = False
 
     def finalize_reaction(self):
         '''
-        Checks reaction for consistency, throwing a ValueError if the reaction
-        is overfilled or otherwise in obvious error, and raising a Warning if
-        the reaction is underfull.
+        Finish up things like addition of fill materials. Also checks reaction
+        for consistency, throwing a ValueError if the reaction is overfilled or
+        otherwise in obvious error, and raising a Warning if the reaction is
+        underfull.
         '''
+        if self.fill_material:
+            fill_volume         = self.rxn_vol - self.current_vol()
+            fill_mat_final_conc = self.fill_material.nM * fill_volume \
+                                  / self.rxn_vol
+            self.add_material(fill_material, fill_mat_final_conc)
+
         current_vol = self.current_vol()
         if current_vol > self.rxn_vol:
             error_string = "Reaction "
