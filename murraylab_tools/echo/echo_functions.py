@@ -818,7 +818,7 @@ class EchoRun():
                 plate = pick.source_material.plate
                 row = [plate.name, plate.type, pick.source_well,
                        pick.source_material.name, self.DPtype,
-                       pick.destination_well, pick.volume, comment]
+                       pick.destination_well, int(pick.volume), comment]
                 writer.writerow(row)
 
         # Write comment file
