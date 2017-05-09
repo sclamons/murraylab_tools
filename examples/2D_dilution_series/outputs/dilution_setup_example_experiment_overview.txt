@@ -14,10 +14,12 @@ ATc:
 	total volume: 48.00 uL
 water:
 	stock concentration: 1.00nM
-	total volume: 0.00 uL
+	total volume: 177.50 uL
 
 Instructions:
 	65.00 uL of txtl_mm in wells F01, F02, F03, F04, F05, F06, F07, F08, F09, F10
 	38.50 uL of txtl_mm in well F11
 	32.00 uL of GFP Plasmid in well F13
 	48.00 uL of ATc in well F15
+	65.00 uL of water in wells F17, F18
+	47.50 uL of water in well F19
