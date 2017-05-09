@@ -24,9 +24,9 @@ GFP Plasmid:
 	total volume: 21.65 uL
 
 Instructions:
-	59.00 uL of master_mix in well D01
-	30.68 uL of water in well D03
-	21.55 uL of Positive Control in well D05
-	21.45 uL of RFP Plasmid in well D07
-	21.68 uL of CFP Plasmid in well D09
-	21.65 uL of GFP Plasmid in well D11
+	59.00 uL of master_mix in well D13
+	30.68 uL of water in well D15
+	21.55 uL of Positive Control in well D17
+	21.45 uL of RFP Plasmid in well D19
+	21.68 uL of CFP Plasmid in well D21
+	21.65 uL of GFP Plasmid in well D23

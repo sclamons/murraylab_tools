@@ -937,7 +937,7 @@ class Reaction(object):
             fill_volume         = self.rxn_vol - self.current_vol()
             fill_mat_final_conc = self.fill_material.nM * fill_volume \
                                   / self.rxn_vol
-            self.add_material(fill_material, fill_mat_final_conc)
+            self.add_material(self.fill_material, fill_mat_final_conc)
 
         current_vol = self.current_vol()
         if current_vol > self.rxn_vol:
@@ -1028,7 +1028,7 @@ class WellReaction(Reaction):
             fill_volume         = self.rxn_vol - self.current_vol()
             fill_mat_final_conc = self.fill_material.nM * fill_volume \
                                   / self.rxn_vol
-            self.add_material(fill_material, fill_mat_final_conc)
+            self.add_material(self.fill_material, fill_mat_final_conc)
 
         current_vol = self.current_vol()
         if current_vol > self.rxn_vol:
