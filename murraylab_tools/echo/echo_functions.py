@@ -1093,6 +1093,7 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.total_volume_requested = 0
         self.well_volumes = None
         self.finalized = False
+        self.fill_material
 
         self.rxn_vol   = rxn_vol
         self.mm_excess = mm_excess
