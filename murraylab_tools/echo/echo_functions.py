@@ -772,7 +772,7 @@ class EchoRun():
             for col in range(start_col, end_col+1):
                 destination = string.ascii_uppercase[row] + str(col+1)
                 vol = final_conc * (self.rxn_vol / material.nM)
-                self.reactions[well].add_material(material, final_conc)
+                self.reactions[destination].add_material(material, final_conc)
 
     def generate_picklist(self):
         for mat_name in self.material_dict:
