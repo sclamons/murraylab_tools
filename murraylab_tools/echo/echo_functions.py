@@ -1032,6 +1032,18 @@ class WellReaction(Reaction):
         the reaction is underfull. Then, if everything checks out, volume is
         requested from the reaction's EchoSourceMaterials.
         '''
+        current_vol = self.current_vol()
+        if current_vol > self.rxn_vol:
+            error_string = "Reaction "
+            if self.well:
+                error_string += "in well %s " % self.well
+            error_string += "has %d nL volume but contains %.2f nL of " \
+                            % (self.rxn_vol, current_vol)
+            error_string += "ingredients:"
+            for material, conc in self.materials:
+                material_vol = conc * self.rxn_vol / material.nM
+                error_string += "\n\t%d nL of %s" % (material_vol, material)
+            raise ValueError(error_string)
         if self.fill_material:
             fill_volume         = self.rxn_vol - self.current_vol()
             fill_mat_final_conc = self.fill_material.nM * fill_volume \
