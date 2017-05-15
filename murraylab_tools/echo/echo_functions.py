@@ -772,6 +772,9 @@ class EchoRun():
         for row in range(start_row, end_row+1):
             for col in range(start_col, end_col+1):
                 destination = string.ascii_uppercase[row] + str(col+1)
+                if destination not in self.reactions:
+                    self.reactions[destination] = WellReaction(self.rxn_vol,
+                                                               destination)
                 vol = final_conc * (self.rxn_vol / material.nM)
                 self.reactions[destination].add_material(material, final_conc)
 
