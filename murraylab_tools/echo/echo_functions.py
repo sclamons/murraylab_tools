@@ -109,7 +109,7 @@ class EchoSourceMaterial():
     much material has been used and where they need to go. When requested,
     will commit to wells (assigned by a SourcePlate) and send a list of picks.
     '''
-    def __init__(self, name, concentration, length, plate):
+    def __init__(self, name, concentration, length, plate = None):
         '''
         name -- A string to associate with the name of this material.
         concentration -- the concentration of this material, in ng/uL if this is
