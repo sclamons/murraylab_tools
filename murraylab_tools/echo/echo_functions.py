@@ -679,8 +679,8 @@ class EchoRun():
         n_material_2 = len(material_2_final)
         first_row = string.ascii_uppercase.find(first_well[0])
         first_col = int(first_well[1:])
-        if first_col + n_material_1 - 1> self.cols \
-            or first_row + n_material_2 > self.rows:
+        if first_col + n_material_2 - 1 > self.cols \
+            or first_row + n_material_1 > self.rows:
             raise ValueError(("Dilution series of size %dx%d starting in " +   \
                               "well %s runs off the edge of plate of type %s") \
                              % (n_material_1, n_material_2, first_well,
