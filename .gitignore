@@ -8,7 +8,10 @@ just_reinstall_murraylab_tools.sh
 
 # Pip installation junk #
 #########################
-
+*.egg-info/
+.installed.cfg
+.eggs
+.cache
 
 # Compiled source #
 ###################
