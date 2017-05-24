@@ -4,11 +4,11 @@ import numpy as np
 import sys
 sys.path.append(os.path.join("..", ".."))
 
-echo import echo_functions as ef
+import murraylab_tools.echo as mt_echo
 
 class TestSourcePlate():
 
-    test_plate = ef.SourcePlate(filename='testplate.dat')
+    test_plate = mt_echo.SourcePlate(filename='testplate.dat')
 
     test_dir = os.path.dirname(os.path.realpath(__file__))
 
