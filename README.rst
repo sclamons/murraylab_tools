@@ -1,11 +1,18 @@
+.. image:: https://img.shields.io/travis/sclamons/murraylab_tools/master.svg
+   :alt: Testing with TravisCI
+   :target: https://travis-ci.org/sclamons/murraylab_tools/branches
+.. image:: https://img.shields.io/codecov/c/github/sclamons/murraylab_tools/master.svg
+   :alt: TravisCI test coverage
+   :target: https://codecov.io/github/sclamons/murraylab_tools/
+
 Tools for Common Murray Lab Protocols
 =====================================
 
-Code for common tasks in the Murray lab. Currently supported in Python 2.7.
+Code for common tasks in the Murray lab. Currently supported in Python 2.7 and 3.5.
 
-Install with the following (probably requires sudo): pip install git+git://github.com/sclamons/murraylab_tools.git@master
+Install with the following (probably requires sudo): ``pip install git+git://github.com/sclamons/murraylab_tools.git@master``
 
-To update, run (also with superuser privilige): pip install --upgrade --no-deps git+git://github.com/sclamons/murraylab_tools.git@master
+To update, run (also with superuser privilege): ``pip install --upgrade --no-deps git+git://github.com/sclamons/murraylab_tools.git@master``
 
 Currently includes the following subpackages:
 
