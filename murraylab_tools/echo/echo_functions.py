@@ -934,7 +934,7 @@ class Reaction(object):
         if self.current_vol < self.rxn_vol and self.well != "Master Mix":
             warn_string = "Reaction "
             warn_string += "%s has %d nL volume but only contains %.2f nL of " \
-                            % (self.well, self.rxn_vol, current_vol)
+                            % (self.well, self.rxn_vol, self.current_vol)
             warn_string += "ingredients. Are you sure you want to underfill " \
                             + "this reaction?"
             warnings.warn(warn_string, Warning)
@@ -1448,7 +1448,7 @@ class DestinationPlate():
                 self.name = "Destination[%s]" % DPname
             else:
                 self.name = DPname
-        if DPtype == None or '384' in Dtype:
+        if DPtype == None or '384' in DPtype:
             self.type = "Nunc 384"
             self.rows = 16
             self.cols = 24
