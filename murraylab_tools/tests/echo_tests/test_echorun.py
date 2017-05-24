@@ -6,6 +6,7 @@ sys.path.append(os.path.join("..", ".."))
 
 import murraylab_tools.echo as mt_echo
 
+@pytest.mark.skip(reason="tests not yet implmented")
 class TestEchoRun():
     def test_implement_me(self):
         assert 0
