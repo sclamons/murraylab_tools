@@ -52,6 +52,7 @@ just_reinstall_murraylab_tools.sh
 ehthumbs.db
 Thumbs.db
 *~
+~$*
 
 # VIM backups #
 ######################
