@@ -2,28 +2,32 @@ import os
 import pytest
 import numpy as np
 import sys
-sys.path.append(os.path.join("..", ".."))
 
-echo import echo_functions as ef
+import murraylab_tools.echo as mt_echo
 
 class TestSourcePlate():
 
-    test_plate = ef.SourcePlate(filename='testplate.dat')
+    test_plate = mt_echo.SourcePlate(filename='testplate.dat')
 
     test_dir = os.path.dirname(os.path.realpath(__file__))
 
+    @pytest.mark.skip(reason="test not yet implemented")
     def test_sanity(self):
         assert 0
 
+    @pytest.mark.skip(reason="test not yet implemented")
     def test_load_from_file(self):
         assert 0
 
+    @pytest.mark.skip(reason="test not yet implemented")
     def test_write_to_file(self):
         assert 0
 
+    @pytest.mark.skip(reason="test not yet implemented")
     def test_request_wells(self):
         assert 0
 
+    @pytest.mark.skip(reason="test not yet implemented")
     def test_increment_position(self):
         assert 0
 

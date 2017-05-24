@@ -1,11 +1,8 @@
 import os
 import pytest
 import numpy as np
-import sys
-sys.path.append(os.path.dirname(os.path.join("..")))
-print(sys.path)
 
-from echo import echo_functions as ef
+import murraylab_tools.echo as mt_echo
 
 @pytest.fixture()
 def test_dir():
@@ -15,7 +12,7 @@ def gen_plate():
     fname = 'dplate.dat'
     if os.path.exists(fname):
         os.rm(fname)
-    dplate = ef.DestinationPlate(filename=fname)
+    dplate = mt_echo.DestinationPlate(filename=fname)
     return dplate
 
 @pytest.fixture(scope="session")
@@ -45,8 +42,8 @@ def test_assigning_plate_file_corrects_object_size():
 
 def test_make_simple_picklist(test_dir):
     # TODO Expand on assertions
-    dplate = ef.DestinationPlate()
-    splate = ef.SourcePlate()
+    dplate = mt_echo.DestinationPlate()
+    splate = mt_echo.SourcePlate()
     splate.load_well_definitions(os.path.join(test_dir,
                                 'test_def_good_column_names.csv'))
     rxns = [
