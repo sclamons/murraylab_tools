@@ -81,6 +81,21 @@ setup(
         # 'test': ['coverage'],
     },
 
+    # List dependencies for the setup script to run. These are not installed on
+    # the system where the setup script is being run, but simply downloaded to
+    # the ./.eggs directory if they're not locally available already.
+    setup_requires=[
+        'pytest-runner'
+    ],
+
+    # List dependencies for the test process to run. These, too, are not
+    # installed on the system where the setup script is being run, but simply
+    # downloaded to the ./.eggs directory if they're not locally available
+    # already.
+    tests_require=[
+        'pytest'
+    ],
+
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.

@@ -1,9 +1,6 @@
 import os
 import pytest
 import numpy as np
-import sys
-sys.path.append(os.path.dirname(os.path.join("..")))
-print(sys.path)
 
 import murraylab_tools.echo as mt_echo
 
