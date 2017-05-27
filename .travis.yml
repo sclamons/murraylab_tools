@@ -1,0 +1,29 @@
+# Run jobs on container-based infrastructure, can be overridden per job
+sudo: false
+
+notifications:
+  email: false
+
+language: generic
+
+env:
+  - CONDA_PY=2.7
+  - CONDA_PY=3.5
+
+# Setup anaconda
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash ./miniconda.sh -b
+  - export PATH=/home/travis/miniconda3/bin:$PATH
+  # Install python environment and dependencies
+  - conda install --yes python=$CONDA_PY --file requirements.txt
+  # Install codecov integration
+  - pip install codecov pytest-cov
+
+
+install:
+  # run tests with coverage information
+  - py.test --cov=./
+
+after_success:
+  - codecov
