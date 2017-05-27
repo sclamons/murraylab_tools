@@ -109,7 +109,7 @@ class EchoSourceMaterial():
     much material has been used and where they need to go. When requested,
     will commit to wells (assigned by a SourcePlate) and send a list of picks.
     '''
-    def __init__(self, name, concentration, length, plate = None):
+    def __init__(self, name, concentration, length = None, plate = None):
         '''
         name -- A string to associate with the name of this material.
         concentration -- the concentration of this material, in ng/uL if this is
@@ -132,10 +132,10 @@ class EchoSourceMaterial():
         # DNA concentration in ng/uL, or other reagent concentration in nM.
         concentration = float(concentration)
         self.concentration = concentration
-        if length > 0:
-            self.nM = dna2nM_convert(concentration, length)
-        else:
+        if length == None or length <= 0:
             self.nM = self.concentration
+        else:
+            self.nM = dna2nM_convert(concentration, length)
 
         self.wells    = None
         self.picklist = []
@@ -1448,7 +1448,7 @@ class DestinationPlate():
                 self.name = "Destination[%s]" % DPname
             else:
                 self.name = DPname
-        if DPtype == None or '384' in Dtype:
+        if DPtype == None or '384' in DPtype:
             self.type = "Nunc 384"
             self.rows = 16
             self.cols = 24
