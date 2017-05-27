@@ -649,7 +649,8 @@ class EchoRun():
 
     def build_dilution_series(self, material_1, material_2,
                               material_1_final, material_2_final,
-                              first_well, fill_with_water = True):
+                              first_well, fill_with_water = True,
+                              negative_control = True):
         '''Calculate TXTL volumes and automatically generate a picklist for
         an NxN dilution matrix with two inputs. If this EchoSource object has a
         MasterMix, then add that master mix as well. Fill the rest with water.
@@ -668,6 +669,8 @@ class EchoRun():
                                 with water. Set to "False" if you want to do
                                 other things to these reactions before using
                                 them.
+            negative_control -- Iff true, adds a negative control well below the
+                                    bottom-left corner of the block.
         '''
         material_1.plate = self.plates[0]
         material_2.plate = self.plates[0]
@@ -724,16 +727,17 @@ class EchoRun():
         # Add positive control....
 
         # and negative control.
-        neg_ctrl_well = string.ascii_uppercase[first_row + n_material_1] \
-                        + str(first_col)
-        if neg_ctrl_well not in self.reactions:
-            self.reactions[neg_ctrl_well] = WellReaction(self.rxn_vol,
-                                                         neg_ctrl_well)
-        if self.make_master_mix:
-            self.reactions[neg_ctrl_well].add_volume_of_material(txtl,
-                                                                 txtl_mm_vol)
-        if fill_with_water:
-            self.reactions[neg_ctrl_well].fill_with(water)
+        if negative_control:
+            neg_ctrl_well = string.ascii_uppercase[first_row + n_material_1] \
+                            + str(first_col)
+            if neg_ctrl_well not in self.reactions:
+                self.reactions[neg_ctrl_well] = WellReaction(self.rxn_vol,
+                                                             neg_ctrl_well)
+            if self.make_master_mix:
+                self.reactions[neg_ctrl_well].add_volume_of_material(txtl,
+                                                                     txtl_mm_vol)
+            if fill_with_water:
+                self.reactions[neg_ctrl_well].fill_with(water)
 
     def add_material_to_well(self, material, final_conc, well):
         '''
