@@ -137,6 +137,7 @@ class EchoSourceMaterial():
             self.nM = self.concentration
         else:
             self.nM = dna2nM_convert(concentration, length)
+            self.ng_per_ul = concentration
 
         self.wells    = None
         self.picklist = []
@@ -147,9 +148,11 @@ class EchoSourceMaterial():
     def __str__(self):
         if self.length > 0:
             conc_string = "ng/µL"
+            conc = self.ng_per_ul
         else:
             conc_string = "nM"
-        return "%s (%.3f %s)" % (self.name, self.nM, conc_string)
+            conc = self.nM
+        return "%s (%.3f %s)" % (self.name, conc, conc_string)
 
     def request_material(self, destination_well, volume):
         '''
@@ -777,7 +780,8 @@ class EchoRun():
         for row in range(start_row, end_row+1):
             for col in range(start_col, end_col+1):
                 destination = string.ascii_uppercase[row] + str(col+1)
-                if destination not in self.reactions:
+                if destination not in self.reactions \
+                   or self.reactions[destination] == None:
                     self.reactions[destination] = WellReaction(self.rxn_vol,
                                                                destination)
                 vol = final_conc * (self.rxn_vol / material.nM)
@@ -837,7 +841,7 @@ class EchoRun():
                                  material.name == "master_mix")
                 text_file.write("\n%s:" % material.name)
                 if not is_master_mix:
-                    text_file.write("\n\tstock concentration: %.2fnM" % \
+                    text_file.write("\n\tstock concentration: %.2f nM" % \
                                     material.nM)
                 if material.length > 0:
                     text_file.write(" (%.2f ng/uL)" % material.concentration)
