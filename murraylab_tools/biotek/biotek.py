@@ -68,7 +68,7 @@ def read_supplementary_info(input_filename):
     info = dict()
     with open(input_filename, 'rU') as infile:
         reader = csv.reader(infile)
-        title_line = reader.next()
+        title_line = next(reader)
         for i in range(1, len(title_line)):
             info[title_line[i]] = dict()
         for line in reader:
@@ -146,11 +146,11 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         if line[1].startswith("Read Height"):
                             break
                         if line[1].startswith("Filter Set"):
-                            line = reader.next()
+                            line = next(reader)
                             lineparts = line[1].split(",")
                             excitation = int(lineparts[0].split(":")[-1].split("/")[0].strip())
                             emission = int(lineparts[1].split(":")[-1].split("/")[0].strip())
-                            line = reader.next()
+                            line = next(reader)
                             gain = line[1].split(",")[-1].split(":")[-1].strip()
                             if gain != "AutoScale":
                                 gain = int(gain)
@@ -190,8 +190,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     excitation      = read_properties.excitation
                     emission        = read_properties.emission
 
-                line = reader.next() # Skip a line
-                line = reader.next() # Chart title line
+                line = next(reader) # Skip a line
+                line = next(reader) # Chart title line
                 well_names = line
                 # Data lines
                 for line in reader:
