@@ -453,6 +453,7 @@ class EchoRun():
                                                         material_length,
                                                         self.plates[0])
             is_duplicate_material = self.add_material(new_material)
+            print("Material " + str(new_material.name) + " is a duplicate? " + str(is_duplicate_material))
             if not is_duplicate_material:
                 stocks.append(new_material)
         print("stocks:")
