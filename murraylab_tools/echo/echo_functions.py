@@ -455,6 +455,7 @@ class EchoRun():
             is_duplicate_material = self.add_material(new_material)
             if not is_duplicate_material:
                 stocks.append(new_material)
+        print("stocks = " + str(stocks))
 
         ##################
         # Register picks #
