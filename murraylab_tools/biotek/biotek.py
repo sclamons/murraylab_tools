@@ -151,7 +151,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             if line[1].strip() == "Fluorescence Endpoint":
                                 read_name = ""
                             else:
-                                read_name = line[1]
+                                read_name = line[1].strip()
                             continue
                         if line[1].startswith("Filter Set"):
                             line = next(reader)
