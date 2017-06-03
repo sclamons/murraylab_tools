@@ -429,6 +429,7 @@ class EchoRun():
         # Register TX-TL master mix
 
         if not "txtl_mm" in self.material_dict:
+            print("Yes, it's not txtl_mm")
             self.material_dict['txtl_mm'] = MasterMix(self.plates[0],
                                 extract_fraction = self.extract_fraction,
                                 mm_excess = self.mm_excess,
@@ -1137,7 +1138,6 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.txtl_fraction = 0.75
         self.materials = []
         self.current_well = None
-        print("self.name = " + str(self.name))
         if add_txtl:
             self.buffer_fraction = self.txtl_fraction - self.extract_fraction
             txtl_extract = EchoSourceMaterial("Extract", 1, 0, None)
