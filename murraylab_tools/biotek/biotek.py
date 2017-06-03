@@ -159,7 +159,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             read_sets[read_name].append(ReadSet(read_name,
                                                                 excitation,
                                                                 emission, gain))
-                if line[0].strip() == "End Kinetic":
+                if line[0].strip() == "Layout":
                     break
 
             # Read data blocks
