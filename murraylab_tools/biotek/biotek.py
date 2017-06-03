@@ -162,6 +162,9 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 if line[0].strip() == "Layout":
                     break
 
+            # DEBUG: DELETE ME
+            print(str(read_sets))
+
             # Read data blocks
             # Find a data block
             for line in reader:
