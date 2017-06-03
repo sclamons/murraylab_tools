@@ -397,10 +397,11 @@ class EchoRun():
             rownum = -1
             for row in recipe_reader:
                 rownum += 1
+                n_rows = recipe_sheet.shape[0]
                 if rownum >= recipe_sheet.shape[0]:
-                    print("Warning -- You are trying to add to more than 384 "+\
-                          "wells in the destination plate. Extra wells will " +\
-                          "be clipped.")
+                    print("Warning -- You are trying to add to more than " + \
+                          str(n_rows) + " wells in the destination plate. " + \
+                          "Extra wells will be clipped.")
                     break
                 for colnum in range(len(row)):
                     element = floatify(row[colnum])
@@ -429,7 +430,6 @@ class EchoRun():
         # Register TX-TL master mix
 
         if not "txtl_mm" in self.material_dict:
-            print("Yes, it's not txtl_mm")
             self.material_dict['txtl_mm'] = MasterMix(self.plates[0],
                                 extract_fraction = self.extract_fraction,
                                 mm_excess = self.mm_excess,
@@ -502,6 +502,7 @@ class EchoRun():
             volume = recipe_sheet[rownum, 4] * 1e3
             self.reactions[well].add_volume_of_material(txtl, volume)
 
+        # Add materials to the master mix.
         for i in range(11,17):
             if recipe_sheet[i,4] == None or recipe_sheet[i,4] == 0:
                 continue
