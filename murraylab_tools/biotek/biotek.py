@@ -144,7 +144,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         read_name = line[1]
                     entered_layout = False
                     for line in reader:
-                        print("processing line: " + line)
+                        print("processing line: " + reduce(lambda s1,s2: s1+s2, line))
                         if line[0].strip() == "Layout":
                             entered_layout = True
                             break
