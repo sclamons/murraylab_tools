@@ -444,6 +444,7 @@ class EchoRun():
         stocks = []
         for i in range(len(material_total_vols)):
             if material_total_vols[i] == 0 or stock_sheet[i+2,1] == "":
+                print("Skipping material #" + str(i))
                 continue
             material_name          = stock_sheet[i+2,1]
             material_concentration = stock_sheet[i+2, 2]
