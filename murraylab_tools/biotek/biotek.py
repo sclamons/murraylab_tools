@@ -147,7 +147,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         if line[0].strip() == "Layout":
                             entered_layout = True
                             break
-                        if line[1].strip() == "Read":
+                        if line[0].strip() == "Read":
                             if line[1].strip() == "Fluorescence Endpoint":
                                 read_name = ""
                             else:
