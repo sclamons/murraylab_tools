@@ -170,7 +170,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                                                 emission, gain))
                     if entered_layout:
                         break
-
+            print("read_sets: " + str(read_sets))
             # Read data blocks
             # Find a data block
             for line in reader:
