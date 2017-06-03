@@ -500,7 +500,7 @@ class EchoRun():
             # Water picks (magic number warning -- magic number defines
             # positions of relevant blocks in the recipe sheet)
             volume = recipe_sheet[rownum, 3] * 1e3
-            self.reactions[well].add_volume_of_material(water, volume)
+            self.reactions[well].fill_with(water)
 
             # Master Mix picks (magic number warning -- magic number defines
             # positions of relevant blocks in the recipe sheet)
