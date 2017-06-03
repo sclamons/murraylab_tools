@@ -442,10 +442,8 @@ class EchoRun():
 
         # Register other materials
         stocks = []
-        print("material_total_vols = " + str(material_total_vols))
         for i in range(len(material_total_vols)):
             if material_total_vols[i] == 0 or stock_sheet[i+2,1] == "":
-                print("Skipping material #" + str(i))
                 continue
             material_name          = stock_sheet[i+2,1]
             material_concentration = stock_sheet[i+2, 2]
@@ -455,15 +453,8 @@ class EchoRun():
                                                         material_length,
                                                         self.plates[0])
             is_duplicate_material = self.add_material(new_material)
-            print("Material " + str(new_material.name) + " is a duplicate? " + str(is_duplicate_material))
             if not is_duplicate_material:
                 stocks.append(new_material)
-        print("stocks:")
-        for mat in stocks:
-            print("\t" + mat.name)
-        print("Materials in self.material_dict:")
-        for mat in self.material_dict.values():
-            print("\t" + mat.name)
 
         ##################
         # Register picks #
