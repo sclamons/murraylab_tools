@@ -166,10 +166,6 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                                                 excitation,
                                                                 emission, gain))
 
-
-            # DEBUG: DELETE ME
-            print(str(read_sets))
-
             # Read data blocks
             # Find a data block
             for line in reader:
