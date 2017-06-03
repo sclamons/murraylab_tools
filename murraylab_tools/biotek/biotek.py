@@ -142,8 +142,10 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         read_name = ""
                     else:
                         read_name = line[1]
+                    entered_layout = False
                     for line in reader:
                         if line[0].strip() == "Layout":
+                            entered_layout = True
                             break
                         if line[1].startswith("Read"):
                             if line[1].strip() == "Fluorescence Endpoint":
@@ -165,6 +167,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             read_sets[read_name].append(ReadSet(read_name,
                                                                 excitation,
                                                                 emission, gain))
+                    if entered_layout:
+                        break
 
             # Read data blocks
             # Find a data block
