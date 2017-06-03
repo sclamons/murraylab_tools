@@ -484,7 +484,7 @@ class EchoRun():
                 colnum = mat_num + 5
                 volume = recipe_sheet[rownum, colnum] * 1e3
                 if volume > 0:
-                    if mat_num >= len(stocks):
+                    if not mat_num > len(stocks):
                         raise ValueError("Tried to pick a material that " + \
                                          "wasn't named in the stock sheet.")
                     source_material = stocks[mat_num]
