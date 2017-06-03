@@ -458,6 +458,9 @@ class EchoRun():
         print("stocks:")
         for mat in stocks:
             print("\t" + mat.name)
+        print("self.materials:")
+        for mat in self.materials:
+            print("\t" + mat.name)
 
         ##################
         # Register picks #
