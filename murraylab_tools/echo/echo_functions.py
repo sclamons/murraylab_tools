@@ -484,8 +484,6 @@ class EchoRun():
                 colnum = mat_num + 5
                 volume = recipe_sheet[rownum, colnum] * 1e3
                 if volume > 0:
-                    if mat_num > len(stocks):
-                        raise ValueError("Only 10 materials can be added.")
                     source_material = stocks[mat_num]
                     self.reactions[well].add_volume_of_material(source_material,
                                                                 volume)
