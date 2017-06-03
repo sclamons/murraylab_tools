@@ -458,8 +458,8 @@ class EchoRun():
         print("stocks:")
         for mat in stocks:
             print("\t" + mat.name)
-        print("self.materials:")
-        for mat in self.materials:
+        print("Materials in self.material_dict:")
+        for mat in self.material_dict.values():
             print("\t" + mat.name)
 
         ##################
