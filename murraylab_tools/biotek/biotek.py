@@ -143,8 +143,14 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     else:
                         read_name = line[1]
                     for line in reader:
-                        if line[1].startswith("Read Height"):
+                        if line[0].strip() == "Layout":
                             break
+                        if line[1].startswith("Read"):
+                            if line[1].strip() == "Fluorescence Endpoint":
+                                read_name = ""
+                            else:
+                                read_name = line[1]
+                            continue
                         if line[1].startswith("Filter Set"):
                             line = next(reader)
                             lineparts = line[1].split(",")
@@ -159,8 +165,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             read_sets[read_name].append(ReadSet(read_name,
                                                                 excitation,
                                                                 emission, gain))
-                if line[0].strip() == "Layout":
-                    break
+
 
             # DEBUG: DELETE ME
             print(str(read_sets))
