@@ -1137,8 +1137,8 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.txtl_fraction = 0.75
         self.materials = []
         self.current_well = None
-        if False:
-            print("Yes, this block is executed.")
+        print("self.name = " + str(self.name))
+        if add_txtl:
             self.buffer_fraction = self.txtl_fraction - self.extract_fraction
             txtl_extract = EchoSourceMaterial("Extract", 1, 0, None)
             txtl_buffer  = EchoSourceMaterial("Buffer",  1, 0, None)
