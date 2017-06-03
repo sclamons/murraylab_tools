@@ -391,16 +391,15 @@ class EchoRun():
                     stock_sheet[rownum, colnum] = element
 
         # Read in recipe file
-        recipe_sheet = np.zeros(shape = (384+2, 16), dtype = object)
+        recipe_sheet = np.zeros(shape = (384+20, 16), dtype = object)
         with open(recipe_filename, 'rU') as recipe_file:
             recipe_reader = csv.reader(recipe_file)
             rownum = -1
             for row in recipe_reader:
                 rownum += 1
-                n_rows = recipe_sheet.shape[0]
                 if rownum >= recipe_sheet.shape[0]:
                     print("Warning -- You are trying to add to more than " + \
-                          str(n_rows) + " wells in the destination plate. " + \
+                          "384 wells in the destination plate. " + \
                           "Extra wells will be clipped.")
                     break
                 for colnum in range(len(row)):
