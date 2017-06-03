@@ -470,7 +470,7 @@ class EchoRun():
         ##################
 
         first_row = 20
-        last_row  = 115
+        last_row  = 20 + 384
         n_rxns    = 0
         for rownum in range(first_row, last_row + 1):
             # Check to see if there's a name in this row; if not, skip it.
