@@ -421,7 +421,7 @@ class EchoRun():
         # Magic numbers here are spreadsheet positions of volumes to add.
         material_total_vols  = [0]*10
         for i in range(len(material_total_vols)):
-            for j in range(20,116):
+            for j in range(20,recipe_sheet.shape[0]):
                 if recipe_sheet[j, 5+i]:
                     material_total_vols[i] += recipe_sheet[j, 5+i] * 1e3
 
