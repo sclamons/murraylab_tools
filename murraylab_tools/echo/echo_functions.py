@@ -442,6 +442,7 @@ class EchoRun():
 
         # Register other materials
         stocks = []
+        print("material_total_vols = " + str(material_total_vols))
         for i in range(len(material_total_vols)):
             if material_total_vols[i] == 0 or stock_sheet[i+2,1] == "":
                 print("Skipping material #" + str(i))
