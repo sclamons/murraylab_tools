@@ -876,7 +876,7 @@ class EchoRun():
                         else:
                             text_file.write(", ")
                         text_file.write(full_well)
-                text_file.write("\n\t%.2f uL of %s in well %s" % \
+                text_file.write("\n\t%.2f uL %s --> %s" % \
                         (material.well_volumes[material.current_well] / 1000.0,
                          material.name,
                          material.wells[material.current_well]))
