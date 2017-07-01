@@ -214,12 +214,13 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         if line[i].strip() == "":
                             break
                         well_name = well_names[i]
+                        print("Reading data for well " + str(well_name))
                         # Check to see if there's any supplementary information
                         # on this well.
                         if supplementary_filename and \
                           not well_name in list(supplementary_data.values())[0]:
                             warnings.warn("No supplementary data for well " + \
-                                          "%s; throwing out data for that well."\
+                                        "%s; throwing out data for that well."\
                                           % well_name)
                             continue
                         afu       = line[i]
