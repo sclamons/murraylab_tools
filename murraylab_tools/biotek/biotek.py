@@ -214,7 +214,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     for i in range(3,len(line)):
                         if line[i].strip() == "":
                             print("Breaking on i = " + str(i))
-                            break
+                            continue
                         well_name = well_names[i]
                         print("Reading data for well " + str(well_name))
                         # Check to see if there's any supplementary information
