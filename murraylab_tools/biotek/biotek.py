@@ -213,6 +213,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     print("Line has length " + str(len(line)))
                     for i in range(3,len(line)):
                         if line[i].strip() == "":
+                            print("Breaking on i = " + str(i))
                             break
                         well_name = well_names[i]
                         print("Reading data for well " + str(well_name))
