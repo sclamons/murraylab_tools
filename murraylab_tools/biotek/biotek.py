@@ -210,13 +210,10 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                 + 3600*int(time_parts[0])
                     time_hrs = time_secs / 3600.0
                     temp = line[2]
-                    print("Line has length " + str(len(line)))
                     for i in range(3,len(line)):
                         if line[i].strip() == "":
-                            print("Breaking on i = " + str(i))
                             continue
                         well_name = well_names[i]
-                        print("Reading data for well " + str(well_name))
                         # Check to see if there's any supplementary information
                         # on this well.
                         if supplementary_filename and \
