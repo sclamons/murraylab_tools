@@ -241,6 +241,52 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         writer.writerow(row)
 
 
+def extract_trajectories_only(df):
+    '''
+    Given a DataFrame that has been read in from a tidied piece of BioTek data,
+    return a DataFrame that collapses each channel's AFU value as a column in a
+    new DataFrame whose only columns are WellID, Time, and each measured channel.
+    
+    Assumptions:
+        - The time is in a channel called 'Time (hr)', which becomes Time
+        - There is at least 1 measured channel
+
+    Arguments:
+        df -- DataFrame of Biotek data, pulled from a tidy dataset of the form
+                produced by tidy_biotek_data.
+    Returns: A new DataFrame with the only columns being Well, Time, and each
+                measured channel.
+    '''
+    # Create dictionary to make new data-frame
+    master_dict = {}
+    master_dict['Time'] = []
+    master_dict['Well'] = []
+    
+    # get all channel names and initialize columns
+    all_channels = df.Channel.unique()
+    for channel in all_channels:
+        master_dict[channel] = []
+        
+    all_wells = df.Well.unique()
+    
+    # go through and build the trajectory for each well.
+    for well in all_wells:
+        well_df = df[df.Well == well]
+        time_series = well_df[well_df.Channel == all_channels[0]]['Time (hr)']
+        series_length = len(time_series)
+        well_series = [well] * series_length
+        
+        master_dict['Time'].extend(time_series)
+        master_dict['Well'].extend(well_series)
+        for channel in all_channels:
+            channel_series = well_df[well_df.Channel == channel].AFU
+            assert (len(channel_series) == series_length)
+            master_dict[channel].extend(channel_series)
+    
+    return_df = pd.DataFrame(master_dict)
+    return return_df
+
+
 def background_subtract(df, negative_control_wells):
     '''
     Create a new version of a dataframe with background removed. Background is
