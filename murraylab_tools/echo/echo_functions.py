@@ -7,6 +7,7 @@ import csv
 import collections
 import os
 import warnings
+import io
 
 __all__ = ["dna2nM_convert", "echo_round", "Reaction", "WellReaction",
            "MasterMix", "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
@@ -16,6 +17,17 @@ dead_volume = 15000 + 6000 # Dead volume per well in an Echo source plate, in nL
 max_volume  = 65000 # Maximum Echoable volume in an Echo source plate, in nL
 usable_volume = max_volume - dead_volume # Maximum pipettable volume per well
                                          # in an Echo source plate, in nL
+
+def mt_open(filename, setting_code):
+    try:
+        return_file = io.open(filename, setting_code, encoding = 'utf-16')
+    except UnicodeDecodeError:
+        try:
+            return_file = io.open(filename, setting_code, encoding = 'utf-8')
+        except UnicodeDecodeError:
+            raise ValueError(("File %s is neither UTF-8 nor UTF-16. " + \
+                              "Could not open.") % filename)
+    return return_file
 
 
 def dna2nM_convert(dnaconc, dnalength):
@@ -381,7 +393,7 @@ class EchoRun():
 
         # Read in stock file
         stock_sheet = np.empty(shape = (12,5), dtype = object)
-        with open(stock_filename, 'rU') as stock_file:
+        with mt_open(stock_filename, 'rU') as stock_file:
             stock_reader = csv.reader(stock_file)
             rownum = -1
             for row in stock_reader:
@@ -392,7 +404,7 @@ class EchoRun():
 
         # Read in recipe file
         recipe_sheet = np.zeros(shape = (384+20, 16), dtype = object)
-        with open(recipe_filename, 'rU') as recipe_file:
+        with mt_open(recipe_filename, 'rU') as recipe_file:
             recipe_reader = csv.reader(recipe_file)
             rownum = -1
             for row in recipe_reader:
@@ -550,7 +562,7 @@ class EchoRun():
         #############
         # Read file #
         #############
-        with open(input_filename, 'rU') as input_file:
+        with mt_open(input_filename, 'rU') as input_file:
             reader = csv.reader(input_file)
             # Skip first row if it's a header
             if header:
@@ -612,7 +624,7 @@ class EchoRun():
                 raise Exception("If 'Fill with water' option selected, must " +\
                                 "set the name of wells contianing water")
 
-        with open(input_filename, 'rU') as input_file:
+        with mt_open(input_filename, 'rU') as input_file:
             reader = csv.reader(input_file)
             # Skip the first row if it's a header
             if header:
@@ -807,7 +819,7 @@ class EchoRun():
         # accurate count of total_volume_requested of each material, which is
         # only calculated once all of the picks are finalized and wells are
         # committed (which happens in this block).
-        with open((outputname + '_EchoInput.csv'), 'w') as outcsv:
+        with mt_open((outputname + '_EchoInput.csv'), 'w') as outcsv:
             writer = csv.writer(outcsv, lineterminator = "\n")
 
             # Write header
@@ -832,7 +844,7 @@ class EchoRun():
                 writer.writerow(row)
 
         # Write comment file
-        with open((outputname+'_experiment_overview.txt'), 'w') as text_file:
+        with mt_open((outputname+'_experiment_overview.txt'), 'w') as text_file:
             text_file.write("Materials used:")
             for material in self.material_dict.values():
                 is_master_mix = (material.name == "txtl_mm" or \
@@ -1334,7 +1346,7 @@ class SourcePlate():
         Reads which wells have been used from a data file. The well-use file
         lists wells that have been used, with one line per well used.
         '''
-        with open(filename, 'r') as infile:
+        with mt_open(filename, 'r') as infile:
             for line in infile:
                 line = line.strip()
                 if line == "":
@@ -1360,7 +1372,7 @@ class SourcePlate():
         used_well_indices = self.wells_used.nonzero()
         used_well_rows = used_well_indices[0]
         used_well_cols = used_well_indices[1]
-        with open(self.used_well_file, 'w+') as outfile:
+        with mt_open(self.used_well_file, 'w+') as outfile:
             for row_num, col_num in zip(used_well_rows, used_well_cols):
                 row_string = string.ascii_uppercase[row_num]
                 col_string = str(col_num + 1)
@@ -1505,7 +1517,7 @@ class DestinationPlate():
         Reads which wells have been used from a data file. The well-use file
         lists wells that have been used, with one line per well used.
         '''
-        with open(filename, 'r') as infile:
+        with mt_open(filename, 'r') as infile:
             for line in infile:
                 line = line.strip()
                 if line == "":
@@ -1528,7 +1540,7 @@ class DestinationPlate():
         used_well_indices = self.wells_used.nonzero()
         used_well_rows = used_well_indices[0]
         used_well_cols = used_well_indices[1]
-        with open(self.used_well_file, 'w+') as outfile:
+        with mt_open(self.used_well_file, 'w+') as outfile:
             for row_num, col_num in zip(used_well_rows, used_well_cols):
                 row_string = string.ascii_uppercase[row_num]
                 col_string = str(col_num + 1)
