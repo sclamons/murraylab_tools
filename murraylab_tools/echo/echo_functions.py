@@ -19,6 +19,7 @@ usable_volume = max_volume - dead_volume # Maximum pipettable volume per well
                                          # in an Echo source plate, in nL
 
 def mt_open(filename, setting_code):
+    print("Trying to open a file!")
     # try:
     #     return_file = io.open(filename, setting_code, encoding = 'utf-16')
     # except UnicodeDecodeError:
