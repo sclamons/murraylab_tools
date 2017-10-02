@@ -8,25 +8,25 @@ master_mix:
 		20.49 uL eSC3 Extract (1.000 nM)
 		0.85 uL Helper Protein (100.000 nM)
 water:
-	stock concentration: 1.00nM
+	stock concentration: 1.00 nM
 	total volume: 30.68 uL
 Positive Control:
-	stock concentration: 8.99nM (19.00 ng/uL)
+	stock concentration: 8.99 nM (19.00 ng/uL)
 	total volume: 21.55 uL
 RFP Plasmid:
-	stock concentration: 94.04nM (189.00 ng/uL)
+	stock concentration: 94.04 nM (189.00 ng/uL)
 	total volume: 21.45 uL
 CFP Plasmid:
-	stock concentration: 67.91nM (125.00 ng/uL)
+	stock concentration: 67.91 nM (125.00 ng/uL)
 	total volume: 21.68 uL
 GFP Plasmid:
-	stock concentration: 72.47nM (149.00 ng/uL)
+	stock concentration: 72.47 nM (149.00 ng/uL)
 	total volume: 21.65 uL
 
 Instructions:
-	59.00 uL of master_mix in well E01
-	30.68 uL of water in well E03
-	21.55 uL of Positive Control in well E05
-	21.45 uL of RFP Plasmid in well E07
-	21.68 uL of CFP Plasmid in well E09
-	21.65 uL of GFP Plasmid in well E11
+	59.00 uL master_mix --> E13
+	30.68 uL water --> E15
+	21.55 uL Positive Control --> E17
+	21.45 uL RFP Plasmid --> E19
+	21.68 uL CFP Plasmid --> E21
+	21.65 uL GFP Plasmid --> E23
