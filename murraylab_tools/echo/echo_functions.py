@@ -28,7 +28,7 @@ def mt_open(filename, setting_code):
     #     except UnicodeDecodeError:
     #         raise ValueError(("File %s is neither UTF-8 nor UTF-16. " + \
     #                           "Could not open.") % filename)
-    return_file = io.open(filename, setting_code, encoding = 'utf-16')
+    return_file = io.open(filename, setting_code, encoding = 'utf-8')
     return return_file
 
 
