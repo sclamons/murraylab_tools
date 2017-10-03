@@ -39,7 +39,7 @@ def mt_open(filename, setting_code):
         return open(filename, setting_code)
 
     with open(filename, 'r'):
-        supported_encodings = check(next(filename))
+        supported_encodings = check_bom(next(filename))
     # try:
     #     return_file = io.open(filename, setting_code, encoding = 'utf-16')
     # except (UnicodeDecodeError, UnicodeError):
