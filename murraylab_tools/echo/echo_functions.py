@@ -38,9 +38,8 @@ def mt_open(filename, setting_code):
     if setting_code.startswith('w'):
         return open(filename, setting_code)
 
-    with open(filename, 'r') as infile:
+    with open(filename, 'rb') as infile:
         n = next(infile)
-        print("type of first line: " + str(type(n)))
         supported_encodings = check_bom(next(infile))
     if len(supported_encodings) == 0:
         encoding = "UTF-8"
