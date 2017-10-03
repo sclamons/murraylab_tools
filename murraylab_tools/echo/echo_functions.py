@@ -20,15 +20,15 @@ usable_volume = max_volume - dead_volume # Maximum pipettable volume per well
 
 def mt_open(filename, setting_code):
     print("Trying to open a file!")
-    # try:
-    #     return_file = io.open(filename, setting_code, encoding = 'utf-16')
-    # except UnicodeDecodeError:
-    #     try:
-    #         return_file = io.open(filename, setting_code, encoding = 'utf-8')
-    #     except UnicodeDecodeError:
-    #         raise ValueError(("File %s is neither UTF-8 nor UTF-16. " + \
-    #                           "Could not open.") % filename)
-    return_file = io.open(filename, setting_code, encoding = 'utf-16')
+    try:
+        return_file = io.open(filename, setting_code, encoding = 'utf-16')
+    except (UnicodeDecodeError, UnicodeError):
+        try:
+            return_file = io.open(filename, setting_code, encoding = 'utf-8')
+        except (UnicodeDecodeError, UnicodeError):
+            raise ValueError(("File %s is neither UTF-8 nor UTF-16. " + \
+                              "Could not open.") % filename)
+    # return_file = io.open(filename, setting_code, encoding = 'utf-16')
     return return_file
 
 
