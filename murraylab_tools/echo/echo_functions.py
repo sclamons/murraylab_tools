@@ -38,8 +38,8 @@ def mt_open(filename, setting_code):
     if setting_code.startswith('w'):
         return open(filename, setting_code)
 
-    with open(filename, 'r'):
-        supported_encodings = check_bom(next(filename))
+    with open(filename, 'r') as infile:
+        supported_encodings = check_bom(next(infile))
     # try:
     #     return_file = io.open(filename, setting_code, encoding = 'utf-16')
     # except (UnicodeDecodeError, UnicodeError):
