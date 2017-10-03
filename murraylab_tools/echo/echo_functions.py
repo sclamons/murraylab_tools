@@ -19,13 +19,15 @@ usable_volume = max_volume - dead_volume # Maximum pipettable volume per well
                                          # in an Echo source plate, in nL
 
 # Encoding nonsense (for detecting UTF-8 vs. UTF-16)
-from codecs import BOM_UTF8, BOM_UTF16_BE, BOM_UTF16_LE, \
-                   BOM_UTF32_BE, BOM_UTF32_LE
+from codecs import BOM_UTF8, BOM_UTF16, BOM_UTF16_BE, BOM_UTF16_LE, \
+                   BOM_UTF32, BOM_UTF32_BE, BOM_UTF32_LE
 
 BOMS = (
     (BOM_UTF8, "UTF-8"),
+    (BOM_UTF32, "UTF-32"),
     (BOM_UTF32_BE, "UTF-32-BE"),
     (BOM_UTF32_LE, "UTF-32-LE"),
+    (BOM_UTF16, "UTF-16"),
     (BOM_UTF16_BE, "UTF-16-BE"),
     (BOM_UTF16_LE, "UTF-16-LE"),
 )
