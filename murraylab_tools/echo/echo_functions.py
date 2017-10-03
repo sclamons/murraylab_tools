@@ -39,7 +39,13 @@ def mt_open(filename, setting_code):
         return open(filename, setting_code)
 
     with open(filename, 'r') as infile:
+        n = next(infile)
+        print("type of first line: " + str(type(n)))
         supported_encodings = check_bom(next(infile))
+    if len(supported_encodings) == 0:
+        encoding = "UTF-8"
+    else:
+        encoding = supported_encodings[0]
     # try:
     #     return_file = io.open(filename, setting_code, encoding = 'utf-16')
     # except (UnicodeDecodeError, UnicodeError):
@@ -49,7 +55,7 @@ def mt_open(filename, setting_code):
     #         raise ValueError(("File %s is neither UTF-8 nor UTF-16. " + \
     #                           "Could not open.") % filename)
     return_file = io.open(filename, setting_code,
-                          encoding = supported_encodings[0])
+                          encoding = encoding)
     return return_file
 
 
