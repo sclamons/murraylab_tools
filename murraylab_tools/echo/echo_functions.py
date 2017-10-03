@@ -45,7 +45,7 @@ def mt_open(filename, setting_code):
         supported_encodings = check_bom(next(infile))
         print("File " + filename + " supports the following encodings: " + str(supported_encodings))
     if len(supported_encodings) == 0:
-        encoding = "UTF-16"
+        encoding = "UTF-8"
     else:
         encoding = supported_encodings[0]
     # try:
