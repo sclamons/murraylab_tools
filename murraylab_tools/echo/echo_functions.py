@@ -37,28 +37,28 @@ def check_bom(data):
 
 
 def mt_open(filename, setting_code):
-    if setting_code.startswith('w'):
-        return open(filename, setting_code)
+    # if setting_code.startswith('w'):
+    #     return open(filename, setting_code)
 
-    with open(filename, 'rb') as infile:
-        n = next(infile)
-        supported_encodings = check_bom(next(infile))
-        print("File " + filename + " supports the following encodings: " + str(supported_encodings))
-    if len(supported_encodings) == 0:
-        encoding = "UTF-8"
-    else:
-        encoding = supported_encodings[0]
-    # try:
-    #     return_file = io.open(filename, setting_code, encoding = 'utf-16')
-    # except (UnicodeDecodeError, UnicodeError):
-    #     try:
-    #         return_file = io.open(filename, setting_code, encoding = 'utf-8')
-    #     except (UnicodeDecodeError, UnicodeError):
-    #         raise ValueError(("File %s is neither UTF-8 nor UTF-16. " + \
-    #                           "Could not open.") % filename)
-    print("Opening file %s with encoding %s" %(filename, encoding))
+    # with open(filename, 'rb') as infile:
+    #     n = next(infile)
+    #     supported_encodings = check_bom(next(infile))
+    #     print("File " + filename + " supports the following encodings: " + str(supported_encodings))
+    # if len(supported_encodings) == 0:
+    #     encoding = "UTF-8"
+    # else:
+    #     encoding = supported_encodings[0]
+    # # try:
+    # #     return_file = io.open(filename, setting_code, encoding = 'utf-16')
+    # # except (UnicodeDecodeError, UnicodeError):
+    # #     try:
+    # #         return_file = io.open(filename, setting_code, encoding = 'utf-8')
+    # #     except (UnicodeDecodeError, UnicodeError):
+    # #         raise ValueError(("File %s is neither UTF-8 nor UTF-16. " + \
+    # #                           "Could not open.") % filename)
+    # print("Opening file %s with encoding %s" %(filename, encoding))
     return_file = io.open(filename, setting_code,
-                          encoding = encoding)
+                          encoding = "latin-1")# encoding)
     return return_file
 
 
