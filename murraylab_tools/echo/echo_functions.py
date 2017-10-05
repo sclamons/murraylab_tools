@@ -167,7 +167,7 @@ class EchoSourceMaterial():
         self.picklist = []
         self.total_volume_requested = 0
         self.well_volumes = None
-        self.current_well = None
+        self.current_well = -1
 
     def __str__(self):
         if self.length > 0:
@@ -221,7 +221,6 @@ class EchoSourceMaterial():
         self.well_volumes[0] = dead_volume
         self.current_well    = 0
         self.total_volume_requested += dead_volume
-
 
         for pick in self.picklist:
             volume_requested = pick.volume # For error-writing purposes.
@@ -1160,7 +1159,7 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.buffer_per_aliquot = buffer_per_aliquot
         self.txtl_fraction = 0.75
         self.materials = []
-        self.current_well = None
+        self.current_well = -1
         if add_txtl:
             self.buffer_fraction = self.txtl_fraction - self.extract_fraction
             txtl_extract = EchoSourceMaterial("Extract", 1, 0, None)
