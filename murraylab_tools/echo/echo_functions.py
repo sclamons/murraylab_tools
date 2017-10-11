@@ -601,7 +601,7 @@ class EchoRun():
                                               length, plate)
                 self.add_material(material)
                 if self.material_dict[name].wells == None:
-                    material_dict[name].wells = [well]
+                    self.material_dict[name].wells = [well]
                 else:
                     self.material_dict[name].wells.append(well)
 
