@@ -157,7 +157,13 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             line = next(reader)
                             lineparts = line[1].split(",")
                             excitation = int(lineparts[0].split(":")[-1].split("/")[0].strip())
-                            emission = int(lineparts[1].split(":")[-1].split("/")[0].strip())
+                            # Sometimes excitation and emission get split to
+                            # different cells; check for this.
+                            if len(lineparts) == 1:
+                                emission_cell = line[2]
+                            else:
+                                emission_cell = lineparts[0]
+                            emission = int(emission_cell.split(":")[-1].split("/")[0].strip())
                             line = next(reader)
                             gain = line[1].split(",")[-1].split(":")[-1].strip()
                             if gain != "AutoScale":
@@ -246,7 +252,7 @@ def extract_trajectories_only(df):
     Given a DataFrame that has been read in from a tidied piece of BioTek data,
     return a DataFrame that collapses each channel's AFU value as a column in a
     new DataFrame whose only columns are WellID, Time, and each measured channel.
-    
+
     Assumptions:
         - The time is in a channel called 'Time (hr)', which becomes Time
         - There is at least 1 measured channel
@@ -261,28 +267,28 @@ def extract_trajectories_only(df):
     master_dict = {}
     master_dict['Time'] = []
     master_dict['Well'] = []
-    
+
     # get all channel names and initialize columns
     all_channels = df.Channel.unique()
     for channel in all_channels:
         master_dict[channel] = []
-        
+
     all_wells = df.Well.unique()
-    
+
     # go through and build the trajectory for each well.
     for well in all_wells:
         well_df = df[df.Well == well]
         time_series = well_df[well_df.Channel == all_channels[0]]['Time (hr)']
         series_length = len(time_series)
         well_series = [well] * series_length
-        
+
         master_dict['Time'].extend(time_series)
         master_dict['Well'].extend(well_series)
         for channel in all_channels:
             channel_series = well_df[well_df.Channel == channel].AFU
             assert (len(channel_series) == series_length)
             master_dict[channel].extend(channel_series)
-    
+
     return_df = pd.DataFrame(master_dict)
     return return_df
 

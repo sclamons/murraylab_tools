@@ -77,7 +77,7 @@ def floatify(element):
                          "?")
     if element == "":
         return 0.0
-    partition=element.partition('.')
+    partition = element.partition('.')
     if element.isdigit() or \
        (partition[0].isdigit() and partition[1]=='.' and \
         partition[2].isdigit()) \
@@ -601,7 +601,7 @@ class EchoRun():
                                               length, plate)
                 self.add_material(material)
                 if self.material_dict[name].wells == None:
-                    self.wells = [well]
+                    material_dict[name].wells = [well]
                 else:
                     self.material_dict[name].wells.append(well)
 
