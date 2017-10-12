@@ -28,12 +28,12 @@ CFP plasmid:
 	total volume: 21.23 uL
 
 Instructions:
-	28.50 uL primer_1F --> A01
-	28.50 uL primer_1R --> A01
-	28.50 uL primer_2F --> A01
-	28.50 uL primer_2R --> A01
-	28.50 uL primer_3F --> A01
-	28.50 uL primer_3R --> A01
-	21.23 uL GFP plasmid --> A01
-	21.15 uL RFP plasmid --> A01
-	21.23 uL CFP plasmid --> A01
+	28.50 uL primer_1F --> A1
+	28.50 uL primer_1R --> A2
+	28.50 uL primer_2F --> A3
+	28.50 uL primer_2R --> A4
+	28.50 uL primer_3F --> A5
+	28.50 uL primer_3R --> A6
+	21.23 uL GFP plasmid --> B1
+	21.15 uL RFP plasmid --> B2
+	21.23 uL CFP plasmid --> B3

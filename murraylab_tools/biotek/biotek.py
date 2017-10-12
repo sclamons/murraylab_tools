@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import warnings
 import scipy.interpolate
+from ..utils import *
 
 ####################
 # Plate Reader IDs #
@@ -66,7 +67,7 @@ ReadSet = collections.namedtuple('ReadSet', ['name', 'excitation', 'emission',
 
 def read_supplementary_info(input_filename):
     info = dict()
-    with open(input_filename, 'rU') as infile:
+    with mt_open(input_filename, 'rU') as infile:
         reader = csv.reader(infile)
         title_line = next(reader)
         for i in range(1, len(title_line)):
@@ -115,8 +116,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
     filename_base   = input_filename.rsplit('.')[0]
     output_filename = filename_base + "_tidy.csv"
 
-    with open(input_filename, 'rU') as infile:
-        with open(output_filename, 'w') as outfile:
+    with mt_open(input_filename, 'rU') as infile:
+        with mt_open(output_filename, 'w') as outfile:
             reader = csv.reader(infile)
             writer = csv.writer(outfile, delimiter = ',')
             title_row = ['Channel', 'Gain', 'Time (sec)', 'Time (hr)', 'Well',
