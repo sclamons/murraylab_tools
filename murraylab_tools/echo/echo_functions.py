@@ -7,7 +7,6 @@ import csv
 import collections
 import os
 import warnings
-import io
 from ..utils import *
 
 __all__ = ["dna2nM_convert", "echo_round", "Reaction", "WellReaction",

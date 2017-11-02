@@ -24,9 +24,9 @@ GFP Plasmid:
 	total volume: 21.65 uL
 
 Instructions:
-	59.00 uL master_mix --> E13
-	30.68 uL water --> E15
-	21.55 uL Positive Control --> E17
-	21.45 uL RFP Plasmid --> E19
-	21.68 uL CFP Plasmid --> E21
-	21.65 uL GFP Plasmid --> E23
+	59.00 uL master_mix --> F01
+	30.68 uL water --> F03
+	21.55 uL Positive Control --> F05
+	21.45 uL RFP Plasmid --> F07
+	21.68 uL CFP Plasmid --> F09
+	21.65 uL GFP Plasmid --> F11
