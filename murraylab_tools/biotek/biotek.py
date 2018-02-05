@@ -403,7 +403,7 @@ def endpoint_averages(df, window_size = 10):
     Converts a dataframe of fluorescence data to a dataframe of endpoint
     average fluorescence. Averages taken over the last window_size points.
     '''
-    grouped_df = clean_df.groupby(["Channel", "Gain", "Well"])
+    grouped_df = df.groupby(["Channel", "Gain", "Well"])
     last_time_dfs = []
     for name, group in grouped_df:
         first_last_time = group["Time (hr)"].unique()[-window_size]
