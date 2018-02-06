@@ -422,6 +422,9 @@ def endpoint_averages(df, window_size = 10, grouping_variables = None):
         if len(last_time_dfs) == 0:
             print("Group " + group + " has no data.")
     end_time_dfs = pd.concat(last_time_dfs)
+    temp_df = end_time_dfs
+    print(temp_df[(temp_df.Reporter == "gQiR-mScar-6") & (temp_df.cleaned == False)].Well.unique())
+    print(temp_df[(temp_df.Reporter == "gQiR-mScar-6") & (temp_df.cleaned == True)].Well.unique())
     return window_averages(end_time_dfs, 0, window_size, "index")
 
 
