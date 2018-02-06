@@ -398,12 +398,21 @@ def window_averages(df, start, end, units = "seconds"):
     return averages_df
 
 
-def endpoint_averages(df, window_size = 10):
+def endpoint_averages(df, window_size = 10, grouping_variables = None):
     '''
     Converts a dataframe of fluorescence data to a dataframe of endpoint
-    average fluorescence. Averages taken over the last window_size points.
+    average fluorescence.
+
+    Params:
+        window_size - Averages are taken over the last window_size points.
+        grouping_variables - Optional list of column names on which to group.
+                                Use this option primarily to separate multiple
+                                plates' worth of data with overlapping wells.
     '''
-    grouped_df = df.groupby(["Channel", "Gain", "Well"])
+    groups = ["Channel", "Gain", "Well"]
+    if grouping_variables:
+        groups = groups + grouping_variables
+    grouped_df = df.groupby(groups)
     last_time_dfs = []
     for name, group in grouped_df:
         print(name)
