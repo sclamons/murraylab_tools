@@ -406,6 +406,7 @@ def endpoint_averages(df, window_size = 10):
     grouped_df = df.groupby(["Channel", "Gain", "Well"])
     last_time_dfs = []
     for name, group in grouped_df:
+        print(name)
         all_times = group["Time (hr)"].unique()
         first_last_time = np.sort(all_times)[-window_size]
         last_time_dfs.append(group[group["Time (hr)"] >= first_last_time])
