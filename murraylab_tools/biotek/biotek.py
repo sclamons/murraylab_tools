@@ -419,6 +419,8 @@ def endpoint_averages(df, window_size = 10, grouping_variables = None):
         all_times = group["Time (hr)"].unique()
         first_last_time = np.sort(all_times)[-window_size]
         last_time_dfs.append(group[group["Time (hr)"] >= first_last_time])
+        if len(last_time_dfs) == 0:
+            print("Group " + group + " has no data.")
     end_time_dfs = pd.concat(last_time_dfs)
     return window_averages(end_time_dfs, 0, window_size, "index")
 
