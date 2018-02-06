@@ -342,7 +342,8 @@ def background_subtract(df, negative_control_wells):
     return return_df
 
 
-def window_averages(df, start, end, units = "seconds"):
+def window_averages(df, start, end, units = "seconds",
+                    grouping_variables = None):
     '''
     Converts a dataframe of fluorescence data to a dataframe of average
     fluorescences from a specified time window. The time window can be specified
@@ -356,31 +357,41 @@ def window_averages(df, start, end, units = "seconds"):
                     or "hours", takes data within a time window (using the
                     obvious columns). If "index", takes a slice using an index,
                     where the first time is 0, etc.
+        grouping_variables - Optional list of column names on which to group.
+                                Use this option primarily to separate multiple
+                                plates' worth of data with overlapping wells.
     '''
-    # Find times within the given window.
-    if units.lower() == "index":
-        all_times = df["Time (sec)"].unique()
-        all_times.sort()
-        window_times = all_times[start:end+1]
-        window_df = df[df["Time (sec)"].isin(window_times)]
-    else:
-        if units.lower() == "seconds":
-            col = "Time (sec)"
-        elif units.lower() == "hours":
-            col = "Time (hr)"
-        else:
-            raise ValueError(('Unknown unit "{0}"; units must be "seconds", ' \
-                            +'"hours", or "index"').format(units))
-        window_df = df[(df[col] >= start) & (df[col] <= end)]
+    group_cols = ["Channel", "Gain", "Well"]
+    if grouping_variables:
+        group_cols += grouping_variables
 
-    # Group by channel, gain, and well
-    grouped_df = window_df.groupby(["Channel", "Gain", "Well"])
+    # Start by screening out everything outside the desired time window.
+    def pick_out_window(df):
+        # Find times within the given window.
+        if units.lower() == "index":
+            all_times = df["Time (sec)"].unique()
+            all_times.sort()
+            window_times = all_times[start:end+1]
+            window_df = df[df["Time (sec)"].isin(window_times)]
+        else:
+            if units.lower() == "seconds":
+                col = "Time (sec)"
+            elif units.lower() == "hours":
+                col = "Time (hr)"
+            else:
+                raise ValueError(('Unknown unit "{0}"; units must be "seconds", ' \
+                                +'"hours", or "index"').format(units))
+            window_df = df[(df[col] >= start) & (df[col] <= end)]
+        return window_df
+
+    grouped_df = df.groupby(group_cols)
+    window_df = grouped_df.apply(pick_out_window)
 
     # Figure out which columns are numeric and which have strings.
-    column_names = df.columns.values.tolist()
+    column_names = window_df.columns.values.tolist()
     functions    = dict()
     for col in column_names:
-        if col in ["Channel", "Gain", "Well"]:
+        if col in group_cols:
             continue
         # Check to see if the column is numerically typed
         if np.issubdtype(window_df[col].dtype, np.number):
@@ -391,7 +402,7 @@ def window_averages(df, start, end, units = "seconds"):
             functions[col] = lambda x:x.iloc[-1]
 
     # Calculate windowed average
-    averages_df = grouped_df.agg(functions)
+    averages_df = window_df.groupby(group_cols).agg(functions)
 
     averages_df.reset_index(inplace = True)
 
@@ -409,23 +420,18 @@ def endpoint_averages(df, window_size = 10, grouping_variables = None):
                                 Use this option primarily to separate multiple
                                 plates' worth of data with overlapping wells.
     '''
-    groups = ["Channel", "Gain", "Well"]
+    group_cols = ["Channel", "Gain", "Well"]
     if grouping_variables:
-        groups = groups + grouping_variables
-    grouped_df = df.groupby(groups)
+        group_cols += grouping_variables
+    grouped_df = df.groupby(group_cols)
     last_time_dfs = []
     for name, group in grouped_df:
-        print(name)
         all_times = group["Time (hr)"].unique()
         first_last_time = np.sort(all_times)[-window_size]
         last_time_dfs.append(group[group["Time (hr)"] >= first_last_time])
-        if len(last_time_dfs) == 0:
-            print("Group " + group + " has no data.")
     end_time_dfs = pd.concat(last_time_dfs)
-    temp_df = end_time_dfs
-    print(temp_df[(temp_df.Reporter == "gQiR-mScar-6") & (temp_df.cleaned == False)].Well.unique())
-    print(temp_df[(temp_df.Reporter == "gQiR-mScar-6") & (temp_df.cleaned == True)].Well.unique())
-    return window_averages(end_time_dfs, 0, window_size, "index")
+    return window_averages(end_time_dfs, 0, window_size, "index",
+                           grouping_variables)
 
 
 def spline_fit(df, column = "uM", smoothing_factor = None):
