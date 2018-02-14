@@ -184,7 +184,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 info = line[0].strip()
                 if info in ["Layout", "Results"]:
                     continue
-                if info.strip().startswith("OD600"):
+                if info.strip().upper().startswith("OD600"):
                     reading_OD = True
                 else:
                     reading_OD = False
