@@ -113,7 +113,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
     supplementary_data = dict()
     if supplementary_filename:
         supplementary_data = read_supplementary_info(supplementary_filename)
-    filename_base   = input_filename.rsplit('.')[0]
+    filename_base   = input_filename.rsplit('.', 1)[0]
     output_filename = filename_base + "_tidy.csv"
 
     with mt_open(input_filename, 'rU') as infile:
@@ -229,7 +229,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                         "%s; throwing out data for that well."\
                                           % well_name)
                             continue
-                        afu       = line[i]
+                        afu = line[i]
                         # Check for overflow
                         if afu.upper() == "OVRFLW":
                             afu = np.infty
