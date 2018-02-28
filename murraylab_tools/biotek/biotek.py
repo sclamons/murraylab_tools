@@ -2,7 +2,6 @@
 #   -- Move calibration data out of source code
 #   -- Add temperature records?
 
-import csv
 import sys
 import collections
 import pandas as pd
@@ -40,6 +39,14 @@ calibration_data["Venus"] = {'b3': {61:2246, 100:79955},
 calibration_data["Cherry"] = {'b3': {61:79.39, 100:2850},
                               'b2': {61:80.84, 100:2822},
                               'b1': {61:51.07, 100:1782}}
+
+############################################
+# Deal with Unicode problems with Python 2 #
+############################################
+if sys.version_info[0] == 2:
+    import unicodecsv as csv
+else:
+    import csv
 
 def standard_channel_name(fp_name, suppress_name_warning = False):
     upper_name = fp_name.upper()
@@ -260,7 +267,8 @@ def extract_trajectories_only(df):
     '''
     Given a DataFrame that has been read in from a tidied piece of BioTek data,
     return a DataFrame that collapses each channel's AFU value as a column in a
-    new DataFrame whose only columns are WellID, Time, and each measured channel.
+    new DataFrame whose only columns are WellID, Time, and each measured
+    channel.
 
     Assumptions:
         - The time is in a channel called 'Time (hr)', which becomes Time

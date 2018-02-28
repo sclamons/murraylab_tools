@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
+import sys
 
 here = path.abspath(path.dirname(__file__))
 
@@ -13,6 +14,8 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 # To parse requirements.txt file
 with open('requirements.txt') as f:
     install_requires = f.read().splitlines()
+if sys.version_info[0] == 2:
+    install_requires.append("unicodecsv")
 
 setup(
     name='murraylab_tools',
