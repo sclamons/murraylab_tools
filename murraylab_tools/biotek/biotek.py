@@ -127,12 +127,14 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
         with mt_open(output_filename, 'w') as outfile:
             reader = csv.reader(infile)
             writer = csv.writer(outfile, delimiter = ',')
-            print(csv)
             title_row = ['Channel', 'Gain', 'Time (sec)', 'Time (hr)', 'Well',
                          'AFU', 'uM', 'Excitation', 'Emission']
             for name in supplementary_data.keys():
                 title_row.append(name)
             try:
+                if sys.version_info[0] == 2:
+                    list(title_row = map(lambda s: unicode(s, "utf-8"),
+                                         title_row))
                 writer.writerow(title_row)
             except TypeError as e:
                 print("Line of error is : " + str(title_row))
