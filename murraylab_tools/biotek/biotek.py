@@ -117,14 +117,18 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
     output_filename = filename_base + "_tidy.csv"
 
     with mt_open(input_filename, 'rU') as infile:
-        with mt_open(output_filename, 'wU') as outfile:
+        with mt_open(output_filename, 'w') as outfile:
             reader = csv.reader(infile)
             writer = csv.writer(outfile, delimiter = ',')
             title_row = ['Channel', 'Gain', 'Time (sec)', 'Time (hr)', 'Well',
                          'AFU', 'uM', 'Excitation', 'Emission']
             for name in supplementary_data.keys():
                 title_row.append(name)
-            writer.writerow(title_row)
+            try:
+                writer.writerow(title_row)
+            except TypeError as e:
+                print("Line of error is : " + str(title_row))
+                raise e
 
             # Read plate information
             read_sets = dict()
