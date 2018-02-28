@@ -133,7 +133,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 title_row.append(name)
             try:
                 if sys.version_info[0] == 2:
-                    list(title_row = map(lambda s: unicode(s, "utf-8"),
+                    title_row = list(map(lambda s: unicode(s, "utf-8"),
                                          title_row))
                 writer.writerow(title_row)
             except TypeError as e:
