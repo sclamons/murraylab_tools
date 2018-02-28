@@ -249,7 +249,11 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                afu, uM_conc, excitation, emission]
                         for name in supplementary_data.keys():
                             row.append(supplementary_data[name][well_name])
-                        writer.writerow(row)
+                        try:
+                            writer.writerow(row)
+                        except TypeError as e:
+                            print("Error writing line: " + str(row))
+                            raise e
 
 
 def extract_trajectories_only(df):
