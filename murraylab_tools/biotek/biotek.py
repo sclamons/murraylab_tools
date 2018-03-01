@@ -124,7 +124,11 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
     output_filename = filename_base + "_tidy.csv"
 
     with mt_open(input_filename, 'rU') as infile:
-        with mt_open(output_filename, 'w') as outfile:
+        if sys.version_info == 2:
+            mode_str = 'wb'
+        else:
+            mode_str = 'w'
+        with mt_open(output_filename, mode_str) as outfile:
             reader = csv.reader(infile)
             writer = csv.writer(outfile, delimiter = ',')
             title_row = ['Channel', 'Gain', 'Time (sec)', 'Time (hr)', 'Well',
