@@ -8,7 +8,7 @@
 Tools for Common Murray Lab Protocols
 =====================================
 
-Code for common tasks in the Murray lab. Currently supported in Python 2.7 and 3.5.
+Code for common tasks in the Murray lab. Currently supported in 3.5. It may also work in Python 2.7 if you are careful to use only ASCII characters.
 
 Install with the following (probably requires sudo): ``pip install git+git://github.com/sclamons/murraylab_tools.git@master``
 
