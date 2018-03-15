@@ -539,11 +539,12 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
     grouped_df = df.groupby(["Channel", "Gain", "Well"])
     normalized_df = pd.DataFrame()
     for name, group in grouped_df:
+        group.reset_index(inplace = True)
         channel, gain, well = name
         norm_data = df[(df.Channel == norm_channel) & \
                        (df.Gain == norm_channel_gain) & \
-                       (df.Well == well)]
+                       (df.Well == well)].reset_index()
         group["AFU/" + norm_channel] = group["AFU"] / norm_data["uM"]
         normalized_df = normalized_df.append(group)
-    return normalized_df
+    return normalized_df.reset_index()
 
