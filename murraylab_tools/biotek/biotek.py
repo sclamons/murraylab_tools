@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import warnings
 import scipy.interpolate
+import csv
 from ..utils import *
 
 ####################
