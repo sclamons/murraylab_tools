@@ -527,7 +527,7 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
     '''
     # Do some kind of check to make sure the norm channel exists with the given
     # channel...
-    if not norm_channel in df.Channel:
+    if not norm_channel in df.Channel.unique():
         raise ValueError("No data for channel '%s' in dataframe." % \
                          norm_channel)
     if not norm_channel_gain in df[df.Channel == norm_channel].Gain:
