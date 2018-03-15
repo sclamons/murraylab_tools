@@ -523,7 +523,8 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
                             Default -1 (for OD600)
     Returns:
         A DataFrame of df augmented with columns for normalized AFU
-        ("AFU/<norm_channel>").
+        ("AFU/<norm_channel>"). Normalization will be performed for uM (equal to
+        AFUs for absorbance channels).
     '''
     # Do some kind of check to make sure the norm channel exists with the given
     # channel...
@@ -538,7 +539,11 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
     grouped_df = df.groupby(["Channel", "Gain", "Well"])
     normalized_df = pd.DataFrame()
     for name, group in grouped_df:
-        group["AFU/" + norm_channel] = group["AFU"] / group[norm_channel]
+        channel, gain, well = name
+        norm_data = df[(df.Channel == norm_channel) & \
+                       (df.Gain == norm_channel_gain) & \
+                       (df.Well == well)]
+        group["AFU/" + norm_channel] = group["AFU"] / norm_data["uM"]
         normalized_df = normalized_df.append(group)
     return normalized_df
 
