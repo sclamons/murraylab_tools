@@ -543,7 +543,8 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
         channel, gain, well = name
         norm_data = df[(df.Channel == norm_channel) & \
                        (df.Gain == norm_channel_gain) & \
-                       (df.Well == well)].reset_index()
+                       (df.Well == well)]
+        norm_data.reset_index(inplace = True)
         group["AFU/" + norm_channel] = group["AFU"] / norm_data["uM"]
         normalized_df = normalized_df.append(group)
     return normalized_df.reset_index()
