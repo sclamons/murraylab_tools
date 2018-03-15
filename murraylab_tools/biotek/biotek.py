@@ -208,7 +208,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     reading_OD = False
                 if reading_OD:
                     read_name = info.strip()
-                    excitation = int(info.strip[2:])
+                    excitation = int(info.strip()[2:])
                     emission   = -1
                     gain       = -1
                 else:
