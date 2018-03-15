@@ -40,14 +40,6 @@ calibration_data["Cherry"] = {'b3': {61:79.39, 100:2850},
                               'b2': {61:80.84, 100:2822},
                               'b1': {61:51.07, 100:1782}}
 
-############################################
-# Deal with Unicode problems with Python 2 #
-############################################
-if sys.version_info[0] == 2:
-    import unicodecsv as csv
-else:
-    import csv
-
 def standard_channel_name(fp_name, suppress_name_warning = False):
     upper_name = fp_name.upper()
     for std_name in ["GFP", "Citrine", "RFP", "CFP", "Venus", "Cherry"]:
@@ -88,7 +80,7 @@ def read_supplementary_info(input_filename):
 
 
 def tidy_biotek_data(input_filename, supplementary_filename = None,
-                     volume = None):
+                     volume = None, normalization_channel = None):
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
     Optionally, also adds columns of metadata specified by a "supplementary
@@ -123,8 +115,11 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
     filename_base   = input_filename.rsplit('.', 1)[0]
     output_filename = filename_base + "_tidy.csv"
 
+    # Open data file and tidy output file at once, so that we can stream data
+    # directly from one to the other without having to store much.
     with mt_open(input_filename, 'rU') as infile:
         with mt_open(output_filename, 'w') as outfile:
+            # Write a header to the tidy output file.
             reader = csv.reader(infile)
             writer = csv.writer(outfile, delimiter = ',')
             title_row = ['Channel', 'Gain', 'Time (sec)', 'Time (hr)', 'Well',
@@ -134,6 +129,21 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             writer.writerow(title_row)
 
             # Read plate information
+            # Basic reading flow looks like:
+            #   1) Read lines until a line that reads "Read", recording
+            #       information about plate reader ID.
+            #   2) For each line until the next line that reads "Layout":
+            #       2.1) Look for a line starting with "Filter Set:"
+            #       2.2) Get read set information from next two lines, store it.
+            #   3) Read lines until the line that reads "Layout", looking for
+            #       information about read settings.
+            #   4) For each line:
+            #       4.1) If line contains information about this read setting,
+            #               store it.
+            #       4.2) If line is the start of data, then for each line until
+            #             empty line:
+            #           4.2.1) Rewrite data on that line to tidy data file,
+            #                   converting to uM if possible.
             read_sets = dict()
             for line in reader:
                 if line[0].strip() == "Reader Serial Number:":
@@ -141,7 +151,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         plate_reader_id = plate_reader_ids[line[1]]
                     else:
                         warnings.warn(("Unknown plate reader id '%s'; will " + \
-                                      "not attempt to calculate molarity " + \
+                                      "not attempt to calculate molarity "   + \
                                       "concentrations.") % line[1])
                         plate_reader_id = None
                     continue
@@ -191,13 +201,13 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 info = line[0].strip()
                 if info in ["Layout", "Results"]:
                     continue
-                if info.strip().upper().startswith("OD600"):
+                if info.strip().upper().startswith("OD"):
                     reading_OD = True
                 else:
                     reading_OD = False
                 if reading_OD:
-                    read_name = "OD600"
-                    excitation = 600
+                    read_name = info.strip()
+                    excitation = int(info.strip[2:])
                     emission   = -1
                     gain       = -1
                 else:
