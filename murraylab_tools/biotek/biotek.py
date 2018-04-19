@@ -124,7 +124,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             reader = csv.reader(infile)
             writer = csv.writer(outfile, delimiter = ',')
             title_row = ['Channel', 'Gain', 'Time (sec)', 'Time (hr)', 'Well',
-                         'AFU', 'uM', 'Excitation', 'Emission']
+                         'Measurement', 'Units', 'Excitation', 'Emission']
             for name in supplementary_data.keys():
                 title_row.append(name)
             writer.writerow(title_row)
@@ -252,15 +252,20 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         if afu.upper() == "OVRFLW":
                             afu = np.infty
                         if reading_OD:
-                            uM_conc = afu
+                            measurement = afu
+                            units = "absorbance"
                         else:
-                            uM_conc = raw_to_uM(line[i],
-                                            standard_channel_name(read_name),
-                                            plate_reader_id, gain, volume)
-                        if uM_conc == None:
-                            uM_conc = -1
+                            uM = raw_to_uM(line[i],
+                                       standard_channel_name(read_name),
+                                       plate_reader_id, gain, volume)
+                            if uM != None:
+                                measurement = uM
+                                units = "uM"
+                            else:
+                                measurement = afu
+                                units = "AFU"
                         row = [read_name, gain, time_secs, time_hrs, well_name,
-                               afu, uM_conc, excitation, emission]
+                               measurement, units, excitation, emission]
                         for name in supplementary_data.keys():
                             row.append(supplementary_data[name][well_name])
                         try:
@@ -285,7 +290,8 @@ def extract_trajectories_only(df):
         df -- DataFrame of Biotek data, pulled from a tidy dataset of the form
                 produced by tidy_biotek_data.
     Returns: A new DataFrame with the only columns being Well, Time, and each
-                measured channel.
+                measured channel, in whatever units they were in the original
+                DataFrame.
     '''
     # Create dictionary to make new data-frame
     master_dict = {}
@@ -309,7 +315,7 @@ def extract_trajectories_only(df):
         master_dict['Time'].extend(time_series)
         master_dict['Well'].extend(well_series)
         for channel in all_channels:
-            channel_series = well_df[well_df.Channel == channel].AFU
+            channel_series = well_df[well_df.Channel == channel].Measurement
             assert (len(channel_series) == series_length)
             master_dict[channel].extend(channel_series)
 
@@ -357,10 +363,8 @@ def background_subtract(df, negative_control_wells):
                 well_df = condition_df[condition_df.Well == well].copy()
                 well_df.sort_values("Time (sec)", inplace = True)
                 well_df.reset_index(inplace = True)
-                well_df.AFU = well_df.AFU - avg_neg_ctrl.AFU
-                if channel in calibration_data and \
-                   gain in calibration_data[channel]['b1']:
-                    well_df.uM = well_df.uM - avg_neg_ctrl.uM
+                well_df.Measurement = well_df.Measurement - \
+                                      avg_neg_ctrl.Measurement
                 return_df = return_df.append(well_df)
     return return_df
 
@@ -402,8 +406,9 @@ def window_averages(df, start, end, units = "seconds",
             elif units.lower() == "hours":
                 col = "Time (hr)"
             else:
-                raise ValueError(('Unknown unit "{0}"; units must be "seconds", ' \
-                                +'"hours", or "index"').format(units))
+                raise ValueError(('Unknown unit "{0}"; units must be ' \
+                                + '"seconds", "hours", or ' \
+                                + '"index"').format(units))
             window_df = df[(df[col] >= start) & (df[col] <= end)]
         return window_df
 
@@ -457,14 +462,15 @@ def endpoint_averages(df, window_size = 10, grouping_variables = None):
                            grouping_variables)
 
 
-def spline_fit(df, column = "uM", smoothing_factor = None):
+def spline_fit(df, column = "Measurement", smoothing_factor = None):
     '''
     Adds a spline fit of the uM traces of a dataframe of the type made by
     tidy_biotek_data.
 
     Params:
         df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
-        column - Column to find spline fit over. Defaults to "uM".
+        column - Column to find spline fit over. Defaults to "Measurement".
+                    Should probably always be this.
         smoothing_factor - Parameter determining the tightness of the fit.
                             Default is the number of time points. Smaller
                             smoothing factor produces tighter fit; 0 smoothing
@@ -480,11 +486,11 @@ def spline_fit(df, column = "uM", smoothing_factor = None):
         spline = scipy.interpolate.UnivariateSpline(group["Time (sec)"],
                                                     group[column],
                                                     s = smoothing_factor)
-        group[column + " spline fit"] = spline(group["Time (sec)"])
+        group["spline fit"] = spline(group["Time (sec)"])
         splined_df = splined_df.append(group)
     return splined_df
 
-def smoothed_derivatives(df, column = "uM", smoothing_factor = None):
+def smoothed_derivatives(df, column = "Measurement", smoothing_factor = None):
     '''
     Calculates a smoothed derivative of the time traces in a dataframe. First
     fits a spline, then adds the derivatives of the spline to a copy of the
@@ -507,7 +513,8 @@ def smoothed_derivatives(df, column = "uM", smoothing_factor = None):
     grouped_df = splined_df.groupby(["Channel", "Gain", "Well"])
     deriv_df   = pd.DataFrame()
     for name, group in grouped_df:
-        group[column + "/sec"] = np.gradient(group[column + " spline fit"])
+        deriv_name = "%s (%s/sec)" % (column, group.Units.unique()[0])
+        group[deriv_name] = np.gradient(group["spline fit"])
         deriv_df = deriv_df.append(group)
     return deriv_df
 
@@ -520,11 +527,12 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
         df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
         norm_channel - Name of a channel to normalize by. Default "OD600"
         norm_channel_gain - Gain of the channel you want to normalize by.
-                            Default -1 (for OD600)
+                            Default -1 (for OD600).
     Returns:
-        A DataFrame of df augmented with columns for normalized AFU
-        ("AFU/<norm_channel>"). Normalization will be performed for uM (equal to
-        AFUs for absorbance channels).
+        A DataFrame of df augmented with columns for normalized AFU/uM
+        ("Normalized Measurement"). Will have units of
+        "<measurement units>/<normalization units>", or "<measurement units>/OD"
+        if normalizing with an OD.
     '''
     # Do some kind of check to make sure the norm channel exists with the given
     # channel...
@@ -545,7 +553,13 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
                        (df.Gain == norm_channel_gain) & \
                        (df.Well == well)]
         norm_data.reset_index(inplace = True)
-        group["AFU/" + norm_channel] = group["AFU"] / norm_data["uM"]
+        group["Measurement"] = group.Measurement \
+                               / norm_data.Measurement
+        orig_units = group.Units.unique()[0]
+        norm_units = "OD" if norm_channel.startswith("OD") \
+                          else norm_data.Units.unique()[0]
+        group.Units = "%s/%s" % (orig_units, norm_units)
+
         normalized_df = normalized_df.append(group)
     return normalized_df.reset_index()
 
