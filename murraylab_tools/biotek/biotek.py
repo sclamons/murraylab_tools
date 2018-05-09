@@ -9,6 +9,8 @@ import numpy as np
 import warnings
 import scipy.interpolate
 import csv
+import matplotlib.pyplot as plt
+from collections import namedtuple
 from ..utils import *
 
 ####################
@@ -563,3 +565,98 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
         normalized_df = normalized_df.append(group)
     return normalized_df.reset_index()
 
+
+CellSpec = namedtuple("CellSpec", ['well_name', 'color', 'label'])
+
+class BiotekCellPlotter(object):
+    '''
+    Class in charge of plotting fluorescence data from multiple wells, with a
+    background plot of each well's OD curve in the background.
+
+    Each BiotekCellPlotter plots data from a single dataframe (of the form
+    produced by tidy_biotek_data), in a single channel, with a single gain.
+    Channel data will, by default, be normalized by OD.
+    '''
+
+    def __init__(self, df, channel, gain, normalize_by_od = True,
+                 od_channel = None):
+        self.df        = df
+        self.channel   = channel
+        self.gain      = gain
+        self.well_list = [] # Stores CellSpec objects, which hold a few pieces
+                            # of information about the well and how it should be
+                            # plotted.
+        self.normalize_by_od = normalize_by_od
+        if not od_channel:
+            for c in self.df.Channel:
+                if c.upper().startswith("OD"):
+                    self.od_channel = c
+                    break
+        else:
+            self.od_channel = od_channel
+        if not self.od_channel:
+            raise Exception("No OD channel specified or detected")
+
+    def add_well(self, well, color = None, label = None):
+        self.well_list.append(CellSpec(well, color, label))
+
+    def add_condition(self, idxs, color = None, label = None):
+        cond_df = self.df[idxs]
+        if len(cond_df) == 0:
+            raise Warning("No data for specified condition.")
+        for well in cond_df.Well.unique():
+            self.add_well(well, color, label)
+            label = ""   # If multiple wells pulled out, only the first one gets
+                         # the label. Should read more cleanly this way.
+
+    def plot(self, title = None):
+        plt.clf()
+
+        # Slice out and normalize all relevant data
+        well_names = [ws.well_name for ws in self.well_list]
+        df = self.df[self.df.Well.isin(well_names)]
+        if self.normalize_by_od:
+            norm_df = normalize(df, norm_channel = self.od_channel)
+        else:
+            norm_df = df
+        norm_df = norm_df[(norm_df.Channel == self.channel) & \
+                          (norm_df.Gain == self.gain)]
+
+        # Plot out all of the fluorescence data, keeping track of the largest
+        # plotted measurement.
+        # measurement_max = 0
+        fig, ax1 = plt.subplots()
+        for well_spec in self.well_list:
+            well_df = norm_df[norm_df.Well == well_spec.well_name]
+            ax1.plot(well_df["Time (hr)"], well_df.Measurement,
+                     color = well_spec.color, label = well_spec.label)
+            # well_max = well_df.Measurement.max()
+            # if well_max > measurement_max:
+            #     measurement_max = well_max
+        ax1.set_xlabel("Time (hr)")
+        if self.normalize_by_od:
+            ax1.set_ylabel("%s/OD (gain %d)" % (self.channel, self.gain))
+        else:
+            ax1.set_ylabel("%s (gain %d)" % (self.channel, self.gain))
+
+        # Plot out all OD data, scaling it to roughly the same size as the other
+        # data.
+        ax2 = ax1.twinx()
+        all_od_df = self.df[(self.df.Channel == self.od_channel) & \
+                            (self.df.Well.isin(well_names))]
+        #max_od = float(all_od_df.Measurement.max())
+        #scale_factor = measurement_max / max_od
+        for well_spec in self.well_list:
+            od_df     = all_od_df[all_od_df.Well == well_spec.well_name]
+            #scaled_od = od_df.Measurement * scale_factor
+            ax2.plot(od_df["Time (hr)"], od_df.Measurement,
+                     color = well_spec.color, linewidth = 0.5, linestyle = ":")
+        ax2.set_ylabel(self.od_channel)
+
+
+        handles, labels = ax1.get_legend_handles_labels()
+        ax1.legend(handles, labels)
+        if title:
+            fig.title(title)
+        fig.tight_layout()
+        plt.show()
