@@ -609,7 +609,17 @@ class BiotekCellPlotter(object):
             label = ""   # If multiple wells pulled out, only the first one gets
                          # the label. Should read more cleanly this way.
 
-    def plot(self, title = None):
+    def plot(self, title = None, filename = None, show = True):
+        '''
+        Plot/show/save the figure.
+
+        Arguments:
+            title -- String that will go at the top of the figure. Default "".
+            filename -- If set, will save this figure in addition to showing it.
+            show -- Boolean that sets whether the plot will actually be shown.
+                    Default True; set to False if you want to save without
+                    viewing it.
+        '''
         plt.clf()
 
         # Slice out and normalize all relevant data
@@ -659,4 +669,7 @@ class BiotekCellPlotter(object):
         if title:
             fig.title(title)
         fig.tight_layout()
-        plt.show()
+        if filename:
+            plt.savefig(filename, dpi = 400)
+        if show:
+            plt.show()
