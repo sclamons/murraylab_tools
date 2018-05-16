@@ -139,6 +139,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                          'Measurement', 'Units', 'Excitation', 'Emission']
             for name in supplementary_data.keys():
                 title_row.append(name)
+            title_row.append('ChanStr')
             writer.writerow(title_row)
 
             # Read plate information
@@ -296,10 +297,13 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                 measurement = afu
                                 units = "AFU"
                         row = [read_name, gain, time_secs, time_hrs, well_name,
-                               measurement, units, excitation, emission]
+                               measurement, units, str(excitation), str(emission)]
+
                         for name in supplementary_data.keys():
                             row.append(supplementary_data[name][well_name])
+                        row.append(read_name+str(gain)+str(excitation)+str(emission))
                         try:
+
                             writer.writerow(row)
                         except TypeError as e:
                             print("Error writing line: " + str(row))
@@ -420,7 +424,7 @@ def window_averages(df, start, end, units = "seconds",
                                 Use this option primarily to separate multiple
                                 plates' worth of data with overlapping wells.
     '''
-    group_cols = ["Channel", "Gain", "Well"]
+    group_cols = ["Channel", "Gain","Excitation","Emission", "Well"]
     if grouping_variables:
         group_cols += grouping_variables
 
@@ -454,7 +458,10 @@ def window_averages(df, start, end, units = "seconds",
         if col in group_cols:
             continue
         # Check to see if the column is numerically typed
-        if np.issubdtype(window_df[col].dtype, np.number):
+        if col == "Measurement":
+            #only average the measurement!! Why would you averaged
+            #anything else
+            #np.issubdtype(window_df[col].dtype, np.number):
             # Numbers get averaged
             functions[col] = np.average
         else:
@@ -576,7 +583,7 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
                          (norm_channel, norm_channel_gain))
 
     # Iterate over channels/gains, applying normalization
-    grouped_df = df.groupby(["Channel", "Gain", "Well"])
+    grouped_df = df.groupby(["ChanStr","Well"])
     norm_channel_df = df[(df.Channel == norm_channel) & \
                          (df.Gain == norm_channel_gain)]
     # normalized_df = pd.DataFrame()
@@ -585,11 +592,22 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
     # Set this Pandas flag to force Pandas to NOT run garbage collection
     # all the time. Improves speed by ~3x.
     pd.set_option('mode.chained_assignment', None)
-    for name, group in grouped_df:
+    for names, group in grouped_df:
         group.reset_index(inplace = True)
-        channel, gain, well = name
+        chanstr,well = names
         norm_data = norm_channel_df[norm_channel_df.Well == well]
         norm_data.reset_index(inplace = True)
+        #print("DFS!")
+        #print(group.head())
+        #print(norm_data.head())
+        """
+        print("before")
+        print(group[group.Excitation != 600].Measurement.iloc[0])
+        print("norm")
+        print(norm_data.Measurement.iloc[0])
+        print("after")
+        print((group[group.Excitation != 600].Measurement / norm_data.Measurement).iloc[0])
+        """
         group["Measurement"] = group.Measurement \
                                / norm_data.Measurement
         orig_units = group.Units.unique()[0]
