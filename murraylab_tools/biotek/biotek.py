@@ -294,7 +294,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         except TypeError as e:
                             print("Error writing line: " + str(row))
                             raise e
-                line = f.readline()
+                line = next(reader)
 
 
 def extract_trajectories_only(df):
