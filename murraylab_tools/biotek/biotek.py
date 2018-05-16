@@ -250,7 +250,6 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 # Data lines
                 for line in reader:
                     if line[1] == "":
-                        line = next(reader, None)
                         break
                     raw_time = line[1]
                     time_parts = raw_time.split(':')
