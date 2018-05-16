@@ -203,7 +203,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             read_sets[read_name].append(ReadSet(read_name,
                                                                 excitation,
                                                                 emission, gain))
-                        if line[1].strip in read_sets.keys():
+                        if line[1].split(":")[0].strip() in read_sets.keys():
                             hit_data == True
                     if entered_layout or hit_data:
                         break
