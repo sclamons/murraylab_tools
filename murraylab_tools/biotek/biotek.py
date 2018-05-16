@@ -210,7 +210,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             # Read data blocks
             # Find a data block
             while line:
-                line = next(reader)
+                line = next(reader, None)
                 info = line[0].strip()
                 if info == "":
                     continue
@@ -235,7 +235,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     read_properties = read_sets[read_name][read_idx]
                     gain            = read_properties.gain
                     if len(info_parts) > 1:
-                        excitation = info_parts[2].split("[")[0].split(",")[0]
+                        excitation = info_parts[1].split("[")[0].split(",")[0]
                         excitation = int(excitation)
                         emission   = info_parts[2].split("[")[0].split(",")[1]
                         emission   = int(emission)
@@ -294,7 +294,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         except TypeError as e:
                             print("Error writing line: " + str(row))
                             raise e
-                line = next(reader)
+                line = next(reader, None)
 
 
 def extract_trajectories_only(df):
