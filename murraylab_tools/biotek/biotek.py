@@ -176,7 +176,6 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     for line in reader:
                         if line[0].strip() == "Layout":
                             entered_layout = True
-
                             break
                         if line[0].strip() == "Read":
                             if line[1].strip() == "Fluorescence Endpoint":
@@ -227,15 +226,22 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     emission   = -1
                     gain       = -1
                 else:
-                    read_name = info.split(":")[0]
+                    info_parts = info.split(":")
+                    read_name  = info_parts[0]
                     if not info.endswith(']'):
                         read_idx = 0
                     else:
                         read_idx = int(info.split('[')[-1][:-1]) - 1
                     read_properties = read_sets[read_name][read_idx]
                     gain            = read_properties.gain
-                    excitation      = read_properties.excitation
-                    emission        = read_properties.emission
+                    if len(info_parts) > 1:
+                        excitation = info_parts[2].split("[")[0].split(",")[0]
+                        excitation = int(excitation)
+                        emission   = info_parts[2].split("[")[0].split(",")[1]
+                        emission   = int(emission)
+                    else:
+                        excitation      = read_properties.excitation
+                        emission        = read_properties.emission
 
                 line = next(reader) # Skip a line
                 line = next(reader) # Chart title line
