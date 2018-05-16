@@ -84,6 +84,7 @@ def read_supplementary_info(input_filename):
 
 def tidy_biotek_data(input_filename, supplementary_filename = None,
                      volume = None, normalization_channel = None):
+                     volume = None, normalization_channel = None,
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
     Optionally, also adds columns of metadata specified by a "supplementary
@@ -158,7 +159,11 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             read_sets = dict()
             for line in reader:
                 if line[0].strip() == "Reader Serial Number:":
-                    if line[1] in plate_reader_ids:
+                    if overrride_plate_reader_id != None:
+                            warnings.warn(("Plate reader id overridden to be '%s'") \
+                                    % overrride_plate_reader_id)
+                            plate_reader_id= overrride_plate_reader_id
+                    elif line[1] in plate_reader_ids:
                         plate_reader_id = plate_reader_ids[line[1]]
                     else:
                         warnings.warn(("Unknown plate reader id '%s'; will " + \
@@ -277,9 +282,12 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             measurement = afu
                             units = "absorbance"
                         else:
-                            uM = raw_to_uM(line[i],
-                                       standard_channel_name(read_name),
-                                       plate_reader_id, gain, volume)
+                            if(convert_to_uM):
+                                uM = raw_to_uM(line[i],
+                                           standard_channel_name(read_name),
+                                           plate_reader_id, gain, volume)
+                            else:
+                                uM = None
                             if uM != None:
                                 measurement = uM
                                 units = "uM"
