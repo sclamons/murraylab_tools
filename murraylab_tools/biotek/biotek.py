@@ -172,9 +172,11 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     else:
                         read_name = line[1]
                     entered_layout = False
+                    hit_data       = False
                     for line in reader:
                         if line[0].strip() == "Layout":
                             entered_layout = True
+
                             break
                         if line[0].strip() == "Read":
                             if line[1].strip() == "Fluorescence Endpoint":
@@ -202,11 +204,14 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             read_sets[read_name].append(ReadSet(read_name,
                                                                 excitation,
                                                                 emission, gain))
-                    if entered_layout:
+                        if line[1].strip in read_sets.keys():
+                            hit_data == True
+                    if entered_layout or hit_data:
                         break
             # Read data blocks
             # Find a data block
-            for line in reader:
+            while line:
+                line = next(reader)
                 info = line[0].strip()
                 if info == "":
                     continue
@@ -283,6 +288,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         except TypeError as e:
                             print("Error writing line: " + str(row))
                             raise e
+                line = f.readline()
 
 
 def extract_trajectories_only(df):
