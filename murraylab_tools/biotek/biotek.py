@@ -118,6 +118,14 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
     filename_base   = input_filename.rsplit('.', 1)[0]
     output_filename = filename_base + "_tidy.csv"
 
+    # If the user gave you an excel file, convert it to a CSV so we can read
+    # it properly.
+    file_extension = input_filename.rpartition(".")[2]
+    if file_extension.startswith("xls"):
+        excel_filename = input_filename
+        input_filename = excel_filename.rpartition(".")[0] + ".csv"
+        pd.read_excel(input_filename).to_csv(input_filename)
+
     # Open data file and tidy output file at once, so that we can stream data
     # directly from one to the other without having to store much.
     with mt_open(input_filename, 'rU') as infile:
@@ -183,7 +191,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             if len(lineparts) == 1:
                                 emission_cell = line[2]
                             else:
-                                emission_cell = lineparts[0]
+                                emission_cell = lineparts[1]
                             emission = int(emission_cell.split(":")[-1].split("/")[0].strip())
                             line = next(reader)
                             gain = line[1].split(",")[-1].split(":")[-1].strip()
@@ -199,18 +207,18 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             # Read data blocks
             # Find a data block
             for line in reader:
-                if line[0].strip() == "":
-                    continue
                 info = line[0].strip()
+                if info == "":
+                    continue
                 if info in ["Layout", "Results"]:
                     continue
-                if info.strip().upper().startswith("OD"):
+                if info.upper().startswith("OD"):
                     reading_OD = True
                 else:
                     reading_OD = False
                 if reading_OD:
                     read_name = info.split(":")[0].strip()
-                    excitation = int(read_name[2:])
+                    excitation = int(info.split(":")[1])
                     emission   = -1
                     gain       = -1
                 else:
@@ -547,13 +555,18 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
 
     # Iterate over channels/gains, applying normalization
     grouped_df = df.groupby(["Channel", "Gain", "Well"])
-    normalized_df = pd.DataFrame()
+    norm_channel_df = df[(df.Channel == norm_channel) & \
+                         (df.Gain == norm_channel_gain)]
+    # normalized_df = pd.DataFrame()
+    normalized_df_list = [None] * len(grouped_df)
+    i = 0
+    # Set this Pandas flag to force Pandas to NOT run garbage collection
+    # all the time. Improves speed by ~3x.
+    pd.set_option('mode.chained_assignment', None)
     for name, group in grouped_df:
         group.reset_index(inplace = True)
         channel, gain, well = name
-        norm_data = df[(df.Channel == norm_channel) & \
-                       (df.Gain == norm_channel_gain) & \
-                       (df.Well == well)]
+        norm_data = norm_channel_df[norm_channel_df.Well == well]
         norm_data.reset_index(inplace = True)
         group["Measurement"] = group.Measurement \
                                / norm_data.Measurement
@@ -562,7 +575,11 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
                           else norm_data.Units.unique()[0]
         group.Units = "%s/%s" % (orig_units, norm_units)
 
-        normalized_df = normalized_df.append(group)
+        normalized_df_list[i] = group
+        i += 1
+    normalized_df = pd.concat(normalized_df_list)
+    # Undo Pandas flag change
+    pd.set_option('mode.chained_assignment', 'warn')
     return normalized_df.reset_index()
 
 
@@ -609,12 +626,18 @@ class BiotekCellPlotter(object):
             label = ""   # If multiple wells pulled out, only the first one gets
                          # the label. Should read more cleanly this way.
 
-    def plot(self, title = None, filename = None, show = True):
+    def plot(self, title = None, split_plots = False, filename = None,
+             show = True):
         '''
         Plot/show/save the figure.
 
         Arguments:
             title -- String that will go at the top of the figure. Default "".
+            split_plots -- Boolean controlling how data will be presented. If
+                            True, will produce two plots -- one with OD data,
+                            one with normalized fluorescence data. If False
+                            (default), will show both sets of data on the same
+                            plot.
             filename -- If set, will save this figure in addition to showing it.
             show -- Boolean that sets whether the plot will actually be shown.
                     Default True; set to False if you want to save without
@@ -649,9 +672,24 @@ class BiotekCellPlotter(object):
         else:
             ax1.set_ylabel("%s (gain %d)" % (self.channel, self.gain))
 
+        if split_plots:
+            handles, labels = ax1.get_legend_handles_labels()
+            ax1.legend(handles, labels)
+            if title:
+                plt.title(title, y = 1.08)
+            fig.tight_layout()
+            if filename:
+                plt.savefig("fluor_" + filename, dpi = 400)
+            if show:
+                plt.show()
+            plt.clf()
+
         # Plot out all OD data, scaling it to roughly the same size as the other
         # data.
-        ax2 = ax1.twinx()
+        if split_plots:
+            fig, ax2 = plt.subplots()
+        else:
+            ax2 = ax1.twinx()
         all_od_df = self.df[(self.df.Channel == self.od_channel) & \
                             (self.df.Well.isin(well_names))]
         #max_od = float(all_od_df.Measurement.max())
@@ -659,17 +697,21 @@ class BiotekCellPlotter(object):
         for well_spec in self.well_list:
             od_df     = all_od_df[all_od_df.Well == well_spec.well_name]
             #scaled_od = od_df.Measurement * scale_factor
+            linestyle = "-" if split_plots else ":"
             ax2.plot(od_df["Time (hr)"], od_df.Measurement,
-                     color = well_spec.color, linewidth = 0.5, linestyle = ":")
+                     color = well_spec.color, linewidth = 1,
+                     linestyle = linestyle)
         ax2.set_ylabel(self.od_channel)
-
 
         handles, labels = ax1.get_legend_handles_labels()
         ax1.legend(handles, labels)
         if title:
-            fig.title(title)
+            plt.title(title, y = 1.08)
         fig.tight_layout()
         if filename:
+            if split_plots:
+                filename = "OD_" + filename
             plt.savefig(filename, dpi = 400)
         if show:
             plt.show()
+        plt.clf()
