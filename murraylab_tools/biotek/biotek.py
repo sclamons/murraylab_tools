@@ -212,8 +212,10 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             while line != None:
                 info = line[0].strip()
                 if info == "":
+                    line = next(reader, None)
                     continue
                 if info in ["Layout", "Results"]:
+                    line = next(reader, None)
                     continue
                 if info.upper().startswith("OD"):
                     reading_OD = True
@@ -248,6 +250,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 # Data lines
                 for line in reader:
                     if line[1] == "":
+                        line = next(reader, None)
                         break
                     raw_time = line[1]
                     time_parts = raw_time.split(':')
@@ -257,6 +260,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     temp = line[2]
                     for i in range(3,len(line)):
                         if line[i].strip() == "":
+                            line = next(reader, None)
                             continue
                         well_name = well_names[i]
                         # Check to see if there's any supplementary information
@@ -266,6 +270,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             warnings.warn("No supplementary data for well " + \
                                         "%s; throwing out data for that well."\
                                           % well_name)
+                            line = next(reader, None)
                             continue
                         afu = line[i]
                         # Check for overflow
