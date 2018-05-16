@@ -269,7 +269,6 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             warnings.warn("No supplementary data for well " + \
                                         "%s; throwing out data for that well."\
                                           % well_name)
-                            line = next(reader, None)
                             continue
                         afu = line[i]
                         # Check for overflow
