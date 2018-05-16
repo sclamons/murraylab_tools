@@ -209,7 +209,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         break
             # Read data blocks
             # Find a data block
-            while line:
+            while line != None:
                 info = line[0].strip()
                 if info == "":
                     continue
