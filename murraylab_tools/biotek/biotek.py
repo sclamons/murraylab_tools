@@ -83,8 +83,10 @@ def read_supplementary_info(input_filename):
 
 
 def tidy_biotek_data(input_filename, supplementary_filename = None,
-                     volume = None, normalization_channel = None):
                      volume = None, normalization_channel = None,
+                     volume = None, normalization_channel = None, \
+                     convert_to_uM = True, \
+                     overrride_plate_reader_id=None):
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
     Optionally, also adds columns of metadata specified by a "supplementary
