@@ -237,7 +237,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     if len(info_parts) > 1:
                         excitation = info_parts[1].split("[")[0].split(",")[0]
                         excitation = int(excitation)
-                        emission   = info_parts[2].split("[")[0].split(",")[1]
+                        emission   = info_parts[1].split("[")[0].split(",")[1]
                         emission   = int(emission)
                     else:
                         excitation      = read_properties.excitation
