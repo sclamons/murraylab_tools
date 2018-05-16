@@ -124,7 +124,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
     if file_extension.startswith("xls"):
         excel_filename = input_filename
         input_filename = excel_filename.rpartition(".")[0] + ".csv"
-        pd.read_excel(input_filename).to_csv(input_filename)
+        pd.read_excel(excel_filename).to_csv(input_filename)
 
     # Open data file and tidy output file at once, so that we can stream data
     # directly from one to the other without having to store much.
