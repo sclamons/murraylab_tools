@@ -259,7 +259,6 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     temp = line[2]
                     for i in range(3,len(line)):
                         if line[i].strip() == "":
-                            line = next(reader, None)
                             continue
                         well_name = well_names[i]
                         # Check to see if there's any supplementary information
