@@ -583,45 +583,64 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
                          (norm_channel, norm_channel_gain))
 
     # Iterate over channels/gains, applying normalization
-    grouped_df = df.groupby(["ChanStr","Well"])
-    norm_channel_df = df[(df.Channel == norm_channel) & \
-                         (df.Gain == norm_channel_gain)]
-    # normalized_df = pd.DataFrame()
-    normalized_df_list = [None] * len(grouped_df)
-    i = 0
-    # Set this Pandas flag to force Pandas to NOT run garbage collection
-    # all the time. Improves speed by ~3x.
-    pd.set_option('mode.chained_assignment', None)
-    for names, group in grouped_df:
-        group.reset_index(inplace = True)
-        chanstr,well = names
-        norm_data = norm_channel_df[norm_channel_df.Well == well]
-        norm_data.reset_index(inplace = True)
-        #print("DFS!")
-        #print(group.head())
-        #print(norm_data.head())
-        """
-        print("before")
-        print(group[group.Excitation != 600].Measurement.iloc[0])
-        print("norm")
-        print(norm_data.Measurement.iloc[0])
-        print("after")
-        print((group[group.Excitation != 600].Measurement / norm_data.Measurement).iloc[0])
-        """
-        group["Measurement"] = group.Measurement \
-                               / norm_data.Measurement
-        orig_units = group.Units.unique()[0]
+    ODchstr = df[(df.Channel == norm_channel)&(df.Gain== norm_channel_gain)].ChanStr.unique()[0]
+    ODdf = df[df.ChanStr == ODchstr].reset_index()
+    #dflst = []
+    chanlist = df.ChanStr.unique().tolist()
+    del chanlist[chanlist.index(ODchstr)]
+    dflist = [df[df.ChanStr == a].reset_index() for a in chanlist]
+    outDF = ODdf.copy()
+    for chandf in dflist:
+        chandf.Measurement = chandf.Measurement/ODdf.Measurement
+        orig_units = chandf.Units.unique()[0]
         norm_units = "OD" if norm_channel.startswith("OD") \
                           else norm_data.Units.unique()[0]
-        group.Units = "%s/%s" % (orig_units, norm_units)
+        chandf.Units = "%s/%s" % (orig_units, norm_units)
+        outDF = outDF.append(chandf,ignore_index=True)
+    outDF.drop("index",1)
+    return outDF
+def applyFunc(df,inputs,dofunc,output="Calculation",newunits="unknown"):
+    '''
+    Apply an arbitrary function to a dataframe.
 
-        normalized_df_list[i] = group
-        i += 1
-    normalized_df = pd.concat(normalized_df_list)
-    # Undo Pandas flag change
-    pd.set_option('mode.chained_assignment', 'warn')
-    return normalized_df.reset_index()
-
+    Args:
+        df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
+        inputs - Name of channels to use as inputs. List of strings.
+        output - Name of the output channel. Can specify new channel or existing.
+        newunits - The units of the output channel. Defaults to "unknown"
+    Returns:
+        A DataFrame of df augmented with columns for whatever your calculation
+        was.
+    '''
+    nout = output
+    i = 1
+    #the following makes sure that we aren't making duplicate calculation channels
+    while(nout in df.Channel.unique()):
+        nout = output+str(i)
+        i+=1
+    output = nout
+    #extract out dataframes corresponding to the interesting channels
+    indfs = [df[df.Channel == a].reset_index() for a in inputs]
+    #make sure they are all the same length!! it won't work otherwise
+    testl = len(indfs[0])
+    for chi in range(len(inputs)):
+        dfl = len(indfs[chi])
+        if(dfl != testl):
+            raise ValueError("channel '%s' is %s members long, which is different" + \
+                                " from %s" % \
+                             inputs[chi],dfl,testl)
+    #this next part is for building the output. Pretty much copy one of the inputs
+    calcdf = indfs[0].copy()
+    #now we just take the measurements....
+    inmeasures = [a.Measurement for a in indfs]
+    #then we apply the function
+    calcdf.Measurement = dofunc(inmeasures)
+    #set the units and the new channel name
+    calcdf.Units = newunits
+    calcdf.Channel = output
+    outDF = df.append(calcdf,ignore_index=True)
+    outDF.drop("index",1)
+    return outDF
 
 CellSpec = namedtuple("CellSpec", ['well_name', 'color', 'label'])
 
