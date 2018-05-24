@@ -10,6 +10,7 @@ import warnings
 import scipy.interpolate
 import csv
 import matplotlib.pyplot as plt
+import seaborn as sns
 from collections import namedtuple
 from ..utils import *
 
@@ -641,7 +642,170 @@ def applyFunc(df,inputs,dofunc,output="Calculation",newunits="unknown"):
     outDF = df.append(calcdf,ignore_index=True)
     outDF.drop("index",1)
     return outDF
+def hmap_plt(indf,yaxis,xaxis,fixedinds=[],fixconcs=[],construct=None,\
+            chan="RFP",axes=None,labels = (1,1), annot=True,vmin=0.6,vmax=0.9,cmap="RdBu"):
+    '''
+    2D heatmap using seaborn heatmap and matplotlib pivot_table. If you don't
+    specify any columns, then it will by default average them!!
 
+    Args:
+        indf - DataFrame of endpoint data, of the kind produced by tidy_biotek_data.
+        yaxis - column name for y axis
+        xaxis - column name for x axis
+        fixedinds - list of fixed inducer names.
+        fixconcs - list of fixed concentrations, corresponding to fixedinds.
+        construct - name of construct to use
+        chan - channel name to plot!
+        axes - matplotlib axes to plot onto
+        labels - this list determines whether the x or y axis labels are displayed
+                default: both axis labels are displayed
+        hmset - settings for the heatmap!
+                values: annot, vmin, vmax, cmap
+
+
+    Returns:
+        Nothing. Creates a matplotlib plot
+    '''
+    logiclist = (indf.Channel == chan)
+    if((construct == None) and not ("Construct" in fixedinds)):
+
+        conpick = indf.Construct.unique()[0]
+        logiclist = logiclist&(indf.Construct==conpick)
+        print("you didn't specify a construct so we are showing "+conpick)
+    for fixedstf in zip(fixedinds,fixconcs):
+        logiclist = logiclist&(indf[fixedstf[0]]==fixedstf[1])
+    slicedf = indf[logiclist]
+    #print(slicedf.head())
+    pivtabl = pd.pivot_table(slicedf, index=yaxis, columns=xaxis, values='Measurement')
+    #print(pivtabl)
+
+    outax = sns.heatmap(pivtabl,\
+                annot=annot,\
+                vmin = vmin,\
+                vmax = vmax,\
+                cmap= cmap, \
+                cbar = False, \
+                ax = axes)
+    if(not labels[0]):
+        outax.get_xaxis().set_visible(False)
+    if(not labels[1]):
+        outax.get_yaxis().set_visible(False)
+def multiPlot(dims,plotdf,fixedinds,fixconcs,constructs,FPchan,\
+                                annot=False,vmin=0,vmax=10,cmap="RdBu"):
+    '''
+    3D or 4D heatmap plot of dataframe
+
+    Args:
+        dims - List of inducer names to vary. Max of four!
+        plotdf - DataFrame of endpoint data, of the kind produced by tidy_biotek_data.
+        fixedinds - list of fixed inducer names.
+        fixconcs - list of fixed concentrations, corresponding to fixedinds.
+        constructs - list of constructs to plot. You can put multiple constructs
+                    to plot here, but then dims should be only three elements long,
+                    since constructs constitutes another dimension
+        FPchan - channel name to plot!
+
+    Returns:
+        Nothing. Creates a matplotlib plot
+    '''
+    def allcomb(listoflists):
+        """creates all paths through a list"""
+        if(len(listoflists)==1):
+            return([[a] for a in listoflists[0]])
+        outlist = []
+        for element in listoflists[0]:
+            for lists in allcomb(listoflists[1:]):
+                outlist+=[[element]+lists]
+        return outlist
+    dimlist = [sorted(plotdf[a].unique()) for a in dims]
+    if(len(constructs)>1):
+        dimlist += [constructs]
+        dims+= ["Construct"]
+    else:
+        fixedinds += ["Construct"]#,"ATC"]
+        fixconcs += constructs#,250]
+
+    enddims = range(len(dims[2:])) #cut out the first two dimensions
+    axiscombs = allcomb(dimlist[2:]) #all combinations of conditions
+    plotpos = allcomb([range(len(a)) for a in dimlist[2:]]) #positions on the graph grid that above will go
+    rows = len(dimlist[2])
+    if(len(dimlist)>=4):
+        cols = len(dimlist[3])
+    else:
+        cols = 1
+    fig, axes = plt.subplots(cols, rows,figsize=(rows*2,cols*2))
+    #four dimensions is about the best we can do
+    #this next part populates the axes list with blanks so that the
+    #plotting code still runs like a 4x4 figure
+    if(cols == 1):
+        axes = [axes]
+    if(len(plotpos[0])<2):
+        plotpos = [[a[0],0] for a in plotpos]
+
+
+    fig.subplots_adjust(hspace=0.05,wspace=0.05)
+    #this next part creates the title
+    titstr = FPchan +" " #what channel we are plotting
+    #this next part determines what inducers there are
+    #and which ones weren't specified.
+    #the pivottable function actually averages those channels
+    #so it would be nice for the user to know that!!
+    defaultColumns = ["Channel","Gain","Excitation",\
+                      "Emission","Well","ChanStr",\
+                      "Construct","Measurement",\
+                      "Time (hr)","Time (sec)",\
+                      "Units","index","level_0",\
+                      "level_1","level_2","level_3"]
+    inducerCols = []
+    for c in list(plotdf.columns):
+        if(not (c in defaultColumns)):
+            inducerCols+=[c]
+    notspecified = []
+    for c in inducerCols:
+        if(not(c in dims+fixedinds)):
+            notspecified+=[c]
+    for ind in zip(fixedinds,fixconcs):
+        titstr+= "; "+ind[0]+" is "+str(ind[1])
+    if(len(notspecified)>0):
+        for nsind in notspecified:
+            titstr+= "; aggregate of " +nsind
+    fig.suptitle(titstr, fontsize=16)
+
+    rowcount = 0
+    for colax in axes:
+        colcount = 0
+        for curax in colax:
+            #iterate through each plot basically
+
+            #curax = fourthaxis[2]
+            plotlocation = [colcount,rowcount]
+            #print(plotlocation)
+
+            if(plotlocation in plotpos):#if we are populating this plot:
+                plotind = plotpos.index(plotlocation)
+                curconcs = axiscombs[plotind]
+
+                hmap_plt(plotdf,dims[0],dims[1],\
+                         fixedinds+dims[2:],\
+                         fixconcs+curconcs,\
+                         None,\
+                         FPchan,curax,\
+                        (rowcount==len(axes)-1,colcount==0),\
+                        annot=annot,\
+                        vmin=vmin,\
+                        vmax=vmax,\
+                        cmap=cmap)
+                if(len(dims) == 4):
+                    if(dims[2:][1]=="Construct"):
+                        curax.set_ylabel(str(curconcs[1])+"\n"+dims[0])
+                    else:
+                        curax.set_ylabel(str(curconcs[1])+" of "+dims[2:][1]+"\n"+dims[0])
+                if(dims[2:][0]=="Construct"):
+                    curax.set_xlabel(dims[1]+"\n"+str(curconcs[0]))
+                else:
+                    curax.set_xlabel(dims[1]+"\n"+str(curconcs[0])+" of "+dims[2:][0])
+            colcount+=1
+        rowcount+=1
 CellSpec = namedtuple("CellSpec", ['well_name', 'color', 'label'])
 
 class BiotekCellPlotter(object):
