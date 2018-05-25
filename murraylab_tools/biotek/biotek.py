@@ -691,7 +691,7 @@ def hmap_plt(indf,yaxis,xaxis,fixedinds=[],fixconcs=[],construct=None,\
     if(not labels[1]):
         outax.get_yaxis().set_visible(False)
 def multiPlot(dims,plotdf,fixedinds,fixconcs,constructs,FPchan,\
-                                annot=False,vmin=0,vmax=10,cmap="RdBu"):
+                                annot=False,vmin=None,vmax=None,cmap="RdBu"):
     '''
     3D or 4D heatmap plot of dataframe
 
@@ -718,13 +718,28 @@ def multiPlot(dims,plotdf,fixedinds,fixconcs,constructs,FPchan,\
                 outlist+=[[element]+lists]
         return outlist
     dimlist = [sorted(plotdf[a].unique()) for a in dims]
+    logiclist = (plotdf.Channel == FPchan)
+    for fixedval in zip(fixedinds,fixconcs):
+        logiclist=logiclist&(plotdf[fixedval[0]]==fixedval[1])
+    loglist2 = plotdf["Construct"]==constructs[0]
+    if(len(constructs)>1):
+        for cons in constructs[1:]:
+            loglist2=loglist2|(plotdf["Construct"]==cons)
+    logiclist = logiclist&loglist2
+    subdf = plotdf[logiclist]
+    print(subdf.head())
+    maxval = max(subdf.Measurement)
+    minval = min(subdf.Measurement)
+    if(vmin == None):
+        vmin = minval
+    if(vmax == None):
+        vmax = maxval
     if(len(constructs)>1):
         dimlist += [constructs]
         dims+= ["Construct"]
     else:
         fixedinds += ["Construct"]#,"ATC"]
         fixconcs += constructs#,250]
-
     enddims = range(len(dims[2:])) #cut out the first two dimensions
     axiscombs = allcomb(dimlist[2:]) #all combinations of conditions
     plotpos = allcomb([range(len(a)) for a in dimlist[2:]]) #positions on the graph grid that above will go
@@ -757,7 +772,7 @@ def multiPlot(dims,plotdf,fixedinds,fixconcs,constructs,FPchan,\
                       "Units","index","level_0",\
                       "level_1","level_2","level_3"]
     inducerCols = []
-    for c in list(plotdf.columns):
+    for c in list(subdf.loc[:,(subdf != 0).any(axis=0)].columns):
         if(not (c in defaultColumns)):
             inducerCols+=[c]
     notspecified = []
