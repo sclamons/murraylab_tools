@@ -727,7 +727,7 @@ def multiPlot(dims,plotdf,fixedinds,fixconcs,constructs,FPchan,\
             loglist2=loglist2|(plotdf["Construct"]==cons)
     logiclist = logiclist&loglist2
     subdf = plotdf[logiclist]
-    print(subdf.head())
+    #print(subdf.head())
     maxval = max(subdf.Measurement)
     minval = min(subdf.Measurement)
     if(vmin == None):
