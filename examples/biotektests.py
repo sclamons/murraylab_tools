@@ -24,15 +24,15 @@ calcdf = mt_biotek.applyFunc(normdf,("GFP","RFP"),lambda x:x[0]/(x[0]+x[1]))
 calcdf = calcdf.drop("index",axis=1)
 #normdf[normdf.Gain==100].head()
 end_df = mt_biotek.window_averages(normdf,15,17,"hours")
-end_df.Construct.unique()
+end_df.aTC.unique()
 dims = ["Ara","IPTG"]#,"ATC"]
 fixedinds = ["aTC"]#,"Construct"]
-fixconcs = [500]
+fixconcs = [250]
 plotdf = end_df
 FPchan = "RFP"
 constructs = ["pQi41","pQi42","pQi51","pQi52"]
 
-mt_biotek.multiPlot(dims,end_df,fixedinds,fixconcs,constructs,FPchan)
+mt_biotek.multiPlot(dims,end_df,fixedinds,fixconcs,constructs,FPchan,annot=True,vmin=None,vmax=None)
 
 
 end_df.Excitation.unique()

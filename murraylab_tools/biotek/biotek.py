@@ -185,11 +185,15 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         if line[0].strip() == "Layout":
                             entered_layout = True
                             break
+                        if line[0].strip() == "End Kinetic":
+                            entered_layout = True
+                            break
                         if line[0].strip() == "Read":
                             if line[1].strip() == "Fluorescence Endpoint":
                                 read_name = ""
                             else:
                                 read_name = line[1].strip()
+                                print(read_name)
                             continue
                         if line[1].startswith("Filter Set"):
                             line = next(reader)
@@ -211,8 +215,10 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             read_sets[read_name].append(ReadSet(read_name,
                                                                 excitation,
                                                                 emission, gain))
+                        #print(read_sets.keys())
                         if line[0].split(":")[0].strip() in read_sets.keys():
                             hit_data == True
+                            break
                     if entered_layout or hit_data:
                         break
             # Read data blocks
@@ -222,7 +228,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 if info == "":
                     line = next(reader, None)
                     continue
-                if info in ["Layout", "Results"]:
+                if info in ["Layout","End Kinetic", "Results"]:
                     line = next(reader, None)
                     continue
                 if info.upper().startswith("OD"):
@@ -719,8 +725,9 @@ def multiPlot(dims,plotdf,fixedinds,fixconcs,constructs,FPchan,\
         return outlist
     dimlist = [sorted(plotdf[a].unique()) for a in dims]
     logiclist = (plotdf.Channel == FPchan)
-    for fixedval in zip(fixedinds,fixconcs):
-        logiclist=logiclist&(plotdf[fixedval[0]]==fixedval[1])
+    if(len(fixedinds)>0):
+        for fixedval in zip(fixedinds,fixconcs):
+            logiclist=logiclist&(plotdf[fixedval[0]]==fixedval[1])
     loglist2 = plotdf["Construct"]==constructs[0]
     if(len(constructs)>1):
         for cons in constructs[1:]:
