@@ -193,7 +193,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                 read_name = ""
                             else:
                                 read_name = line[1].strip()
-                                print(read_name)
+                                #print(read_name)
                             continue
                         if line[1].startswith("Filter Set"):
                             line = next(reader)
