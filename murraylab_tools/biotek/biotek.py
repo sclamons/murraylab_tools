@@ -386,30 +386,24 @@ def background_subtract(df, negative_control_wells):
     '''
     if type(negative_control_wells) == str:
         negative_control_wells = [negative_control_wells]
-    return_df = pd.DataFrame()
-    # Split the dataframe by channel and gain
-    for channel in df.Channel.unique():
-        channel_df = df[df.Channel == channel]
-        for gain in channel_df.Gain.unique():
-            condition_df = channel_df[channel_df.Gain == gain]
-            neg_ctrl_df  = pd.DataFrame()
-            for well in negative_control_wells:
-                well_df = condition_df[condition_df.Well == well]
-                neg_ctrl_df = neg_ctrl_df.append(well_df)
-            grouped_neg_ctrl = neg_ctrl_df.groupby(["Time (sec)"])
-            avg_neg_ctrl = grouped_neg_ctrl.aggregate(np.average)
-            avg_neg_ctrl.sort_index(inplace = True)
-            avg_neg_ctrl.reset_index(inplace = True)
-            # Easiest thing to do is to apply the background subtraction to each
-            # well separately
-            for well in condition_df.Well.unique():
-                well_df = condition_df[condition_df.Well == well].copy()
-                well_df.sort_values("Time (sec)", inplace = True)
-                well_df.reset_index(inplace = True)
-                well_df.Measurement = well_df.Measurement - \
-                                      avg_neg_ctrl.Measurement
-                return_df = return_df.append(well_df)
-    return return_df
+    bgvals = pd.DataFrame(columns = ["Measurement","ChanStr"])
+    for chan in df.ChanStr.unique():
+        logiclist = (df.Well == negative_control_wells[0])
+        if(len(negative_control_wells)>1):
+            for well in negative_control_wells[1:]:
+                logiclist = logiclist|(df.Well == well) 
+        zwells = df[logiclist&(df.ChanStr==chan)]
+        #following gets the average measurement per channel
+        temp=pd.pivot_table(zwells,index = "Time (sec)",values="Measurement")
+        temp=temp.reset_index()
+        temp["ChanStr"] = chan
+        #temp["Well"] = None
+        bgvals = bgvals.append(temp.copy())
+    dfnew = df.set_index(["Time (sec)","Well"])
+    bgvals = bgvals.set_index(["Time (sec)"])
+    dfnew.Measurement = dfnew.Measurement-bgvals.Measurement
+    dfnew = dfnew.reset_index()
+    return dfnew
 
 
 def window_averages(df, start, end, units = "seconds",

@@ -2,7 +2,8 @@ import murraylab_tools.biotek as mt_biotek
 import os
 import pandas as pd
 import seaborn as sns
-
+import warnings
+warnings.filterwarnings('ignore')
 gitexamplepath =".\\examples\\biotek_examples\\"
 data_filename = gitexamplepath+\
                 "180515_big384wellplate.csv"
@@ -17,22 +18,24 @@ tidy_filename = gitexamplepath+"180515_big384wellplate_tidy.csv"
 df = pd.read_csv(tidy_filename)
 df.loc[df.Excitation==580,"Channel"] = "RFP"
 df.loc[df.Excitation==485,"Channel"] = "GFP"
-
+neg_ctrl = ["D21","D22"]
+#df = mt_biotek.background_subtract(df,neg_ctrl)
 normdf = mt_biotek.normalize(df,norm_channel= "OD")
+normdf = mt_biotek.background_subtract(normdf,neg_ctrl)
 normdf = normdf.drop("index",axis=1)
-calcdf = mt_biotek.applyFunc(normdf,("GFP","RFP"),lambda x:x[0]/(x[0]+x[1]))
-calcdf = calcdf.drop("index",axis=1)
+#calcdf = mt_biotek.applyFunc(normdf,("GFP","RFP"),lambda x:x[0]/(x[0]+x[1]),output="GFP frac")
+#calcdf = calcdf.drop("index",axis=1)
 #normdf[normdf.Gain==100].head()
 end_df = mt_biotek.window_averages(normdf,15,17,"hours")
-end_df.aTC.unique()
-dims = ["Ara","IPTG"]#,"ATC"]
-fixedinds = ["aTC"]#,"Construct"]
-fixconcs = [250]
+end_df = end_df[end_df.aTC!=200]
+dims = ["Ara","IPTG","aTC"]
+fixedinds = []#,"Construct"]
+fixconcs = []
 plotdf = end_df
 FPchan = "RFP"
 constructs = ["pQi41","pQi42","pQi51","pQi52"]
 
-mt_biotek.multiPlot(dims,end_df,fixedinds,fixconcs,constructs,FPchan,annot=True,vmin=None,vmax=None)
+mt_biotek.multiPlot(dims,end_df,fixedinds,fixconcs,constructs,FPchan,annot=False,vmin=None,vmax=None)
 
 
 end_df.Excitation.unique()
