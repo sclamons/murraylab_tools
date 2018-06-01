@@ -6,7 +6,7 @@ import murraylab_tools.echo as mt_echo
 
 @pytest.fixture()
 def test_dir():
-    return os.path.dirname(os.path.realpath(__file__))
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 
 def gen_plate():
     fname = 'dplate.dat'
