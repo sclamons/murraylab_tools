@@ -160,6 +160,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             #                   converting to uM if possible.
             read_sets = dict()
             for line in reader:
+                if len(line) == 0:
+                    continue
                 if line[0].strip() == "Reader Serial Number:":
                     if overrride_plate_reader_id != None:
                             warnings.warn(("Plate reader id overridden to be '%s'") \

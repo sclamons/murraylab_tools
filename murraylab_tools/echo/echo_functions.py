@@ -1550,7 +1550,8 @@ class DestinationPlate():
         if n_wells == 0:
             return []
         if sum(self.wells_used) + n_wells > len(self.wells):
-            raise Exception("Source plate %s is out of available wells." % self.name)
+            raise Exception("Source plate %s is out of available wells." % \
+                            self.name)
         unused_indices = self.indices[self.wells_used == False]
         return_indices = unused_indices[:n_wells]
         return_wells = self.wells[return_indices]

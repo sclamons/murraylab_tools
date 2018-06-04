@@ -23,8 +23,6 @@ def check_bom(data):
 
 
 def mt_open(filename, setting_code):
-    if sys.version_info[0] < 3:
-        filename = unicode(filename)
     return_file = io.open(filename, setting_code,
                           encoding = "latin-1")# encoding)
     return return_file
