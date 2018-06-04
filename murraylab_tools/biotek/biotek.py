@@ -236,8 +236,11 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     emission   = -1
                     gain       = -1
                 else:
-                    info_parts = info.split(":")
-                    read_name  = info_parts[0]
+                    if ":" in info:
+                        info_parts = info.split(":")
+                        read_name  = info_parts[0]
+                    else:
+                        read_name = ""
                     if not info.endswith(']'):
                         read_idx = 0
                     else:
