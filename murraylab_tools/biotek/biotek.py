@@ -85,7 +85,7 @@ def read_supplementary_info(input_filename):
 def tidy_biotek_data(input_filename, supplementary_filename = None,
                      volume = None, normalization_channel = None,
                      convert_to_uM = True,
-                     overrride_plate_reader_id=None):
+                     override_plate_reader_id=None):
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
     Optionally, also adds columns of metadata specified by a "supplementary
@@ -103,6 +103,14 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                     (no metadata other than what can be mined
                                     from the data file).
         --volume: Volume of the TX-TL reactions. Note that default is 10 uL!
+                    if you don't care about the volume see convert_to_uM.
+        --convert_to_uM: Flag that decides whether or not to calculate
+                            micromolar concentrations from biotek data.
+                            Default True. Note that OD data is not, by default,
+                            normalized, but other channels will be even if you
+                            are using cells, unless you set this flag to False.
+        --override_plate_reader_id: If not None, the plate reader ID will be
+                                        set to this. Default None.
     Returns: None
     Side Effects: Creates a new CSV with the same name as the data file with
                     "_tidy" appended to the end. This new file is in tidy
@@ -163,7 +171,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 if len(line) == 0:
                     continue
                 if line[0].strip() == "Reader Serial Number:":
-                    if overrride_plate_reader_id != None:
+                    if override_plate_reader_id != None:
                             warnings.warn(("Plate reader id overridden to be '%s'") \
                                     % overrride_plate_reader_id)
                             plate_reader_id= overrride_plate_reader_id
@@ -179,7 +187,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     if line[1].strip() == "Fluorescence Endpoint":
                         read_name = ""
                     else:
-                        read_name = line[1]
+                        read_name = line[1].strip()
                     entered_layout = False
                     hit_data       = False
                     for line in reader:
@@ -213,8 +221,10 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                                                 excitation,
                                                                 emission, gain))
                         if line[0].split(":")[0].strip() in read_sets.keys():
-                            hit_data == True
+                            hit_data = True
+                            break
                     if entered_layout or hit_data:
+                        print("Breaking at 'entered_layout or hit_data'")
                         break
             # Read data blocks
             # Find a data block
@@ -262,6 +272,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 well_names = line
                 # Data lines
                 for line in reader:
+                    print("reading line " + str(line))
                     if line[1] == "":
                         break
                     raw_time = line[1]
