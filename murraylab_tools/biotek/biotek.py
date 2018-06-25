@@ -1,5 +1,7 @@
 # TODO:
 #   -- Move calibration data out of source code
+#       Have a string identifying the calibration data file, use that.
+#       Default to most recent calibration data.
 #   -- Add temperature records?
 
 import sys
@@ -18,7 +20,8 @@ from ..utils import *
 ####################
 plate_reader_ids = {"268449":'b1',
                     "271275":'b2',
-                    "1402031D":'b3'}
+                    "1402031D":'b3',
+                    "18060417":'b4'}
 
 ####################
 # Calibration Data #
@@ -224,7 +227,6 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             hit_data = True
                             break
                     if entered_layout or hit_data:
-                        print("Breaking at 'entered_layout or hit_data'")
                         break
             # Read data blocks
             # Find a data block
@@ -272,7 +274,6 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 well_names = line
                 # Data lines
                 for line in reader:
-                    print("reading line " + str(line))
                     if line[1] == "":
                         break
                     raw_time = line[1]
