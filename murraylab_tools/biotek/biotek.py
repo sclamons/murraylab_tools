@@ -223,11 +223,14 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             read_sets[read_name].append(ReadSet(read_name,
                                                                 excitation,
                                                                 emission, gain))
-                        if line[0].split(":")[0].strip() in read_sets.keys():
+                        maybe_read_name = line[0].split(":")[0].strip()
+                        if maybe_read_name in read_sets.keys() or \
+                           maybe_read_name.startswith("OD"):
                             hit_data = True
                             break
                     if entered_layout or hit_data:
                         break
+
             # Read data blocks
             # Find a data block
             while line != None:
