@@ -718,15 +718,11 @@ class BiotekCellPlotter(object):
 
         # Plot out all of the fluorescence data, keeping track of the largest
         # plotted measurement.
-        # measurement_max = 0
         fig, ax1 = plt.subplots()
         for well_spec in self.well_list:
             well_df = norm_df[norm_df.Well == well_spec.well_name]
             ax1.plot(well_df["Time (hr)"], well_df.Measurement,
                      color = well_spec.color, label = well_spec.label)
-            # well_max = well_df.Measurement.max()
-            # if well_max > measurement_max:
-            #     measurement_max = well_max
         ax1.set_xlabel("Time (hr)")
         if self.normalize_by_od:
             ax1.set_ylabel("%s/OD (gain %d)" % (self.channel, self.gain))
@@ -753,19 +749,17 @@ class BiotekCellPlotter(object):
             ax2 = ax1.twinx()
         all_od_df = self.df[(self.df.Channel == self.od_channel) & \
                             (self.df.Well.isin(well_names))]
-        #max_od = float(all_od_df.Measurement.max())
-        #scale_factor = measurement_max / max_od
         for well_spec in self.well_list:
             od_df     = all_od_df[all_od_df.Well == well_spec.well_name]
-            #scaled_od = od_df.Measurement * scale_factor
             linestyle = "-" if split_plots else ":"
             ax2.plot(od_df["Time (hr)"], od_df.Measurement,
                      color = well_spec.color, linewidth = 1,
-                     linestyle = linestyle)
+                     linestyle = linestyle,
+                     label = well_spec.label if split_plots else "")
         ax2.set_ylabel(self.od_channel)
 
-        handles, labels = ax1.get_legend_handles_labels()
-        ax1.legend(handles, labels)
+        handles, labels = ax2.get_legend_handles_labels()
+        ax2.legend(handles, labels)
         if title:
             plt.title(title, y = 1.08)
         fig.tight_layout()

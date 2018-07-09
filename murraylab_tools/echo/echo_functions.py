@@ -443,7 +443,14 @@ class EchoRun():
         # Register other materials
         stocks = []
         for i in range(len(material_total_vols)):
-            if material_total_vols[i] == 0 or stock_sheet[i+2,1] == "":
+            if stock_sheet[i+2,1] == "":
+                for j in range(i+1, len(material_total_vols)):
+                    if stock_sheet[i+2,1] != "":
+                        raise RuntimeWarning("You left a blank row in your " + \
+                            "stock file. This will cause alignment shifts in "+\
+                            "your recipe sheet and you will almost surely " +  \
+                            "use the wrong amounts of ingredients. Are you " + \
+                            "sure this is what you want?")
                 continue
             material_name          = stock_sheet[i+2,1]
             material_concentration = stock_sheet[i+2, 2]
