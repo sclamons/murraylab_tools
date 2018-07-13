@@ -14,6 +14,7 @@ import csv
 import matplotlib.pyplot as plt
 from collections import namedtuple
 from ..utils import *
+import pkg_resources
 
 ####################
 # Plate Reader IDs #
@@ -23,9 +24,43 @@ plate_reader_ids = {"268449":'b1',
                     "1402031D":'b3',
                     "18060417":'b4'}
 
-####################
-# Calibration Data #
-####################
+def calibration_data_df(filename = None):
+    '''
+    Loads all available calibration data into a pandas DataFrame. By default,
+    loads from a data file distributed with the package; optionally, you can
+    instead read from your own file by setting filename. If you do, you'll need
+    the following columns:
+        Fluorophore
+        Date
+        Biotek
+        Gain
+        AFU per uM
+
+    Params:
+        filename: The name of the (CSV) file to read calibration data from.
+                    Default None, in which case data is loaded from a
+                    package-distributed data file.
+    Returns: A dataframe containing all available calibration data.
+    '''
+    if filename is None:
+        filename = pkg_resources.resource_filename('murraylab_tools',
+                                   os.path.join('data', 'calibration_data.csv'))
+    return pd.read_csv(filename)
+
+def calibration_data(date = None):
+    '''
+    Returns calibration data for the bioteks in the form of a nested dictionary:
+        fluorophore -> {biotek -> {gain -> AFU/uM}}
+
+    Params:
+        date: Date of calibration data you would like to use, as a string of the
+                form "MM/DD/YY" (e.g. 6/23/18). Defaults to None, in which case
+                the latest date of calibration for each fluorophore is used.
+    Returns: A nested dictionary containing calibration data from a single date,
+                or the most recent calibration data.
+    '''
+    pass
+
 calibration_data = dict()
 calibration_data["GFP"] = {'b3': {61:2261, 100:80850},
                            'b2': {61:1762, 100:62732},
