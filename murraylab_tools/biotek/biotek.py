@@ -139,7 +139,7 @@ def raw_to_uM(calibration_dict, raw, protein, biotek, gain, volume):
         volume: Volume of the TX-TL reaction.
     '''
     protein = standard_channel_name(protein, calibration_dict)
-    if not protein in calibration_ict or \
+    if not protein in calibration_dict or \
        not biotek in calibration_dict[protein] or \
        not gain in calibration_dict[protein][biotek]:
        return None
@@ -168,7 +168,7 @@ def read_supplementary_info(input_filename):
 
 def tidy_biotek_data(input_filename, supplementary_filename = None,
                      volume = None, normalization_channel = None,
-                     convert_to_uM = True, calibration_date = None,
+                     convert_to_uM = True, calibration_dict = None,
                      override_plate_reader_id=None):
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
@@ -193,8 +193,9 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             Default True. Note that OD data is not, by default,
                             normalized, but other channels will be even if you
                             are using cells, unless you set this flag to False.
-        --calibration_date: Date of calibrations you want to use to convert
-                                AFU readings to uM measurements. Default none,
+        --calibration_dict: Dictionary of calibrations you want to use to
+                                convert AFU readings to uM measurements, as
+                                returned by calibration_data. Default none,
                                 in which case the most recent calibration will
                                 be used for each channel.
         --override_plate_reader_id: If not None, the plate reader ID will be
@@ -216,7 +217,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
     filename_base   = input_filename.rsplit('.', 1)[0]
     output_filename = filename_base + "_tidy.csv"
 
-    calibration_dict = calibration_data(calibration_date)
+    if calibration_dict is None:
+        calibration_dict = calibration_data()
 
     # If the user gave you an excel file, convert it to a CSV so we can read
     # it properly.
