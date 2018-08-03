@@ -156,8 +156,9 @@ def read_supplementary_info(input_filename):
     with mt_open(input_filename, 'rU') as infile:
         reader = csv.reader(infile)
         title_line = next(reader)
+        title_line = list(map(lambda s:s.strip(), title_line))
         for i in range(1, len(title_line)):
-            info[title_line[i].strip()] = dict()
+            info[title_line[i]] = dict()
         for line in reader:
             line = list(map(lambda s:s.strip(), line))
             if line[0].strip() == "":
