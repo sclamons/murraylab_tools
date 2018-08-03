@@ -157,8 +157,9 @@ def read_supplementary_info(input_filename):
         reader = csv.reader(infile)
         title_line = next(reader)
         for i in range(1, len(title_line)):
-            info[title_line[i]] = dict()
+            info[title_line[i].strip()] = dict()
         for line in reader:
+            line = list(map(lambda s:s.strip(), line))
             if line[0].strip() == "":
                 continue
             for i in range(1, len(title_line)):
@@ -777,7 +778,7 @@ class BiotekCellPlotter(object):
                          # the label. Should read more cleanly this way.
 
     def plot(self, title = None, split_plots = False, filename = None,
-             show = True):
+             show = True, figsize = (8, 4)):
         '''
         Plot/show/save the figure.
 
@@ -792,6 +793,8 @@ class BiotekCellPlotter(object):
             show -- Boolean that sets whether the plot will actually be shown.
                     Default True; set to False if you want to save without
                     viewing it.
+            figsize -- 2-tuple of the size of the figure. Is passed directly
+                        to figure creation.
         '''
         plt.clf()
 
@@ -807,7 +810,7 @@ class BiotekCellPlotter(object):
 
         # Plot out all of the fluorescence data, keeping track of the largest
         # plotted measurement.
-        fig, ax1 = plt.subplots()
+        fig, ax1 = plt.subplots(figsize = figsize)
         for well_spec in self.well_list:
             well_df = norm_df[norm_df.Well == well_spec.well_name]
             ax1.plot(well_df["Time (hr)"], well_df.Measurement,
@@ -833,7 +836,7 @@ class BiotekCellPlotter(object):
         # Plot out all OD data, scaling it to roughly the same size as the other
         # data.
         if split_plots:
-            fig, ax2 = plt.subplots()
+            fig, ax2 = plt.subplots(figsize = figsize)
         else:
             ax2 = ax1.twinx()
         all_od_df = self.df[(self.df.Channel == self.od_channel) & \
