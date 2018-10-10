@@ -863,6 +863,5 @@ class BiotekCellPlotter(object):
             plt.savefig(filename, dpi = 400)
         if show:
             plt.show()
-        plt.clf()
 
         return plt.gca()
