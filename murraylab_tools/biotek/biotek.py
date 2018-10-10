@@ -852,7 +852,7 @@ class BiotekCellPlotter(object):
                      label = well_spec.label if split_plots else "")
         ax2.set_ylabel(self.od_channel)
 
-        handles, labels = ax2.get_legend_handles_labels()
+        handles, labels = ax1.get_legend_handles_labels()
         ax2.legend(handles, labels)
         if title:
             plt.title(title, y = 1.08)
