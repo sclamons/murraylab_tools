@@ -169,9 +169,8 @@ def read_supplementary_info(input_filename):
 
 
 def tidy_biotek_data(input_filename, supplementary_filename = None,
-                     volume = None, normalization_channel = None,
-                     convert_to_uM = True, calibration_dict = None,
-                     override_plate_reader_id=None):
+                     volume = None, convert_to_uM = True,
+                     calibration_dict = None, override_plate_reader_id=None):
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
     Optionally, also adds columns of metadata specified by a "supplementary
@@ -189,7 +188,8 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                     (no metadata other than what can be mined
                                     from the data file).
         --volume: Volume of the TX-TL reactions. Note that default is 10 uL!
-                    if you don't care about the volume see convert_to_uM.
+                    if you don't care about the volume set convert_to_uM to
+                    False.
         --convert_to_uM: Flag that decides whether or not to calculate
                             micromolar concentrations from biotek data.
                             Default True. Note that OD data is not, by default,
@@ -409,13 +409,14 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                 measurement = afu
                                 units = "AFU"
                         row = [read_name, gain, time_secs, time_hrs, well_name,
-                               measurement, units, str(excitation), str(emission)]
+                               measurement, units, str(excitation),
+                               str(emission)]
 
                         for name in supplementary_data.keys():
                             row.append(supplementary_data[name][well_name])
-                        row.append(read_name+str(gain)+str(excitation)+str(emission))
+                        row.append(read_name + str(gain) + str(excitation) +\
+                                   str(emission))
                         try:
-
                             writer.writerow(row)
                         except TypeError as e:
                             print("Error writing line: " + str(row))
@@ -863,3 +864,5 @@ class BiotekCellPlotter(object):
         if show:
             plt.show()
         plt.clf()
+
+        return plt.gca()
