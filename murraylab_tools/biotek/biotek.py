@@ -780,7 +780,7 @@ class BiotekCellPlotter(object):
                          # the label. Should read more cleanly this way.
 
     def plot(self, title = None, split_plots = False, filename = None,
-             show = True, figsize = (8, 4)):
+             show = True, figsize = (8, 4), show_legend = True):
         '''
         Plot/show/save the figure.
 
@@ -824,8 +824,9 @@ class BiotekCellPlotter(object):
             ax1.set_ylabel("%s (gain %d)" % (self.channel, self.gain))
 
         if split_plots:
-            handles, labels = ax1.get_legend_handles_labels()
-            ax1.legend(handles, labels)
+            if show_legend:
+                handles, labels = ax1.get_legend_handles_labels()
+                ax1.legend(handles, labels)
             if title:
                 plt.title(title, y = 1.08)
             fig.tight_layout()
@@ -852,11 +853,12 @@ class BiotekCellPlotter(object):
                      label = well_spec.label if split_plots else "")
         ax2.set_ylabel(self.od_channel)
 
-        if split_plots:
-            handles, labels = ax2.get_legend_handles_labels()
-        else:
-            handles, labels = ax1.get_legend_handles_labels()
-        ax2.legend(handles, labels)
+        if show_legend:
+            if split_plots:
+                handles, labels = ax2.get_legend_handles_labels()
+            else:
+                handles, labels = ax1.get_legend_handles_labels()
+            ax2.legend(handles, labels)
         if title:
             plt.title(title, y = 1.08)
         fig.tight_layout()
