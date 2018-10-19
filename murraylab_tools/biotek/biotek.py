@@ -1,5 +1,7 @@
 # TODO:
 #   -- Move calibration data out of source code
+#       Have a string identifying the calibration data file, use that.
+#       Default to most recent calibration data.
 #   -- Add temperature records?
 
 import sys
@@ -9,61 +11,143 @@ import numpy as np
 import warnings
 import scipy.interpolate
 import csv
+import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import namedtuple
 from ..utils import *
+import pkg_resources
+from datetime import datetime
 
 ####################
 # Plate Reader IDs #
 ####################
 plate_reader_ids = {"268449":'b1',
                     "271275":'b2',
-                    "1402031D":'b3'}
+                    "1402031D":'b3',
+                    "18060417":'b4'}
 
-####################
-# Calibration Data #
-####################
-calibration_data = dict()
-calibration_data["GFP"] = {'b3': {61:2261, 100:80850},
-                           'b2': {61:1762, 100:62732},
-                           'b1': {61:1517, 100:53258}}
-calibration_data["Citrine"] = {'b3': {61:2379, 100:82680},
-                               'b2': {61:1849, 100:64985},
-                               'b1': {61:1487, 100:51725}}
-calibration_data["RFP"] = {'b3': {61:70.38, 100:2541},
-                           'b2': {61:67.64, 100:2392},
-                           'b1': {61:47.96, 100:1689}}
-calibration_data["CFP"] = {'b3': {61:578, 100:20722},
-                           'b2': {61:513, 100:18136},
-                           'b1': {61:387, 100:13809}}
-calibration_data["Venus"] = {'b3': {61:2246, 100:79955},
-                             'b2': {61:1742, 100:61130},
-                             'b1': {61:1455, 100:50405}}
-calibration_data["Cherry"] = {'b3': {61:79.39, 100:2850},
-                              'b2': {61:80.84, 100:2822},
-                              'b1': {61:51.07, 100:1782}}
+def calibration_data_df(filename = None):
+    '''
+    Loads all available calibration data into a pandas DataFrame. By default,
+    loads from a data file distributed with the package; optionally, you can
+    instead read from your own file by setting filename. If you do, you'll need
+    the following columns:
+        Fluorophore
+        Date
+        Biotek
+        Gain
+        AFU per uM
 
-def standard_channel_name(fp_name, suppress_name_warning = False):
+    Params:
+        filename: The name of the (CSV) file to read calibration data from.
+                    Default None, in which case data is loaded from a
+                    package-distributed data file.
+    Returns: A dataframe containing all available calibration data.
+    '''
+    if filename is None:
+        filename = pkg_resources.resource_filename('murraylab_tools',
+                                   os.path.join('data', 'calibration_data.csv'))
+    return pd.read_csv(filename)
+
+def calibration_dates(filename = None):
+    '''
+    Returns information about when each channel was calibrated.
+
+    Params:
+        filename: The name of the (CSV) file to read calibration data from.
+                    Default None, in which case data is loaded from a
+                    package-distributed data file.
+    Returns: dictionary of the form {Fluorophore -> [dates]}.
+    '''
+    df = calibration_data_df(filename)
+    date_dict = dict()
+    for fluor in df.Fluorophore:
+        date_dict[fluor] = df[df.Fluorophore == fluor].Date.unique()
+    return date_dict
+
+def calibration_data(date = None, filename = None):
+    '''
+    Returns calibration data for the bioteks in the form of a nested dictionary:
+        fluorophore -> {biotek -> {gain -> AFU/uM}}
+
+    Params:
+        date: Date of calibration data you would like to use, as a string of the
+                form "MM/DD/YY" (e.g. 06/23/18). Defaults to None, in which case
+                the latest date of calibration for each fluorophore is used.
+        filename: The name of the (CSV) file to read calibration data from.
+                    Default None, in which case data is loaded from a
+                    package-distributed data file.
+    Returns: A nested dictionary containing calibration data from a single date,
+                or the most recent calibration data.
+    '''
+    df = calibration_data_df(filename)
+    if date is not None:
+        data_df = df[df.Date == date]
+        if len(df) == 0:
+            raise Warning("No calibration data found on date %s." % date)
+    else:
+        data_list = []
+        for fluor in df.Fluorophore.unique():
+            fluor_df = df[df.Fluorophore == fluor]
+            dates = list(map(lambda d: datetime.strptime(d, "%m/%d/%y").date(),
+                             fluor_df.Date))
+            most_recent_date = max(dates).strftime("%m/%d/%y")
+            data_list.append(fluor_df[fluor_df.Date == most_recent_date])
+        data_df = pd.concat(data_list)
+
+    # Convert data to dictionary form.
+    calibration_dict = dict()
+    for index, row in data_df.iterrows():
+        fluor = row.Fluorophore
+        date  = row.Date
+        bt    = 'b' + str(row.Biotek)
+        gain  = row.Gain
+        AFU   = row["AFU per uM"]
+        if fluor not in calibration_dict:
+            calibration_dict[fluor] = dict()
+            calibration_dict[fluor]["date"] = date
+        if bt not in calibration_dict[fluor]:
+            calibration_dict[fluor][bt] = dict()
+        calibration_dict[fluor][bt][gain] = AFU
+    return calibration_dict
+
+
+def standard_channel_name(fp_name, calibration_dict,
+                          suppress_name_warning = False):
     upper_name = fp_name.upper()
-    for std_name in ["GFP", "Citrine", "RFP", "CFP", "Venus", "Cherry"]:
-        if std_name in upper_name:
-            return std_name
+    all_names  = calibration_dict.keys()
+    for name in all_names:
+        if name.upper() == upper_name:
+            return name
     if not suppress_name_warning:
         warnings.warn(("Unable to convert channel %s into standard channel " + \
                        "name. Are you sure this is the right name?") % fp_name)
     return fp_name
 
+def raw_to_uM(calibration_dict, raw, protein, biotek, gain, volume):
+    '''
+    Convert an AFU measurement (in TX-TL) to a uM measurement, if possible.
 
-def raw_to_uM(raw, protein, biotek, gain, volume):
-    if not protein in calibration_data or \
-       not biotek in calibration_data[protein] or \
-       not gain in calibration_data[protein][biotek]:
+    Params:
+        calibration_dict: A nested dictionary of calibration data, as returned
+                            by calibration_data().
+        raw: An AFU fluorescence reading.
+        protein: Name of the fluorescent protein or channel. Must match a
+                    channel name in calibration_data, but isn't case-sensitive.
+        biotek: Number of the biotek used, e.g. 3.
+        gain: Gain used. Usually should be 61 or 100.
+        volume: Volume of the TX-TL reaction.
+    '''
+    protein = standard_channel_name(protein, calibration_dict)
+    if not protein in calibration_dict or \
+       not biotek in calibration_dict[protein] or \
+       not gain in calibration_dict[protein][biotek]:
        return None
     # Note that volume is in uL!
     if raw == "OVRFLW":
         raw = np.infty
-    return float(raw) * 10.0 / calibration_data[protein][biotek][gain] / volume
+    return float(raw) * 10.0 / calibration_dict[protein][biotek][gain] / volume
 
 ReadSet = collections.namedtuple('ReadSet', ['name', 'excitation', 'emission',
                                              'gain'])
@@ -73,9 +157,11 @@ def read_supplementary_info(input_filename):
     with mt_open(input_filename, 'rU') as infile:
         reader = csv.reader(infile)
         title_line = next(reader)
+        title_line = list(map(lambda s:s.strip(), title_line))
         for i in range(1, len(title_line)):
             info[title_line[i]] = dict()
         for line in reader:
+            line = list(map(lambda s:s.strip(), line))
             if line[0].strip() == "":
                 continue
             for i in range(1, len(title_line)):
@@ -84,9 +170,8 @@ def read_supplementary_info(input_filename):
 
 
 def tidy_biotek_data(input_filename, supplementary_filename = None,
-                     volume = None, normalization_channel = None,
-                     convert_to_uM = True,
-                     overrride_plate_reader_id=None):
+                     volume = None, convert_to_uM = True,
+                     calibration_dict = None, override_plate_reader_id=None):
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
     Optionally, also adds columns of metadata specified by a "supplementary
@@ -104,6 +189,20 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                     (no metadata other than what can be mined
                                     from the data file).
         --volume: Volume of the TX-TL reactions. Note that default is 10 uL!
+                    if you don't care about the volume set convert_to_uM to
+                    False.
+        --convert_to_uM: Flag that decides whether or not to calculate
+                            micromolar concentrations from biotek data.
+                            Default True. Note that OD data is not, by default,
+                            normalized, but other channels will be even if you
+                            are using cells, unless you set this flag to False.
+        --calibration_dict: Dictionary of calibrations you want to use to
+                                convert AFU readings to uM measurements, as
+                                returned by calibration_data. Default none,
+                                in which case the most recent calibration will
+                                be used for each channel.
+        --override_plate_reader_id: If not None, the plate reader ID will be
+                                        set to this. Default None.
     Returns: None
     Side Effects: Creates a new CSV with the same name as the data file with
                     "_tidy" appended to the end. This new file is in tidy
@@ -120,6 +219,9 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
         supplementary_data = read_supplementary_info(supplementary_filename)
     filename_base   = input_filename.rsplit('.', 1)[0]
     output_filename = filename_base + "_tidy.csv"
+
+    if calibration_dict is None:
+        calibration_dict = calibration_data()
 
     # If the user gave you an excel file, convert it to a CSV so we can read
     # it properly.
@@ -161,8 +263,10 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             #                   converting to uM if possible.
             read_sets = dict()
             for line in reader:
+                if len(line) == 0:
+                    continue
                 if line[0].strip() == "Reader Serial Number:":
-                    if overrride_plate_reader_id != None:
+                    if override_plate_reader_id != None:
                             warnings.warn(("Plate reader id overridden to be '%s'") \
                                     % overrride_plate_reader_id)
                             plate_reader_id= overrride_plate_reader_id
@@ -178,7 +282,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     if line[1].strip() == "Fluorescence Endpoint":
                         read_name = ""
                     else:
-                        read_name = line[1]
+                        read_name = line[1].strip()
                     entered_layout = False
                     hit_data       = False
                     for line in reader:
@@ -215,12 +319,15 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             read_sets[read_name].append(ReadSet(read_name,
                                                                 excitation,
                                                                 emission, gain))
-                        #print(read_sets.keys())
-                        if line[0].split(":")[0].strip() in read_sets.keys():
-                            hit_data == True
+
+                        maybe_read_name = line[0].split(":")[0].strip()
+                        if maybe_read_name in read_sets.keys() or \
+                           maybe_read_name.startswith("OD"):
+                            hit_data = True
                             break
                     if entered_layout or hit_data:
                         break
+
             # Read data blocks
             # Find a data block
             while line != None:
@@ -241,8 +348,12 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     emission   = -1
                     gain       = -1
                 else:
-                    info_parts = info.split(":")
-                    read_name  = info_parts[0]
+                    if ":" in info:
+                        info_parts = info.split(":")
+                        read_name  = info_parts[0]
+                    else:
+                        info_parts = [info]
+                        read_name = ""
                     if not info.endswith(']'):
                         read_idx = 0
                     else:
@@ -292,9 +403,9 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                             units = "absorbance"
                         else:
                             if(convert_to_uM):
-                                uM = raw_to_uM(line[i],
-                                           standard_channel_name(read_name),
-                                           plate_reader_id, gain, volume)
+                                uM = raw_to_uM(calibration_dict, line[i],
+                                               read_name, plate_reader_id, gain,
+                                               volume)
                             else:
                                 uM = None
                             if uM != None:
@@ -304,13 +415,14 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                 measurement = afu
                                 units = "AFU"
                         row = [read_name, gain, time_secs, time_hrs, well_name,
-                               measurement, units, str(excitation), str(emission)]
+                               measurement, units, str(excitation),
+                               str(emission)]
 
                         for name in supplementary_data.keys():
                             row.append(supplementary_data[name][well_name])
-                        row.append(read_name+str(gain)+str(excitation)+str(emission))
+                        row.append(read_name + str(gain) + str(excitation) +\
+                                   str(emission))
                         try:
-
                             writer.writerow(row)
                         except TypeError as e:
                             print("Error writing line: " + str(row))
@@ -866,7 +978,7 @@ class BiotekCellPlotter(object):
                          # the label. Should read more cleanly this way.
 
     def plot(self, title = None, split_plots = False, filename = None,
-             show = True):
+             show = True, figsize = (8, 4), show_legend = True):
         '''
         Plot/show/save the figure.
 
@@ -881,6 +993,8 @@ class BiotekCellPlotter(object):
             show -- Boolean that sets whether the plot will actually be shown.
                     Default True; set to False if you want to save without
                     viewing it.
+            figsize -- 2-tuple of the size of the figure. Is passed directly
+                        to figure creation.
         '''
         plt.clf()
 
@@ -896,15 +1010,11 @@ class BiotekCellPlotter(object):
 
         # Plot out all of the fluorescence data, keeping track of the largest
         # plotted measurement.
-        # measurement_max = 0
-        fig, ax1 = plt.subplots()
+        fig, ax1 = plt.subplots(figsize = figsize)
         for well_spec in self.well_list:
             well_df = norm_df[norm_df.Well == well_spec.well_name]
             ax1.plot(well_df["Time (hr)"], well_df.Measurement,
                      color = well_spec.color, label = well_spec.label)
-            # well_max = well_df.Measurement.max()
-            # if well_max > measurement_max:
-            #     measurement_max = well_max
         ax1.set_xlabel("Time (hr)")
         if self.normalize_by_od:
             ax1.set_ylabel("%s/OD (gain %d)" % (self.channel, self.gain))
@@ -912,8 +1022,9 @@ class BiotekCellPlotter(object):
             ax1.set_ylabel("%s (gain %d)" % (self.channel, self.gain))
 
         if split_plots:
-            handles, labels = ax1.get_legend_handles_labels()
-            ax1.legend(handles, labels)
+            if show_legend:
+                handles, labels = ax1.get_legend_handles_labels()
+                ax1.legend(handles, labels)
             if title:
                 plt.title(title, y = 1.08)
             fig.tight_layout()
@@ -926,24 +1037,26 @@ class BiotekCellPlotter(object):
         # Plot out all OD data, scaling it to roughly the same size as the other
         # data.
         if split_plots:
-            fig, ax2 = plt.subplots()
+            fig, ax2 = plt.subplots(figsize = figsize)
         else:
             ax2 = ax1.twinx()
         all_od_df = self.df[(self.df.Channel == self.od_channel) & \
                             (self.df.Well.isin(well_names))]
-        #max_od = float(all_od_df.Measurement.max())
-        #scale_factor = measurement_max / max_od
         for well_spec in self.well_list:
             od_df     = all_od_df[all_od_df.Well == well_spec.well_name]
-            #scaled_od = od_df.Measurement * scale_factor
             linestyle = "-" if split_plots else ":"
             ax2.plot(od_df["Time (hr)"], od_df.Measurement,
                      color = well_spec.color, linewidth = 1,
-                     linestyle = linestyle)
+                     linestyle = linestyle,
+                     label = well_spec.label if split_plots else "")
         ax2.set_ylabel(self.od_channel)
 
-        handles, labels = ax1.get_legend_handles_labels()
-        ax1.legend(handles, labels)
+        if show_legend:
+            if split_plots:
+                handles, labels = ax2.get_legend_handles_labels()
+            else:
+                handles, labels = ax1.get_legend_handles_labels()
+            ax2.legend(handles, labels)
         if title:
             plt.title(title, y = 1.08)
         fig.tight_layout()
@@ -953,4 +1066,5 @@ class BiotekCellPlotter(object):
             plt.savefig(filename, dpi = 400)
         if show:
             plt.show()
-        plt.clf()
+
+        return plt.gca()

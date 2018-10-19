@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import io
-
+import sys
 
 __all__ = ['mt_open']
 

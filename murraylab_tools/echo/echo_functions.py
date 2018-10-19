@@ -443,7 +443,14 @@ class EchoRun():
         # Register other materials
         stocks = []
         for i in range(len(material_total_vols)):
-            if material_total_vols[i] == 0 or stock_sheet[i+2,1] == "":
+            if stock_sheet[i+2,1] == "":
+                for j in range(i+1, len(material_total_vols)):
+                    if stock_sheet[i+2,1] != "":
+                        raise RuntimeWarning("You left a blank row in your " + \
+                            "stock file. This will cause alignment shifts in "+\
+                            "your recipe sheet and you will almost surely " +  \
+                            "use the wrong amounts of ingredients. Are you " + \
+                            "sure this is what you want?")
                 continue
             material_name          = stock_sheet[i+2,1]
             material_concentration = stock_sheet[i+2, 2]
@@ -1233,7 +1240,7 @@ class SourcePlate():
     One Echo source plate. Responsible for allocating wells for
     EchoSourceMaterials.
     '''
-    def __init__(self, SPname = None, SPtype = None, filename = None):
+    def __init__(self, filename = None, SPname = None, SPtype = None):
         '''
         SPname -- A(n arbitrary) string representing this plate. Default is
                     "Plate[1]"
@@ -1368,7 +1375,7 @@ class SourcePlate():
                 col_string = str(col_num + 1)
                 outfile.write(row_string + col_string + "\n")
 
-    def request_wells(self, n_wells, name = "None"):
+    def request_wells(self, n_wells):
         '''
         Called when an EchoSourceMaterial wants to get some wells. Returns a
         list of wells for the material, which are marked internally as used.
@@ -1379,10 +1386,6 @@ class SourcePlate():
         buffer welll on the right. Assign the first block run across. If the
         number of wells requested is smaller than the number of wells per row,
         also require that the entire block be able to fit in one row.
-
-        Alternatively, if the name of a material is passed, and the
-        SourcePlate object knows where that material is stored, it can assign
-        that well instead.
         '''
         if n_wells == 0:
             return []
@@ -1392,8 +1395,8 @@ class SourcePlate():
             if n_wells > self.cols or self.current_col + n_wells <= self.cols:
                 flat_idx = self.current_row*self.cols + self.current_col
                 if flat_idx + n_wells > self.rows * self.cols:
-                    raise Exception("Source plate %s is out of available wells."\
-                                   % self.name)
+                    raise Exception("Source plate %s is out of available " + \
+                                    "wells." % self.name)
                 block = self.wells_used.ravel()[flat_idx:flat_idx + n_wells]
                 # If it will, return that block and mark it used
                 if True not in block:
@@ -1420,6 +1423,9 @@ class SourcePlate():
         '''
         For internal use. Increments the plate's current position by n.
         '''
+        if n < 0:
+            raise ValueError("Can't increment a plate's position by negative "+\
+                             "numbers. Good try, though.")
         self.current_col += n
         while self.current_col >= self.cols:
             self.current_col -= self.cols
@@ -1551,7 +1557,8 @@ class DestinationPlate():
         if n_wells == 0:
             return []
         if sum(self.wells_used) + n_wells > len(self.wells):
-            raise Exception("Source plate %s is out of available wells." % self.name)
+            raise Exception("Source plate %s is out of available wells." % \
+                            self.name)
         unused_indices = self.indices[self.wells_used == False]
         return_indices = unused_indices[:n_wells]
         return_wells = self.wells[return_indices]
