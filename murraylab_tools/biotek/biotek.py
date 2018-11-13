@@ -262,7 +262,16 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             #           4.2.1) Rewrite data on that line to tidy data file,
             #                   converting to uM if possible.
             read_sets = dict()
-            for line in reader:
+            next_line = ""
+            while True:
+                if next_line != "":
+                    line = next_line
+                    next_line = ""
+                else:
+                    try:
+                        line = next(reader)
+                    except StopIteration:
+                        break
                 if len(line) == 0:
                     continue
                 if line[0].strip() == "Reader Serial Number:":
@@ -285,44 +294,62 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         read_name = line[1].strip()
                     entered_layout = False
                     hit_data       = False
+
+                    # Process all the information for this read set into one
+                    # solid text block, which we will search for relevant
+                    # information
+                    read_information_block = ""
                     for line in reader:
+                        if len(line) == 0:
+                            continue
                         if line[0].strip() == "Layout":
                             entered_layout = True
                             break
-                        if line[0].strip() == "Read":
-                            if line[1].strip() == "Fluorescence Endpoint":
-                                read_name = ""
-                            else:
-                                read_name = line[1].strip()
-                            continue
-                        if line[1].startswith("Filter Set"):
-                            line = next(reader)
-                            lineparts = line[1].split(",")
-                            excitation = int(lineparts[0].split(":")[-1].split("/")[0].strip())
-                            # Sometimes excitation and emission get split to
-                            # different cells; check for this.
-                            if len(lineparts) == 1:
-                                emission_cell = line[2]
-                            else:
-                                emission_cell = lineparts[1]
-                            emission = int(emission_cell.split(":")[-1].split("/")[0].strip())
-                            line = next(reader)
-                            gain = line[1].split(",")[-1].split(":")[-1].strip()
-                            if gain != "AutoScale":
-                                gain = int(gain)
-                            if not read_name in read_sets:
-                                read_sets[read_name] = []
-                            read_sets[read_name].append(ReadSet(read_name,
-                                                                excitation,
-                                                                emission, gain))
                         maybe_read_name = line[0].split(":")[0].strip()
                         if maybe_read_name in read_sets.keys() or \
                            maybe_read_name.startswith("OD"):
                             hit_data = True
                             break
+                        if line[0].strip() == "Read":
+                            next_line = line
+                            break
+                        line[-1] = line[-1].strip()
+                        read_information_block += ",".join(line)
+
+                    # Now go through the block to figure out information for the
+                    # read set.
+                    info_parts = read_information_block.split(",")
+                    for idx in range(len(info_parts)):
+                        block = info_parts[idx]
+                        block = block.strip()
+                        if block.startswith("Wavelengths"):
+                            emission = int(block.split(":")[-1].strip()\
+                                           .split("/")[0].strip())
+                            excitation = emission
+                        if block.startswith("Filter Set"):
+                            for i in range(idx+1, len(info_parts)):
+                                sub_block = info_parts[i]
+                                sub_block = sub_block.strip()
+                                if sub_block.startswith("Excitation"):
+                                    excitation = int(sub_block.split(":")[-1]\
+                                                     .split("/")[0].strip())
+                                if sub_block.startswith("Emission"):
+                                    emission = int(sub_block.split(":")[-1]\
+                                                     .split("/")[0].strip())
+                                if sub_block.startswith("Gain"):
+                                    gain = sub_block.split(",")[-1]\
+                                           .split(":")[-1].strip()
+                                    if gain != "AutoScale":
+                                        gain = int(gain)
+                                if sub_block.startswith("Filter Set"):
+                                    break
+                            if not read_name in read_sets:
+                                read_sets[read_name] = []
+                            read_sets[read_name].append(ReadSet(read_name,
+                                                            excitation,
+                                                            emission, gain))
                     if entered_layout or hit_data:
                         break
-
             # Read data blocks
             # Find a data block
             while line != None:
