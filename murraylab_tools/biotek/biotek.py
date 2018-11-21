@@ -400,8 +400,19 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         break
                     raw_time = line[1]
                     time_parts = raw_time.split(':')
-                    time_secs = int(time_parts[2]) + 60*int(time_parts[1]) \
-                                + 3600*int(time_parts[0])
+                    days=0
+                    minutes=int(time_parts[1])
+                    seconds=int(time_parts[2])
+                    
+                    if("1900" in raw_time):
+                      tstamp=pd.to_datetime(raw_time)
+                      days=tstamp.day
+                      hours=int(tstamp.hour)+24*days
+                    else:
+                      hours=int(time_parts[0])
+                    time_secs = int(seconds) + 60*int(minutes) \
+                                + 3600*int(hours)
+                    
                     time_hrs = time_secs / 3600.0
                     temp = line[2]
                     for i in range(3,len(line)):
