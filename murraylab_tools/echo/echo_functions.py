@@ -189,7 +189,7 @@ class EchoSourceMaterial():
                   "source plate to give %f total volume") % \
                   (self.name, self.total_volume_requested))
         if self.wells == None:
-            self.wells = self.plate.request_wells(int(n_source_wells),self.name)
+            self.wells = self.plate.request_wells(int(n_source_wells))
         if len(self.wells) < 1:
             warnings.warn(("Material %s has requested no wells. Are you sure "+\
                           "this is correct?") % self.name)

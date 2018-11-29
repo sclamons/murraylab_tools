@@ -13,6 +13,8 @@ from .biotek import calibration_data, \
                     normalize, \
                     BiotekCellPlotter, \
                     calibration_dates, \
-                    applyFunc, \
+                    multiPlot, \
                     hmap_plt, \
-                    multiPlot 
+                    applyFunc
+
+

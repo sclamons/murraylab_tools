@@ -1,10 +1,7 @@
 import murraylab_tools.biotek as mt_biotek
 import os
-import pandas as pd
-import seaborn as sns
-import warnings
-warnings.filterwarnings('ignore')
-gitexamplepath =".\\examples\\biotek_examples\\"
+gitexamplepath = "C:\\Users\\Andrey\\Documents\\GitHub\\"+\
+                "murraylab_tools\\examples\\biotek_examples\\"
 data_filename = gitexamplepath+\
                 "180515_big384wellplate.csv"
 supplementary_filename = gitexamplepath+\
@@ -12,31 +9,18 @@ supplementary_filename = gitexamplepath+\
 
 #mt_biotek.tidy_biotek_data(data_filename, supplementary_filename, convert_to_uM = False)
 
-
+import pandas as pd
 
 tidy_filename = gitexamplepath+"180515_big384wellplate_tidy.csv"
 df = pd.read_csv(tidy_filename)
-df.loc[df.Excitation==580,"Channel"] = "RFP"
-df.loc[df.Excitation==485,"Channel"] = "GFP"
-neg_ctrl = ["D21","D22"]
-#df = mt_biotek.background_subtract(df,neg_ctrl)
+#df.head()
+#df.head()
+#gdf = df.groupby(["Channel", "Gain", "Well"])
+#gdf.head()
+#df[df.Channel == "GFP"].head()
 normdf = mt_biotek.normalize(df,norm_channel= "OD")
-normdf = mt_biotek.background_subtract(normdf,neg_ctrl)
-normdf = normdf.drop("index",axis=1)
-#calcdf = mt_biotek.applyFunc(normdf,("GFP","RFP"),lambda x:x[0]/(x[0]+x[1]),output="GFP frac")
-#calcdf = calcdf.drop("index",axis=1)
 #normdf[normdf.Gain==100].head()
 end_df = mt_biotek.window_averages(normdf,15,17,"hours")
-end_df = end_df[end_df.aTC!=200]
-dims = ["Ara","IPTG","aTC"]
-fixedinds = []#,"Construct"]
-fixconcs = []
-plotdf = end_df
-FPchan = "RFP"
-constructs = ["pQi41","pQi42","pQi51","pQi52"]
-
-mt_biotek.multiPlot(dims,end_df,fixedinds,fixconcs,constructs,FPchan,annot=False,vmin=None,vmax=None)
-
 
 end_df.Excitation.unique()
 slicedf = end_df[(end_df.Gain == 100 )&(end_df.Construct=="pQi41")&(end_df.aTC==250)]
