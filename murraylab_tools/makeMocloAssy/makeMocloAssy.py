@@ -342,17 +342,21 @@ def isNewDseq(newpart,partlist):
     """checks to see if newpart is contained within partlist, returns true
     if it isn't"""
     new = True
-    dsnewpart = Dseqrecord(newpart)
+    seqnewpart = str(newpart).upper()
+    newcirc = newpart.circular
+    #dsnewpart = Dseqrecord(newpart)
     for part in partlist:
         if(len(part) != len(newpart)):
             continue
-        dspart = Dseqrecord(part)
-        if(dspart.linear==False):
-            try:
-                dspart = dspart.synced(dsnewpart)
-            except Exception:
-                continue
-        if(dspart == dsnewpart):
+        #dspart = Dseqrecord(part)
+        if(newcirc and part.circular):
+            if(seqnewpart in (str(part).upper()*3)):
+                new=False
+                break
+            elif(seqnewpart in (str(part.rc()).upper()*3)):
+                new=False
+                break
+        elif(dspart == dsnewpart):
             new=False
             break
     return new
@@ -536,6 +540,9 @@ def DPallCombDseq(partslist):
     nodeDict = {}#defaultdict(lambda : [])
     partDict = {}#defaultdict(lambda : [])
     pind = 0
+    import time
+    #stime = time.time()
+    #print("makingdict")
     for part in partslist:
         Lend = ""
         Rend = ""
@@ -566,13 +573,25 @@ def DPallCombDseq(partslist):
         nodeDict[pind] = (Lend,Rend)
         pind+=1
     paths = []
+    #dtime = time.time()-stime
+    #stime = time.time()
+    #print("done making dict, took "+str(dtime))
     for pind in list(nodeDict.keys()):
         paths += findDNAPaths(pind,nodeDict,edgeDict)
     goodpaths = []
+
+    #dtime = time.time()-stime
+    #stime = time.time()
+    #print("done finding paths, took "+str(dtime))
     #print("paths are {}".format(paths))
+    part1time = 0
+    part2time = 0
     for path in paths:
         #print("path is")
         #print(path)
+        #here we are looking at the first and last parts
+        #to see if they are blunt
+        #stime = time.time()
         fpart = path[0]
         rpart = path[-1]
         npart = False
@@ -581,19 +600,30 @@ def DPallCombDseq(partslist):
             npart = True
             accpart = partslist[fpart]
             for pind in path[1:]:
+                #this is the part that traces back the path
                 accpart+=partslist[pind]
 
         elif(nodeDict[fpart][0]==nodeDict[rpart][1]):
+            #this is checking if the overhangs on the ends are compatible
             npart = True
             #this means we have a circular part! also good!
             accpart = partslist[fpart]
             for pind in path[1:]:
                 accpart+=partslist[pind]
             accpart=accpart.looped()
+        #part1time+= time.time()-stime
+        #stime = time.time()
         if(npart):
+            #this checks if the part we think is good already exists
+            #in the list
             if(isNewDseq(accpart,goodpaths)):
                 goodpaths+=[accpart]
-
+        #part2time+=time.time()-stime
+    #dtime = time.time()-stime
+    #stime = time.time()
+    #print("done tracing back paths, took "+str(dtime))
+    #print("first half took " + str(part1time))
+    #print("second half took " + str(part2time))
     return goodpaths
 def chewback(seqtochew,chewamt,end="fiveprime"):
     """chews back the amount mentioned, from the end mentioned."""
