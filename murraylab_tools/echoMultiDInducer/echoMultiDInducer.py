@@ -99,7 +99,12 @@ def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = []
         #well counter at the right row, in the leftmost column
         #if(wellorder=="down"):
         #    wellct = rows.index(con[0])*len(columns)+columns.index(int(con[1:]))
+        controlwell = [[0]*len(inducers)]
+
         acomb = allcomb(inducers)
+        if(not controlwell in acomb):
+            #you should really do some un-induced controls!!
+            acomb+=controlwell
 
         if(shuffle):
             random.shuffle(acomb)
@@ -121,7 +126,8 @@ def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = []
             #each comination of volumes is a list
             #where each element corresponds to an inducer
             for ind_i in range(len(iteration)):
-
+                #this goes through every inducer and
+                #tells the echo to pipet it.
 
                 #print(rowct)
                 #print(colct)
@@ -132,11 +138,13 @@ def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = []
 
                     usewell = wells[ind_i]
                     if(type(usewell)==list):
+                        #if we have multiple sources, randomly pick one of them!
                         usewell = random.choice(usewell)
                     outfile += eachline.format(usewell,wellstr,iteration[ind_i])
-                    wellsused+=[wellct]
-                    conwells+=[wellct]
-                    wlist.update({wellct:construct.index(con)})
+            #even 0,0 will be marked as used. This is good!
+            wellsused+=[wellct]
+            conwells+=[wellct]
+            wlist.update({wellct:construct.index(con)})
 
             wellind+=1#here is where we just go along left to right, top to bottom
         #wlist+=[conwells]
