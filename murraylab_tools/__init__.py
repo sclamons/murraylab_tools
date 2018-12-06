@@ -1,1 +1,1 @@
-__all__ = ['biotek', 'echo','makeMocloAssy']
+__all__ = ['biotek', 'echo','makeMocloAssy','echoMultiDInducer']
