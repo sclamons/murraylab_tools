@@ -8,6 +8,7 @@ import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
 import math
+import os
 
 edges = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,\
              24,47,48,71,72,95,96,119,120,143,144,167,168,191,192,215,216,\
@@ -71,7 +72,7 @@ def allcomb(listoflists):
             outlist+=[[element]+lists]
     return outlist
 
-def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = [],inducernames=[],shuffle=False,wellorder="across",draw=True):
+def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = [],inducernames=[],shuffle=False,wellorder="across",draw=True, mypath="."):
     outfile = "Source Plate Name,Source Plate Type,Source Well,    Sample ID,Sample Name,Sample Group,Sample Comment,Destination Plate Name,    Destination Well,Transfer Volume\n"
     suppfile = "Well,Construct,"
     suppfile+= ",".join(inducernames)
@@ -141,16 +142,16 @@ def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = []
         #wlist+=[conwells]
     if(draw):
         drawPlate(wlist)
-    outfle = open(fname,"w")
+    outfle = open(os.path.join(mypath,fname),"w")
     outfle.write(outfile)
     outfle.close()
-    print("wrote "+outfile)
-    supfleout= open("supp_"+fname,"w")
+    print("wrote "+os.path.join(mypath,fname))
+    supfleout= open(os.path.join(mypath,"supp_"+fname),"w")
     supfleout.write(suppfile)
     supfleout.close()
-    print("wrote "+suppfile)
+    print("wrote "+os.path.join(mypath,"supp_"+fname))
     return wellsused
-def makeGridWrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,wellvol=50,shuffle=False,wellorder="across"):
+def makeGridWrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,wellvol=50,shuffle=False,wellorder="across",mypath="."):
     """this function contains some helpful pre-sets for doing multiple inducer sweeps in a 384 well plate.
     inducers:
     this is a list of lists that looks like this:
@@ -256,4 +257,4 @@ def makeGridWrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,wellv
     for cname,cwell in zip(constructs,conwells):
         print("{} : {}".format(cname,str(cwell)))
     print("prepare {} ml of each construct for {} well volume".format(int(wellvol*1.1*384/len(constructs))/1000,wellvol))
-    return makeGridFile(volonly,sourceonly,conwells,fname,avoidedges,constructs,indonly,shuffle,wellorder=wellorder)
+    return makeGridFile(volonly,sourceonly,conwells,fname,avoidedges,constructs,indonly,shuffle,wellorder=wellorder,mypath=mypath)
