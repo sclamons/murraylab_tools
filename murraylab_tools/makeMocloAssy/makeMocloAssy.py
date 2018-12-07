@@ -1097,7 +1097,7 @@ class assemblyFileMaker():
             ftoload = pd.read_csv(loadFile).fillna('')
             try:
                 ftoload = ftoload.drop('comment',axis=1)
-            except ValueError:
+            except (ValueError,KeyError) as e:
                 #if this happens then 'comment' was already not there. great!
                 pass
 
