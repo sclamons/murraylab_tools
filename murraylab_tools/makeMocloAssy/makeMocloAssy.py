@@ -20,7 +20,14 @@ import ipywidgets as widgets
 from collections import defaultdict
 from IPython.display import FileLink, FileLinks
 import warnings
-
+import re
+def incrementString(s):
+    m = re.search(r'\d+$', s)
+    if(m):
+        return s[:m.start()]+str(int(m.group())+1)
+    else:
+        return s+str(0)
+    #return int(m.group()) if m else None
 
 enzymes = \
           {"BsaI":BsaI,
@@ -541,8 +548,6 @@ def DPallCombDseq(partslist):
     partDict = {}#defaultdict(lambda : [])
     pind = 0
     import time
-    #stime = time.time()
-    #print("makingdict")
     for part in partslist:
         Lend = ""
         Rend = ""
@@ -558,40 +563,26 @@ def DPallCombDseq(partslist):
             else:
                 Lend = str(Lseq).lower()
             edgeDict[Lend].append([pind,0])
-            #pushDict(edgeDict,Lend,((pind,0),))
         if(Rtype == "blunt"):
             Rend = "blunt"
             edgeDict[Rend].append([pind,1])
-            #pushDict(edgeDict,Rend,((pind,1),))
         else:
             if(Rtype == "5'"):
                 Rend = str(Dseq(Rseq).rc()).lower()
             else:
                 Rend = str(Rseq).lower()
             edgeDict[Rend].append([pind,1])
-            #pushDict(edgeDict,Rend,((pind,1),))
         nodeDict[pind] = (Lend,Rend)
         pind+=1
     paths = []
-    #dtime = time.time()-stime
-    #stime = time.time()
-    #print("done making dict, took "+str(dtime))
     for pind in list(nodeDict.keys()):
         paths += findDNAPaths(pind,nodeDict,edgeDict)
     goodpaths = []
-
-    #dtime = time.time()-stime
-    #stime = time.time()
-    #print("done finding paths, took "+str(dtime))
-    #print("paths are {}".format(paths))
     part1time = 0
     part2time = 0
     for path in paths:
-        #print("path is")
-        #print(path)
         #here we are looking at the first and last parts
         #to see if they are blunt
-        #stime = time.time()
         fpart = path[0]
         rpart = path[-1]
         npart = False
@@ -910,7 +901,9 @@ class assemblyFileMaker():
         self.holdup=False
         self.ddlay = widgets.Layout(width='75px',height='30px')
         self.eblay = widgets.Layout(width='50px',height='30px')
+        self.lsblay = widgets.Layout(width='140px',height='30px')
         self.sblay = widgets.Layout(width='100px',height='30px')
+        self.rsblay = widgets.Layout(width='60px',height='30px')
         self.Vboxlay = widgets.Layout(width='130px',height='67px')
         self.textlay = widgets.Layout(width='200px',height='30px')
         self.PlateLetters="ABCDEFGHIJKLMNOP"
@@ -927,14 +920,14 @@ class assemblyFileMaker():
         self.loadFIleList = widgets.Dropdown(
             options=oplist,
             #value=2,
-            layout=self.sblay,
+            layout=self.lsblay,
             description='',
         )
         self.loadbut = widgets.Button(
             description='Load',
             disabled=False,
             button_style='', # 'success', 'info', 'warning', 'danger' or ''
-            layout=self.sblay,
+            layout=self.rsblay,
             tooltip='Click to load an existing file',
         )
 
@@ -976,7 +969,7 @@ class assemblyFileMaker():
         )
         #print(self.drop2.style.keys)
         self.but = widgets.Button(
-            description='Start',
+            description='New...',
             disabled=False,
             button_style='', # 'success', 'info', 'warning', 'danger' or ''
             layout=self.sblay,
@@ -1091,6 +1084,7 @@ class assemblyFileMaker():
         drop downs and populates them with options!"""
         #txtdisabl = True
         b.disabled=True
+        self.but.disabled = True
         self.drop2.disabled = True
         self.finbut.disabled = False
         self.DestWell.disabled = False
@@ -1099,8 +1093,15 @@ class assemblyFileMaker():
         self.loadbut.disabled=True
         if(loadFile!=None):
             #this should read the file
-            self.fname1.value=loadFile
+            self.fname1.value=os.path.splitext(os.path.split(loadFile)[1])[0]
+            ftoload = pd.read_csv(loadFile).fillna('')
+            try:
+                ftoload = ftoload.drop('comment',axis=1)
+            except ValueError:
+                #if this happens then 'comment' was already not there. great!
+                pass
 
+            self.AddCols.value=len(ftoload.columns)-9
         dfs = pd.read_excel(self.drop2.value,None)
         sheetlist = list(dfs.keys())
         self.p = pd.DataFrame.append(dfs["parts_1"],dfs["Gibson"])
@@ -1115,21 +1116,22 @@ class assemblyFileMaker():
         if(loadFile==None):
             self.addWidgetRow(labonly=False)
         else:
-            print(loadFile)
-            ftoload = pd.read_csv(loadFile)
+            #print(loadFile)
+
             findex = ftoload.index
             first = True
             for findex in ftoload.index:
-                currow = list(ftoload.iloc[findex])
-
+                dfrow = ftoload.iloc[findex]
+                currow = list(dfrow)
                 if(first):
-                    self.DestWell.value=currow[-1]
-                    self.AddCols.value=8-len(currow)
+                    self.DestWell.value=dfrow.targwell
                     #extracols =
                     #startpos =
                     first=False
-                self.addWidgetRow(labonly=False,copyrow=currow[:-1])
-
+                currow = list(dfrow.drop(['targwell','name','enzyme']))\
+                                +[dfrow.enzyme]+[dfrow["name"]]
+                self.addWidgetRow(labonly=False,copyrow=currow)
+            #self.updatePartOptions()
             #readindex = ftoload.index()
         outcols = [widgets.VBox(a) for a in self.outitems ]
         self.bigSheet=widgets.HBox(outcols)
@@ -1161,7 +1163,11 @@ class assemblyFileMaker():
                 rightvalue = self.outitems[rightitem][itemnum].value
                 logiclist = np.array([True]*len(self.p))
                 if(leftvalue!=""):
-                    leftoverhang=self.p[self.p.part == leftvalue].right.iloc[0]
+                    try:
+                        leftoverhang=self.p[self.p.part == leftvalue].right.iloc[0]
+                    except IndexError:
+                        #this means we didn't find the part!
+                        raise ValueError("part {} has incorrect right overhang!".format(leftvalue))
                     if((self.outitems[-3][itemnum].value!='gibson') \
                                                 and ('UNS' in leftoverhang)):
                         pass
@@ -1170,7 +1176,10 @@ class assemblyFileMaker():
 
                     #print(leftoverhang)
                 if(rightvalue!=""):
-                    rightoverhang=self.p[self.p.part == rightvalue].left.iloc[0]
+                    try:
+                        rightoverhang=self.p[self.p.part == rightvalue].left.iloc[0]
+                    except IndexError:
+                        raise ValueError("part {} has incorrect right overhang!".format(rightvalue))
                     if((self.outitems[-3][itemnum].value!='gibson') \
                                                 and ('UNS' in rightoverhang)):
                         pass
@@ -1230,8 +1239,16 @@ class assemblyFileMaker():
             else:
 
                 if(col=="name"):
+                    newname = ""
+                    #print(copyrow)
+                    if(type(copyrow)==list):
+                        newname = copyrow[outcolnum]
+                    elif(type(copyrow)==int):
+                        oldname = self.outitems[outcolnum][copyrow].value
+                        newname = incrementString(oldname)
                     interwidg = widgets.Text(\
-                            layout=self.ddlay)
+                            layout=self.ddlay,\
+                            value=str(newname))
                 elif(col==""):
                     but1 = widgets.Button(\
                         description='+',
@@ -1259,6 +1276,9 @@ class assemblyFileMaker():
                         prevval = copyrow[outcolnum]
                     oplist, prevval = self.generateOptionsList(self.p,col,\
                                             prevval,self.listEverything.value)
+                    #print(oplist)
+                    #print("value is")
+                    #print(prevval)
                     interwidg = widgets.Dropdown(\
                             options=oplist,\
                             value=prevval,\
