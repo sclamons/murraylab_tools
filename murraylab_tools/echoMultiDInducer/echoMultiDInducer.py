@@ -25,10 +25,12 @@ def drawPlate(welldict={}):
     grid = np.mgrid[0:1:24j,.7:0:16j].reshape(2, -1,order="F").T
 
     patches = []
-    numconstructs=len(set([welldict[a] for a in welldict]))
-    #print(numconstructs)
+    uniqconstructs = set([welldict[a] for a in welldict])
+    numconstructs=len(uniqconstructs)
     colrange=np.linspace(0,1,numconstructs)
     random.shuffle(colrange)
+    concolor = {a:b for a,b in zip(uniqconstructs,range(numconstructs))}
+    print(concolor)
     colors=plt.cm.rainbow([0]+colrange)
 
     condiv=0
@@ -38,17 +40,31 @@ def drawPlate(welldict={}):
     color=colrange[0]
     #print(len(colors))
     clist=[]
+    centroids = [(0,0)]*numconstructs
+    pcount = [0]*numconstructs
     for a in range(384):
+        i = -1
         try:
-            color= colors[welldict[a]]
-
+            i=concolor[welldict[a]]
+            color= colors[i]
         except KeyError:
             color="lightgray"
-        rect = mpatches.Rectangle(grid[a], .6/17, 1/28, ec="none", fc=color,alpha=.7)
+        if(i>=0):
+            centroids[i] = \
+                    (centroids[i][0]+grid[a][0],\
+                    centroids[i][1]+grid[a][1])
+            pcount[i]+=1
+        rect = mpatches.Rectangle(grid[a], .6/17, 1/28, \
+                                ec="none", fc=color,alpha=.7)
         plt.gca().add_patch(rect)
         #patches.append(rect)
     #label(grid[1], "Rectangle")
-
+    centroids = [(a[0]/b,a[1]/b) for a,b in zip(centroids,pcount)]
+    for construct,centpt in zip(uniqconstructs,centroids):
+        offset = (len(construct)*.0125)/2
+        plt.gca().text(centpt[0]-offset,centpt[1],construct,\
+                        bbox={'facecolor':'white','edgecolor':'white',\
+                                            'alpha':0.9,'pad':2})
     #colors = np.linspace(0, 1, len(patches))
     collection = PatchCollection(patches,alpha=.3)
     #collection.set_array(np.array(colors))
@@ -144,7 +160,7 @@ def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = []
             #even 0,0 will be marked as used. This is good!
             wellsused+=[wellct]
             conwells+=[wellct]
-            wlist.update({wellct:construct.index(con)})
+            wlist.update({wellct:curconname})
 
             wellind+=1#here is where we just go along left to right, top to bottom
         #wlist+=[conwells]
@@ -159,8 +175,10 @@ def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = []
     supfleout.close()
     print("wrote "+os.path.join(mypath,"supp_"+fname))
     return wellsused
-def makeGridWrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,wellvol=50,shuffle=False,wellorder="across",mypath="."):
-    """this function contains some helpful pre-sets for doing multiple inducer sweeps in a 384 well plate.
+def makeGridWrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,\
+                wellvol=50,shuffle=False,wellorder="across",mypath="."):
+    """this function contains some helpful pre-sets for doing multiple
+    inducer sweeps in a 384 well plate.
     inducers:
     this is a list of lists that looks like this:
     [ ["name",[int(amount1),int(amount2)],["well",number of wells]]]
@@ -218,6 +236,7 @@ def makeGridWrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,wellv
     ->->A2 -> B2 etc.
     """
     if(avoidedges==edges):
+        #print("edges")
         start="B2"
         rows=14
         cols=22
@@ -243,8 +262,6 @@ def makeGridWrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,wellv
             divideplate-=1
         for i in range(len(constructs)):
             conwells+=[start[0]+str(int(start[1:])+divideplate*i)]
-    #print(rows/len(constructs))
-
 
     indonly=[a[0] for a in inducers]
     volonly=[[int(b*maxinducer/100) for b in a[1]] for a in inducers]
