@@ -1,3 +1,3 @@
-__all__ = ['echoMultiDInducer']
+__all__ = ['echo_multid_dilution_series']
 # , 'echo_source_material', 'echo_run', 'source_plate', 'pick', 'reaction', 'source_plate']
-from .echoMultiDInducer import *
+from .echo_multid_dilution_series import *

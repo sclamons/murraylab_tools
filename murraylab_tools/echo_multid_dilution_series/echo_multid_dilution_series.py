@@ -88,7 +88,7 @@ def allcomb(listoflists):
             outlist+=[[element]+lists]
     return outlist
 
-def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = [],inducernames=[],shuffle=False,wellorder="across",draw=True, mypath="."):
+def multid_dilution(inducers,wells,construct,fname,blacklist=[],constructnames = [],inducernames=[],shuffle=False,wellorder="across",draw=True, mypath="."):
     outfile = "Source Plate Name,Source Plate Type,Source Well,    Sample ID,Sample Name,Sample Group,Sample Comment,Destination Plate Name,    Destination Well,Transfer Volume\n"
     suppfile = "Well,Construct,"
     suppfile+= ",".join(inducernames)
@@ -175,7 +175,7 @@ def makeGridFile(inducers,wells,construct,fname,blacklist=[],constructnames = []
     supfleout.close()
     print("wrote "+os.path.join(mypath,"supp_"+fname))
     return wellsused
-def makeGridWrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,\
+def multid_dilution_wrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,\
                 wellvol=50,shuffle=False,wellorder="across",mypath="."):
     """this function contains some helpful pre-sets for doing multiple
     inducer sweeps in a 384 well plate.
@@ -282,4 +282,4 @@ def makeGridWrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,\
     for cname,cwell in zip(constructs,conwells):
         print("{} : {}".format(cname,str(cwell)))
     print("prepare {} ml of each construct for {} well volume".format(int(wellvol*1.1*384/len(constructs))/1000,wellvol))
-    return makeGridFile(volonly,sourceonly,conwells,fname,avoidedges,constructs,indonly,shuffle,wellorder=wellorder,mypath=mypath)
+    return multid_dilution(volonly,sourceonly,conwells,fname,avoidedges,constructs,indonly,shuffle,wellorder=wellorder,mypath=mypath)

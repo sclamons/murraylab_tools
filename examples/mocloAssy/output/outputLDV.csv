@@ -1,5 +1,0 @@
-Source Plate Name,Source Plate Barcode,Source Plate Type,Source Well,    Sample ID,Sample Name,Sample Group,Sample Comment,Destination Plate Name,    Destination Well,Transfer Volume
-ASSGIB01,ASSGIB01,384LDV_Plus_AQ_GP,A4,,,,,Destination[1],A1,250
-ASSGIB01,ASSGIB01,384LDV_Plus_AQ_GP,B5,,,,,Destination[1],A1,200
-ASSGIB01,ASSGIB01,384LDV_Plus_AQ_GP,D5,,,,,Destination[1],A1,100
-ASSGIB01,ASSGIB01,384LDV_Plus_AQ_GP,P23,,,,,Destination[1],A1,450

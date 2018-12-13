@@ -1301,11 +1301,11 @@ class assemblyFileMaker():
                 pass
 
 
-def makeAssemblyFile(mypath="."):
+def make_assembly_file(mypath="."):
     """this function will assist the user with making assembly .csv files!"""
     x=assemblyFileMaker(mypath=mypath)
 
-def makeInteractive(mypath=".",printstuff=True):
+def process_assembly_file(mypath=".",printstuff=True):
     oplist = findFilesDict(os.path.join(mypath,"assemblies"))
     parts = findPartsListsDict(os.path.join(mypath,"partslist"))
 
@@ -1359,6 +1359,8 @@ def makeInteractive(mypath=".",printstuff=True):
 #def fixPart(partseq,enz="BsaI",circ=True,end5p=0,end3p=0,goodends=ENDDICT):
 
 def runProgram():
+    """runs the process_assembly_file function with command line prompts.
+    Probably doesn't work"""
     #x=pd.read_csv(insheet,sep=",")
     #pickhand = raw_input("is this for the echo? (y/n)")
     pickhand = 'y'
