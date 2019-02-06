@@ -743,7 +743,7 @@ class EchoRun():
                                                              neg_ctrl_well)
             if self.make_master_mix:
                 self.reactions[neg_ctrl_well].add_volume_of_material(txtl,
-                                                                     txtl_mm_vol)
+                                                                    txtl_mm_vol)
             if fill_with_water:
                 self.reactions[neg_ctrl_well].fill_with(water)
 
