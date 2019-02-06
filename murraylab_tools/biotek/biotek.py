@@ -748,7 +748,7 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
         chandf.Measurement = chandf.Measurement/ODdf.Measurement
         orig_units = chandf.Units.unique()[0]
         norm_units = "OD" if norm_channel.startswith("OD") \
-                          else norm_data.Units.unique()[0]
+                          else normalized_df.Units.unique()[0]
         chandf.Units = "%s/%s" % (orig_units, norm_units)
         normalized_df = normalized_df.append(chandf,ignore_index=True)
     normalized_df.reset_index()
