@@ -19,6 +19,7 @@ from collections import namedtuple
 from ..utils import *
 import pkg_resources
 from datetime import datetime
+from copy import deepcopy as dc
 
 ####################
 # Plate Reader IDs #
@@ -401,8 +402,19 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         break
                     raw_time = line[1]
                     time_parts = raw_time.split(':')
-                    time_secs = int(time_parts[2]) + 60*int(time_parts[1]) \
-                                + 3600*int(time_parts[0])
+                    days=0
+                    minutes=int(time_parts[1])
+                    seconds=int(time_parts[2])
+
+                    if("1900" in raw_time):
+                      tstamp=pd.to_datetime(raw_time)
+                      days=tstamp.day
+                      hours=int(tstamp.hour)+24*days
+                    else:
+                      hours=int(time_parts[0])
+                    time_secs = int(seconds) + 60*int(minutes) \
+                                + 3600*int(hours)
+
                     time_hrs = time_secs / 3600.0
                     temp = line[2]
                     for i in range(3,len(line)):
@@ -1255,7 +1267,7 @@ def hmap_plt(indf,yaxis,xaxis,fixedinds=[],fixconcs=[],construct=None,\
         outax.get_yaxis().set_visible(False)
 
 
-def multiPlot(dims,plotdf,fixedinds,fixconcs,constructs,FPchan,\
+def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
                                 annot=False,vmin=None,vmax=None,cmap="RdBu"):
     '''
     3D or 4D heatmap plot of dataframe
@@ -1271,6 +1283,9 @@ def multiPlot(dims,plotdf,fixedinds,fixconcs,constructs,FPchan,\
     Returns:
         Nothing. Creates a matplotlib plot
     '''
+    dims = dc(dims_in)
+    fixedinds = dc(fixedinds_in)
+    fixconcs = dc(fixconcs_in)
     def allcomb(listoflists):
         """creates all paths through a list"""
         if(len(listoflists)==1):
