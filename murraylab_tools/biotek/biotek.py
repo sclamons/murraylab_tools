@@ -12,6 +12,7 @@ import warnings
 import scipy.interpolate
 import csv
 import os
+import math
 import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import namedtuple
@@ -558,6 +559,140 @@ def background_subtract(df, negative_control_wells):
     return return_df
 
 
+def logistic_growth(t, rate, cap, floor, init):
+    '''
+    Model function for logistic growth with a noise floor.
+
+    Params:
+        t -- Time.
+        rate -- Growth rate parameter.
+        init -- Initial population.
+        cap -- Maximum population size.
+        floor -- Noise floor (i.e., OD reading for zero cells).
+    Returns: Model OD reading at the given time, for the given parameters.
+    '''
+
+    rate = np.abs(rate)
+    init = np.abs(init)
+    cap = np.abs(cap)
+    floor = np.abs(floor)
+    return floor + cap * init * np.exp(rate * t) \
+            / (cap + init * (np.exp(rate * t) - 1))
+
+def summarize_single_well_growth(well_df, growth_threshold = None,
+                                 fixed_init = None, verbose = False):
+    '''
+    Summarizes the growth characteristics of a single well's worth of dataframe,
+    returning the results as a dictionary describing a single dataframe line.
+    See summarize_growth for measurement details.
+
+    This function is intended as a helper function for summarize_growth; it uses
+    the helper function logistic_growth as a growth model.
+
+    Params:
+        well_df -- A DataFrame of Biotek data from a single well and a single
+                channel (presumably an OD channel).
+        growth_threshold -- If set, determines the fraction of of total
+                                population to find the time of, i.e., if
+                                growth_threshold = 0.25, this function will
+                                report the time that each well crossed 25%
+                                of the total population size for that well.
+        fixed_init -- Sets a fixed value for the initial population parameter.
+                        If None, this value is optimized with the rest of the
+                        parameters.
+        verbose -- Iff True, print some hints about how it's progressing.
+    Returns: A dictionary containing the well name, growth characteristics, and
+                any supplementary data from df.
+    '''
+    well_df.reset_index(inplace = True)
+    if verbose:
+        print("Summarizing from well %s" % well_df.Well[0])
+
+    # Some empirically-reasonable guesses for most growth experiments.
+    if fixed_init == None:
+        param_guess = (1.3, 1, 0.05, 0)
+        opt_func = logistic_growth
+    else:
+        param_guess = (1.3, 1, 0.05)
+        opt_func = lambda t, r, c, f: logistic_growth(t, r, c, f, fixed_init)
+
+    times = well_df["Time (hr)"]
+
+    opt_params = scipy.optimize.curve_fit(opt_func, times,
+                                          well_df["Measurement"],
+                                          p0 = param_guess,
+                                          maxfev = int(1e4))[0]
+
+    # To keep parameters positive, logistic_growth uses the absolute value
+    # of whatever parameters it gets, so optimization will sometimes return
+    # negative parameter values; have to correct these.
+    opt_params = np.abs(opt_params)
+
+    return_dict = dict()
+    return_dict["Rate"]  = opt_params[0]
+    return_dict["Cap"]   = opt_params[1]
+    return_dict["Floor"] = opt_params[2]
+    if fixed_init == None:
+        return_dict["Init"] = opt_params[3]
+    else:
+        return_dict["Init"] = fixed_init
+
+    # Calculate threshold time, if it is specified
+    if growth_threshold:
+        raise NotImplementedError()
+
+    # Add supplemental data.
+    for column in well_df.columns.values:
+        if column in ["Channel", "Gain", "Time (sec)", "Time (hr)",
+                      "Measurement", "Units", "Excitation", "Emission"]:
+            continue
+        return_dict[column] = well_df[column][0]
+
+    return return_dict
+
+def summarize_growth(df, channel, fixed_init = None, growth_threshold = None,
+                     verbose = False):
+    '''
+    Summarizes the growth characteristics of OD curves from a dataframe of
+    Biotek data. Performs the following summaries on each well:
+        * Fits OD curve to a logistic-plus-floor, finding an initial value, a
+            noise floor, a rate constant (R, not to be interpreted directly),
+            and a population maximum. The rate parameter has time units of
+            hours.
+        * Optionally finds the time when the population crosses some fraction of
+            maximum population. By default, does not calculate this -- set
+            the growth_threshold parameter to add this calculation.
+
+    Params:
+        df -- A DataFrame of Biotek data with at least one channel of growth
+                data.
+        channel -- The name of the channel with growth data. Should be a channel
+                    with only one Gain, or this will do weird things.
+        growth_threshold -- If set, determines the fraction of of total
+                                population to find the time of, i.e., if
+                                growth_threshold = 0.25, this function will
+                                report the time that each well crossed 25%
+                                of the total population size for that well.
+        fixed_init -- Sets a fixed value for the initial population parameter.
+                        If None, this value is optimized with the rest of the
+                        parameters.
+        verbose -- Iff True, prints some hints about what it's doing. Use if it's taking
+                    a while and you want to make sure it's making progress. Default False.
+    Returns: A new dataframe where each row summarizes the growth
+                characteristics of one from the original dataframe.
+    '''
+    channel_df = df[df.Channel == channel]
+
+    # Split dataframe into a list of dataframes for individual wells.
+    well_dfs = [channel_df[channel_df.Well == w] \
+                for w in channel_df.Well.unique()]
+    measurement_summary_rows = \
+        list(map(lambda df: summarize_single_well_growth(df, growth_threshold,
+                                                         fixed_init, verbose),
+                 well_dfs))
+    return pd.DataFrame(measurement_summary_rows)
+
+
 def window_averages(df, start, end, units = "seconds",
                     grouping_variables = None):
     '''
@@ -565,7 +700,7 @@ def window_averages(df, start, end, units = "seconds",
     fluorescences from a specified time window. The time window can be specified
     in seconds, hours, or index.
 
-    Args:
+    Params:
         df -- Dataframe of fluorescence data
         start -- First frame to be included (inclusively)
         end -- Last frame to be included (also inclusively)
@@ -682,31 +817,119 @@ def spline_fit(df, column = "Measurement", smoothing_factor = None):
         splined_df = splined_df.append(group)
     return splined_df
 
-def smoothed_derivatives(df, column = "Measurement", smoothing_factor = None):
+def moving_average_fit(df, column = "Measurement", window_size = 1,
+                       units = "hours", grouping_variables = None):
     '''
-    Calculates a smoothed derivative of the time traces in a dataframe. First
-    fits a spline, then adds the derivatives of the spline to a copy of the
-    DataFrame, which is returned.
+    Returns a DataFrame in which measurements (or values from some other column)
+    have been smoothed with a moving average filter. The size of the moving
+    average window canbe specified in frames, seconds, hours. Window sizes are
+    fixed across the time series in *frames*, but not necessarily fixed in
+    amount of *time* if the times in the DataFrame are not evenly spaced.
+
+    Whichever column is smooothed will be replaced by the smoothed data.
+
+    Note that smoothing will clip floor(n/2) frames from each end of the data,
+    where n is the size of the moving average window in frames.
+
+    Assumes that any data outside of the column to be smoothed is identical
+    across time within each well. If this is not true for some column, then the
+    values of that column will be overwritten by the value for the earliest
+    value of that column in that well.
+
+    Params:
+        df -- DataFrame of fluorescence data
+        column -- The column to smooth. Default "Measurement", which smooths OD
+                    and fluorescence data.
+        window_size -- Specifies the number of frames to average over. Can be
+                        in units of frames ("index") or time ("hours" or
+                        "seconds"). Window size will be rounded up to the
+                        nearest odd number.
+        units -- Either "hours" (default), "seconds", or "index". If "seconds"
+                    or "hours", all measurements must be equally spaced in time.
+        grouping_variables - Optional list of column names on which to group.
+                                Use this option primarily to separate multiple
+                                plates' worth of data with overlapping wells.
+    Returns: A DataFrame in which measurements (or some other column) are
+                replaced by a moving average of those measurements.
+    '''
+    group_cols = ["Channel", "Gain","Excitation","Emission", "Well"]
+    if grouping_variables:
+        group_cols += grouping_variables
+    grouped_df = df.groupby(group_cols)
+    smoothed_groups = []
+    for name, group in grouped_df:
+        group.sort_values("Time (sec)", ascending = True, inplace = True)
+
+        # Figure out the window size, in frames.
+        if units == "index":
+            n_frames = window_size
+        else:
+            if units == "hours":
+                times = group["Time (hr)"]
+            elif units == "seconds":
+                times = group["Time (sec)"]
+            # Time-per-frame can vary substantially between frames. We'll
+            # use the median time-difference as an estimate for
+            # the time-per-frame.
+            time_per_frame = np.median(np.diff(times))
+            n_frames = math.ceil(window_size / time_per_frame)
+        if n_frames%2 == 0:
+            n_frames += 1
+
+        # Calculate smoothed data. Code taken from StackOverflow user Jamie.
+        column_data = group[column].to_numpy()
+        smoothed_data = np.cumsum(column_data)
+        smoothed_data[n_frames:] = \
+                            smoothed_data[n_frames:] - smoothed_data[:-n_frames]
+        smoothed_data = smoothed_data[n_frames - 1:] / n_frames
+
+        # Clip out data from either end of the group and replace the column of
+        # interest with the smoothed version.
+        group = group.iloc[n_frames//2 - 1 : -n_frames//2]
+        group[column] = smoothed_data
+
+        # This will get concatenated into a total dataframe later.
+        smoothed_groups.append(group)
+    return pd.concat(smoothed_groups)
+
+
+def smoothed_derivatives(df, column = "Measurement", window_size = 1,
+                         units = "hours", grouping_variables = None):
+    '''
+    Calculates a smoothed derivative of the time traces in a dataframe. Returns
+    a new DataFrame with the measurements in a column replaced by a derivative
+    of a moving window average of those measurements.
 
     Args:
         df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
-        column - Column to fit derivatives to. Defaults to "uM"
-        smoothing_factor - Parameter determining the tightness of the spline
-                            fit made before derivative calculation.
-                            Default is the number of time points. Smaller
-                            smoothing factor produces tighter fit; 0 smoothing
-                            factor interpolates every point. See parameter 's'
-                            in scipy.interpolate.UnivariateSpline.
+        column - Column to fit derivatives to. Defaults to "Measurement".
+        window_size -- Specifies the number of frames to average over. Can be
+                        in units of frames ("index") or time ("hours" or
+                        "seconds"). Window size will be rounded up to the
+                        nearest odd number.
+        units -- Either "hours" (default), "seconds", or "index". If "seconds"
+                    or "hours", all measurements must be equally spaced in time.
+        grouping_variables - Optional list of column names on which to group.
+                                Use this option primarily to separate multiple
+                                plates' worth of data with overlapping wells.
     Returns:
         A DataFrame of df augmented with columns for a spline fit and a
         derivative
     '''
-    splined_df = spline_fit(df, column, smoothing_factor)
-    grouped_df = splined_df.groupby(["Channel", "Gain", "Well"])
+    smoothed_df = moving_average_fit(df, column, window_size = window_size,
+                             units = units,
+                             grouping_variables = grouping_variables)
+    group_cols = ["Channel", "Gain","Excitation","Emission", "Well"]
+    if grouping_variables:
+        group_cols += grouping_variables
+    grouped_df = smoothed_df.groupby(group_cols)
     deriv_df   = pd.DataFrame()
     for name, group in grouped_df:
-        deriv_name = "%s (%s/sec)" % (column, group.Units.unique()[0])
-        group[deriv_name] = np.gradient(group["spline fit"])
+        if column == "Measurement":
+            deriv_name = "%s (%s/sec)" % (column, group.Units.unique()[0])
+            group.Units = deriv_name
+        group[column] = np.gradient(group[column].to_numpy(),
+                                        group["Time (sec)"].to_numpy())
         deriv_df = deriv_df.append(group)
     return deriv_df
 
@@ -737,54 +960,67 @@ def normalize(df, norm_channel = "OD600", norm_channel_gain = -1):
                          (norm_channel, norm_channel_gain))
 
     # Iterate over channels/gains, applying normalization
-    ODchstr = df[(df.Channel == norm_channel)&(df.Gain== norm_channel_gain)].ChanStr.unique()[0]
-    ODdf = df[df.ChanStr == ODchstr].reset_index()
+    OD_channel_string = df[(df.Channel == norm_channel) & \
+                 (df.Gain== norm_channel_gain)].ChanStr.unique()[0]
+    od_df = df[df.ChanStr == OD_channel_string].reset_index()
     #dflst = []
-    chanlist = df.ChanStr.unique().tolist()
-    del chanlist[chanlist.index(ODchstr)]
-    dflist = [df[df.ChanStr == a].reset_index() for a in chanlist]
-    normalized_df = ODdf.copy()
-    for chandf in dflist:
-        chandf.Measurement = chandf.Measurement/ODdf.Measurement
-        orig_units = chandf.Units.unique()[0]
+    channel_list = df.ChanStr.unique().tolist()
+    del channel_list[channel_list.index(OD_channel_string)]
+    dflist = [df[df.ChanStr == a].reset_index() for a in channel_list]
+    normalized_df = od_df.copy()
+    for channel_df in dflist:
+        channel_df.Measurement = channel_df.Measurement/od_df.Measurement
+        orig_units = channel_df.Units.unique()[0]
         norm_units = "OD" if norm_channel.startswith("OD") \
-                          else normalized_df.Units.unique()[0]
-        chandf.Units = "%s/%s" % (orig_units, norm_units)
-        normalized_df = normalized_df.append(chandf,ignore_index=True)
+                          else norm_data.Units.unique()[0]
+        channel_df.Units = "%s/%s" % (orig_units, norm_units)
+        normalized_df = normalized_df.append(channel_df,ignore_index=True)
     normalized_df.reset_index()
 
     return normalized_df
 
+def apply_by_well(df, summary_function, split_channels = True):
+    # README:
+    # May be able to rewrite a bunch of other functions using this!!!!!
+    '''
+    Applies a function over the wells in a DataFrame of Biotek measurements.
 
-    # for names, group in grouped_df:
-    #     group.reset_index(inplace = True)
-    #     chanstr,well = names
-    #     norm_data = norm_channel_df[norm_channel_df.Well == well]
-    #     norm_data.reset_index(inplace = True)
-    #     #print("DFS!")
-    #     #print(group.head())
-    #     #print(norm_data.head())
-    #     """
-    #     print("before")
-    #     print(group[group.Excitation != 600].Measurement.iloc[0])
-    #     print("norm")
-    #     print(norm_data.Measurement.iloc[0])
-    #     print("after")
-    #     print((group[group.Excitation != 600].Measurement / norm_data.Measurement).iloc[0])
-    #     """
-    #     group["Measurement"] = group.Measurement \
-    #                            / norm_data.Measurement
-    #     orig_units = group.Units.unique()[0]
-    #     norm_units = "OD" if norm_channel.startswith("OD") \
-    #                       else norm_data.Units.unique()[0]
-    #     group.Units = "%s/%s" % (orig_units, norm_units)
+    The summary function should be a function that takes one well's worth of
+    data and returns a list representing a new row in the summarized DataFrame.
 
-    #     normalized_df_list[i] = group
-    #     i += 1
-    # normalized_df = pd.concat(normalized_df_list)
-    # # Undo Pandas flag change
-    # #pd.set_option('mode.chained_assignment', 'warn')
-    # return normalized_df.reset_index()
+    Args:
+        df - The dataframe to be summarized.
+        summary_function - A function that summarizes data from a single well,
+                            e.g., finds the maximum expression or the median
+                            measurement. The summary function should take one
+                            well's worth of data, as a DataFrame, and return a
+                            list representing one or more new rows in the
+                            summary DataFrame that will be returned.
+        split_channels - If True, the summary funtion will be applied separately
+                            for each channel (for example, when producing a
+                            smoothed version of each time trace). If False,
+                            the summary function will receive a DataFrame with
+                            ALL of the channels for each well (for example,
+                            when normalizing measurements against OD). Default
+                            True.
+    '''
+    wells = df.Well.unique()
+    if split_channels:
+        channels = df.Channel.unique()
+        gains    = df.Gain.unique()
+    else:
+        channels = [None]
+        gains    = [None]
+
+    groups = ["Well"]
+    if split_channels:
+        groups.append("Channel")
+        groups.append("Gain")
+    grouped_df = df.groupby(groups)
+    summarized_list = []
+    for name, group in grouped_df:
+        summarized_list.append(summary_function(group))
+    return pd.DataFrame(summarized_list)
 
 
 CellSpec = namedtuple("CellSpec", ['well_name', 'color', 'label'])
@@ -830,13 +1066,18 @@ class BiotekCellPlotter(object):
             label = ""   # If multiple wells pulled out, only the first one gets
                          # the label. Should read more cleanly this way.
 
-    def plot(self, title = None, split_plots = False, filename = None,
-             show = True, figsize = (8, 4), show_legend = True):
+    def plot(self, title = None, column = "Measurement", split_plots = False,
+             filename = None, show = True, figsize = (8, 4), linewidth = 1,
+             show_legend = True):
         '''
         Plot/show/save the figure.
 
         Arguments:
             title -- String that will go at the top of the figure. Default "".
+            column -- Column containing the data you want plotted. Defaults to
+                        "Measurement", which is standard for fluorescence and
+                        OD raw data. You may need to use other columns if you're
+                        plotting a DataFrame of derivatives or fits.
             split_plots -- Boolean controlling how data will be presented. If
                             True, will produce two plots -- one with OD data,
                             one with normalized fluorescence data. If False
@@ -848,6 +1089,7 @@ class BiotekCellPlotter(object):
                     viewing it.
             figsize -- 2-tuple of the size of the figure. Is passed directly
                         to figure creation.
+            linewidth -- Default 1. Passed to plot commands.
         '''
         plt.clf()
 
@@ -866,8 +1108,9 @@ class BiotekCellPlotter(object):
         fig, ax1 = plt.subplots(figsize = figsize)
         for well_spec in self.well_list:
             well_df = norm_df[norm_df.Well == well_spec.well_name]
-            ax1.plot(well_df["Time (hr)"], well_df.Measurement,
-                     color = well_spec.color, label = well_spec.label)
+            ax1.plot(well_df["Time (hr)"], well_df[column],
+                     color = well_spec.color, label = well_spec.label,
+                     linewidth = linewidth)
         ax1.set_xlabel("Time (hr)")
         if self.normalize_by_od:
             ax1.set_ylabel("%s/OD (gain %d)" % (self.channel, self.gain))
@@ -899,7 +1142,7 @@ class BiotekCellPlotter(object):
             od_df     = all_od_df[all_od_df.Well == well_spec.well_name]
             linestyle = "-" if split_plots else ":"
             ax2.plot(od_df["Time (hr)"], od_df.Measurement,
-                     color = well_spec.color, linewidth = 1,
+                     color = well_spec.color, linewidth = linewidth,
                      linestyle = linestyle,
                      label = well_spec.label if split_plots else "")
         ax2.set_ylabel(self.od_channel)
@@ -922,13 +1165,21 @@ class BiotekCellPlotter(object):
 
         return plt.gca()
 
-def applyFunc(df,inputs,dofunc,output="Calculation",newunits="unknown"):
+def applyFunc(df, inputs, dofunc, output="Calculation", newunits="unknown"):
     '''
-    Apply an arbitrary function to a dataframe.
+    Apply an arbitrary function to over measurements from each channel in a
+    dataframe of Biotek data.
+
+    Concatenates the results of that function (another dataframe) as a new set
+    of measurements.
+
     Args:
         df - DataFrame of time traces, of the kind produced by tidy_biotek_data.
         inputs - Name of channels to use as inputs. List of strings.
-        output - Name of the output channel. Can specify new channel or existing.
+        dofunc - A function that takes a Series of measurements and returns a
+                    dataframe based on those measurements.
+        output - Name of the output channel. Can specify new channel or
+                    existing.
         newunits - The units of the output channel. Defaults to "unknown"
     Returns:
         A DataFrame of df augmented with columns for whatever your calculation
@@ -936,7 +1187,8 @@ def applyFunc(df,inputs,dofunc,output="Calculation",newunits="unknown"):
     '''
     nout = output
     i = 1
-    #the following makes sure that we aren't making duplicate calculation channels
+    # the following makes sure that we aren't making duplicate calculation
+    # channels
     while(nout in df.Channel.unique()):
         nout = output+str(i)
         i+=1
@@ -948,10 +1200,11 @@ def applyFunc(df,inputs,dofunc,output="Calculation",newunits="unknown"):
     for chi in range(len(inputs)):
         dfl = len(indfs[chi])
         if(dfl != testl):
-            raise ValueError("channel '%s' is %s members long, which is different" + \
-                                " from %s" % \
+            raise ValueError("channel '%s' is %s members long, which is " +\
+                             "different from %s" % \
                              inputs[chi],dfl,testl)
-    #this next part is for building the output. Pretty much copy one of the inputs
+    # this next part is for building the output. Pretty much copy one of the
+    # inputs
     calcdf = indfs[0].copy()
     #now we just take the measurements....
     inmeasures = [a.Measurement for a in indfs]
@@ -963,13 +1216,16 @@ def applyFunc(df,inputs,dofunc,output="Calculation",newunits="unknown"):
     outDF = df.append(calcdf,ignore_index=True)
     outDF.drop("index",1)
     return outDF
+
 def hmap_plt(indf,yaxis,xaxis,fixedinds=[],fixconcs=[],construct=None,\
-            chan="RFP",axes=None,labels = (1,1), annot=True,vmin=0.6,vmax=0.9,cmap="RdBu"):
+            chan="RFP",axes=None,labels = (1,1), annot=True,vmin=0.6,vmax=0.9,
+            cmap="RdBu"):
     '''
     2D heatmap using seaborn heatmap and matplotlib pivot_table. If you don't
     specify any columns, then it will by default average them!!
     Args:
-        indf - DataFrame of endpoint data, of the kind produced by tidy_biotek_data.
+        indf - DataFrame of endpoint data, of the kind produced by
+                tidy_biotek_data.
         yaxis - column name for y axis
         xaxis - column name for x axis
         fixedinds - list of fixed inducer names.
@@ -977,7 +1233,8 @@ def hmap_plt(indf,yaxis,xaxis,fixedinds=[],fixconcs=[],construct=None,\
         construct - name of construct to use
         chan - channel name to plot!
         axes - matplotlib axes to plot onto
-        labels - this list determines whether the x or y axis labels are displayed
+        labels - this list determines whether the x or y axis labels are
+                displayed
                 default: both axis labels are displayed
         hmset - settings for the heatmap!
                 values: annot, vmin, vmax, cmap

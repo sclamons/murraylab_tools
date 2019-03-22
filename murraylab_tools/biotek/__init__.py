@@ -15,6 +15,8 @@ from .biotek import calibration_data, \
                     calibration_dates, \
                     multiPlot, \
                     hmap_plt, \
-                    applyFunc
+                    applyFunc, \
+                    summarize_growth, \
+                    logistic_growth
 
 
