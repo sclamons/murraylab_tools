@@ -1,0 +1,15 @@
+vector1,promoter,UTR,CDS,term,vector2,targwell,comment,name,enzyme
+U5A,PlacCIDAR,ntrig3,,T16m,EUX,O1,,Lnt5-X,BsaI
+U4A,PbadCIDAR,gqisc3,nscaff3,T15m,EU5,O2,,Bqinscaff4-5,BsaI
+U5A,PlacCIDAR,vtrig3,,T16m,EUX,O3,,Lvtrig5-x,BsaI
+U4A,PbadCIDAR,gqisc3,vscaff3,T15m,EU5,O4,,Bqivscaff4-5,BsaI
+U8A,PlacCIDAR,ntrig3,,T16m,EUX,O5,,Lntrig8-x,BsaI
+U8A,PlacCIDAR,vtrig3,,T16m,EUX,O6,,Lvtrig8-x,BsaI
+U6A,PbadCIDAR,g1sc3,nscaff3,T17m,EU7,O7,,Bg1nscaff6-7,BsaI
+U7A,PcinAM,g2sc3,nscaff3,T15m,EU8,O8,,Cg2nscaff7-8,BsaI
+U6A,PbadCIDAR,g1sc3,vscaff3,T17m,EU7,O9,,Bg1vscaff6-7,BsaI
+U7A,PcinAM,g2sc3,vscaff3,T15m,EU8,O10,,Cg2vscaff7-8,BsaI
+U6A,PcinAM,g1sc3,nscaff3,T17m,EU7,O11,,Cg1nscaff6-7,BsaI
+U7A,PbadCIDAR,g2sc3,nscaff3,T15m,EU8,O12,,Bg2nscaff7-8,BsaI
+U6A,PcinAM,g1sc3,vscaff3,T17m,EU7,O13,,Cg1vscaff6-7,BsaI
+U7A,PbadCIDAR,g2sc3,vscaff3,T15m,EU8,O14,,Bg2vscaff7-8,BsaI
