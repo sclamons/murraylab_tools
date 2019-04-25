@@ -172,7 +172,7 @@ def read_supplementary_info(input_filename):
 
 
 def tidy_biotek_data(input_filename, supplementary_filename = None,
-                     volume = None, convert_to_uM = True,
+                     volume = None, convert_to_uM = False,
                      calibration_dict = None, override_plate_reader_id=None):
     '''
     Convert the raw output from a Biotek plate reader into tidy data.
@@ -1146,6 +1146,7 @@ class BiotekCellPlotter(object):
                      linestyle = linestyle,
                      label = well_spec.label if split_plots else "")
         ax2.set_ylabel(self.od_channel)
+        ax2.set_xlabel("Time (hr)")
 
         if show_legend:
             if split_plots:
