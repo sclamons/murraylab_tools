@@ -44,8 +44,6 @@ class notify_when_done(object):
     def __enter__(self):
         # Test connection and credentials.
         self.login_good = True
-        print("_username: " + _username)
-        print("_password: " + _password)
         try:
             server = self.connect_to_server()
         except Exception as e:
@@ -83,8 +81,6 @@ class notify_when_done(object):
         server.send_message(msg_email)
 
     def connect_to_server(self):
-        print("self.server: " + str(self.server))
-        print("self.port: " + str(self.port))
         server = smtplib.SMTP(self.server, self.port)
         server.starttls()
 
