@@ -30,7 +30,7 @@ def set_destination(destination):
 
 class notify_when_done(object):
     def __init__(self, done_string, debug_connection = False,
-                  server = "smtp.google.com", port = 587):
+                  server = "smtp.gmail.com", port = 587):
         self.done_string = done_string
         self.debug_connection = debug_connection
         self.server = server
