@@ -15,6 +15,7 @@ from pydna.assembly import Assembly as pydAssembly
 from Bio.Restriction import BsaI
 from Bio.Restriction import BbsI
 from Bio.Restriction import AarI
+from Bio.Restriction import Esp3I
 from copy import deepcopy as dc
 import ipywidgets as widgets
 from collections import defaultdict
@@ -22,21 +23,17 @@ from IPython.display import FileLink, FileLinks
 import warnings
 import re
 def incrementString(s):
+    """regular expression search! I forget exactly why this is needed"""
     m = re.search(r'\d+$', s)
     if(m):
         return s[:m.start()]+str(int(m.group())+1)
     else:
         return s+str(0)
-    #return int(m.group()) if m else None
-
-enzymes = \
-          {"BsaI":BsaI,
-           "BbsI":BbsI,
-           "AarI":AarI}
-enlist = ["BsaI",
-          "BbsI",
-          "AarI",
-          "gibson"]
+#the following makes a few data members for handling restriction enzymes
+enzymelist = [BsaI,BbsI,AarI,Esp3I]
+enzymes = {str(a):a for a in enzymelist}
+enlist = [str(a) for a in enzymelist]+["gibson"]
+#the following defines the overhangs in our library!
 ENDDICT = { \
 "GGAG":"A", \
 "TACT":"B", \
@@ -47,13 +44,15 @@ ENDDICT = { \
 "TGCC":"G", \
 "ACTA":"H" \
 }
+#have a dictionary of the reverse complement too
 rcENDDICT = {str(Dseq(a).rc()):ENDDICT[a] for a in ENDDICT}
 
 prevplate = None
 selenzyme = "gibson" #which enzyme to assemble everything with
 chewnt = 40
 frags = [] #fragments in the reaction
-#the following lists the components in each well, in uL
+#the following lists the components in each well, in uL. I think this is outdated
+#as of 4/25/19
 gga = \
 [["component","volume"],
  #["buffer10x",0.4],
@@ -1049,9 +1048,9 @@ class assemblyFileMaker():
                 oplist = sorted(list(df[(df.type=="UNS")|\
                                         (df.type=="vector")].part))+[""]
             elif(colname=="enzyme"):
-                oplist =["BsaI","BbsI","gibson"]
+                oplist =enlist
                 if(prevval == ""):
-                    prevval = "BsaI"
+                    prevval = enlist[0]
             else:
                 oplist = sorted(list(df[df.type==colname].part))+[""]
         if(not (prevval in oplist)):
