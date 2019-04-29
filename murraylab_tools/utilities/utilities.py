@@ -55,7 +55,7 @@ class notify_when_done(object):
                 print("Connection error is:")
                 print(traceback.format_exc())
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, trace):
         # Don't bother connecting again if it didn't work the first time.
         if not self.login_good:
             return
