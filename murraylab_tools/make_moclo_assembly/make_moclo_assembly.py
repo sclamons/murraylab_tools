@@ -294,7 +294,10 @@ def makeDseqFromDF(part,partslist,col = "part",enzyme=enzymes["BsaI"]):
             warnings.warn("Be careful! sequence {} has only {} {} site"\
                             .format(part,numzymes,str(enzyme)))
         elif(numzymes>=2):
+            #try:
             testcut = pDseq.cut(enzyme)
+            #except IndexError:
+
             esite = enzyme.site.lower()
             esiterc = str(Dseq(enzyme.site).rc()).lower()
             if(numzymes > 2):
@@ -351,6 +354,7 @@ def isNewDseq(newpart,partlist):
     seqnewpart = str(newpart).upper()
     newcirc = newpart.circular
     #dsnewpart = Dseqrecord(newpart)
+    rcnewpart = newpart.rc()
     for part in partlist:
         if(len(part) != len(newpart)):
             continue
@@ -362,7 +366,7 @@ def isNewDseq(newpart,partlist):
             elif(seqnewpart in (str(part.rc()).upper()*3)):
                 new=False
                 break
-        elif(dspart == dsnewpart):
+        elif(part == newpart or part == rcnewpart):
             new=False
             break
     return new
@@ -534,6 +538,44 @@ def getOverhang(Dnaseq,side="left"):
     """extracts the overhang in the DNA sequence, either on the left or right sides.
     If the dna sequence is blunt, then the returned overhang is called 'blunt'"""
 
+def appendPart(part,pind,edgeDict,nodeDict):
+    """this function appends a part to a dictionary of
+    edges (overhangs), and nodes(middle sequence) for running DPallcombDseq.
+    part is a DseqRecord of a DNA part that's been cut by an enzyme.
+    pind is the index of that part in the parts list
+    edgedict is a dictionary of edges that says which nodes they are connected
+    to.
+    nodedict is a dictionary of nodes that says which edges they have."""
+    Lend = ""
+    Rend = ""
+    Ltype,Lseq = part.five_prime_end()
+    Rtype,Rseq = part.three_prime_end()
+    if(Ltype == "blunt"):
+        Lend = "blunt"
+        #if the end is blunt append nothing
+        edgeDict[Lend].append([pind,0])
+        #pushDict(edgeDict,Lend,((pind,0),))
+    else:
+        if(Ltype == "3'"):
+            #if we have a 3' overhang, then add that sequence
+            Lend = str(Dseq(Lseq).rc()).lower()
+        else:
+            #otherwise, it must be a 5' overhang since we handled the
+            #blunt condition above.
+            Lend = str(Lseq).lower()
+        edgeDict[Lend].append([pind,0])
+    if(Rtype == "blunt"):
+        #same thing for the right side
+        Rend = "blunt"
+        edgeDict[Rend].append([pind,1])
+    else:
+        if(Rtype == "5'"):
+            Rend = str(Dseq(Rseq).rc()).lower()
+        else:
+            Rend = str(Rseq).lower()
+        edgeDict[Rend].append([pind,1])
+    nodeDict[pind] = (Lend,Rend)
+
 def DPallCombDseq(partslist):
     '''Finds all paths through the partsist using a graph type of approach.
     First a graph is constructed from all possible overhang interactions,
@@ -547,34 +589,18 @@ def DPallCombDseq(partslist):
     partDict = {}#defaultdict(lambda : [])
     pind = 0
     import time
+    rcpartslist = []
+    number_of_parts = len(partslist)
     for part in partslist:
-        Lend = ""
-        Rend = ""
-        Ltype,Lseq = part.five_prime_end()
-        Rtype,Rseq = part.three_prime_end()
-        if(Ltype == "blunt"):
-            Lend = "blunt"
-            edgeDict[Lend].append([pind,0])
-            #pushDict(edgeDict,Lend,((pind,0),))
-        else:
-            if(Ltype == "3'"):
-                Lend = str(Dseq(Lseq).rc()).lower()
-            else:
-                Lend = str(Lseq).lower()
-            edgeDict[Lend].append([pind,0])
-        if(Rtype == "blunt"):
-            Rend = "blunt"
-            edgeDict[Rend].append([pind,1])
-        else:
-            if(Rtype == "5'"):
-                Rend = str(Dseq(Rseq).rc()).lower()
-            else:
-                Rend = str(Rseq).lower()
-            edgeDict[Rend].append([pind,1])
-        nodeDict[pind] = (Lend,Rend)
+        #this next part appends the part to the list of nodes and edges
+        appendPart(part,pind,edgeDict,nodeDict)
+        appendPart(part.rc(),pind+number_of_parts,edgeDict,nodeDict)
+        rcpartslist+=[part.rc()]
         pind+=1
+    partslist+=rcpartslist
     paths = []
     for pind in list(nodeDict.keys()):
+        #find good paths through the graph starting from every part
         paths += findDNAPaths(pind,nodeDict,edgeDict)
     goodpaths = []
     part1time = 0
@@ -590,19 +616,18 @@ def DPallCombDseq(partslist):
             npart = True
             accpart = partslist[fpart]
             for pind in path[1:]:
-                #this is the part that traces back the path
+                #this traces back the path
                 accpart+=partslist[pind]
 
         elif(nodeDict[fpart][0]==nodeDict[rpart][1]):
-            #this is checking if the overhangs on the ends are compatible
+            #this is checking if the overhangs on the ends are compatible.
+            #if true, then create a circular piece of DNA!
             npart = True
             #this means we have a circular part! also good!
             accpart = partslist[fpart]
             for pind in path[1:]:
                 accpart+=partslist[pind]
             accpart=accpart.looped()
-        #part1time+= time.time()-stime
-        #stime = time.time()
         if(npart):
             #this checks if the part we think is good already exists
             #in the list
