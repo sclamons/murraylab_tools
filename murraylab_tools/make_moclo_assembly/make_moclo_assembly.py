@@ -82,7 +82,7 @@ ptypedict = {
             "ASSGGA04":"384PP_PLUS_AQ_BP",
             "ASSGIB01":"384LDV_PLUS_AQ_BP",
             "ASSGIB02":"384PP_AQ_BP"}
-waterwell = "P23" #in your source plate, include one well that is just full of water.
+waterwell = "P1" #in your source plate, include one well that is just full of water.
 #dnaPath = os.path.join(".","DNA")
 
 #go down and look at makeEchoFile
