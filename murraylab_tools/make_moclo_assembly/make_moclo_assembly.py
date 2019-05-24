@@ -341,10 +341,14 @@ def makeDseqFromDF(part,partslist,col = "part",enzyme=enzymes["BsaI"]):
     return pDseq
 def bluntLeft(DSseq):
     """returns true if the left hand side of DSseq is blunt"""
+    if(type(DSseq)==Dseqrecord):
+        DSseq = DSseq.seq
     isblunt = (DSseq.five_prime_end()[0]=='blunt')&DSseq.linear
     return(isblunt)
 def bluntRight(DSseq):
     """returns true if the right hand side of DSseq is blunt"""
+    if(type(DSseq)==Dseqrecord):
+        DSseq = DSseq.seq
     isblunt = (DSseq.three_prime_end()[0]=='blunt')&DSseq.linear
     return(isblunt)
 def isNewDseq(newpart,partlist):
@@ -355,15 +359,24 @@ def isNewDseq(newpart,partlist):
     newcirc = newpart.circular
     #dsnewpart = Dseqrecord(newpart)
     rcnewpart = newpart.rc()
+    cseguid = None
+    if(newcirc and type(newpart)==Dseqrecord):
+        cseguid = newpart.cseguid()
     for part in partlist:
+
         if(len(part) != len(newpart)):
             continue
         #dspart = Dseqrecord(part)
         if(newcirc and part.circular):
-            if(seqnewpart in (str(part).upper()*3)):
+            if(type(part) == Dseqrecord and cseguid != None):
+                comparid = part.cseguid()
+                if(comparid == cseguid):
+                    new=False
+                    break
+            if(seqnewpart in (str(part.seq).upper()*3)):
                 new=False
                 break
-            elif(seqnewpart in (str(part.rc()).upper()*3)):
+            elif(seqnewpart in (str(part.seq.rc()).upper()*3)):
                 new=False
                 break
         elif(part == newpart or part == rcnewpart):
@@ -611,22 +624,52 @@ def DPallCombDseq(partslist):
         fpart = path[0]
         rpart = path[-1]
         npart = False
+        accpart = Dseqrecord(partslist[fpart])
         if(nodeDict[fpart][0]=="blunt" and nodeDict[rpart][1]=="blunt"):
             #this means we have a blunt ended path! good
             npart = True
-            accpart = partslist[fpart]
+            plen = len(accpart)
+            #accpart.add_feature(0,3,label="?",type="scar")
+            #accpart.add_feature(plen-4,plen,label="?",type="scar")
             for pind in path[1:]:
                 #this traces back the path
+                #we want to add features as we go representing the cloning
+                #scars. These scars could be gibson or golden gate in nature
+                ovhg = accpart.seq.three_prime_end()
+                oseq = ovhg[1]
+                plen = len(accpart)
+                if("5" in ovhg[0]):
+                    #ideally we take note of what type of overhang it is
+                    #but for now i'll just take the top strand sequence
+                    oseq = str(Dseq(oseq).rc())
+                accpart.add_feature(plen-len(oseq),plen,label="?",type="scar")
                 accpart+=partslist[pind]
+
 
         elif(nodeDict[fpart][0]==nodeDict[rpart][1]):
             #this is checking if the overhangs on the ends are compatible.
             #if true, then create a circular piece of DNA!
             npart = True
             #this means we have a circular part! also good!
-            accpart = partslist[fpart]
+            #accpart = partslist[fpart]
             for pind in path[1:]:
+                ovhg = accpart.seq.three_prime_end()
+                oseq = ovhg[1]
+                plen = len(accpart)
+                if("5" in ovhg[0]):
+                    #ideally we take note of what type of overhang it is
+                    #but for now i'll just take the top strand sequence
+                    oseq = str(Dseq(oseq).rc())
+                accpart.add_feature(plen-len(oseq),plen,label="?",type="scar")
                 accpart+=partslist[pind]
+            ovhg = accpart.seq.three_prime_end()
+            oseq = ovhg[1]
+            plen = len(accpart)
+            if("5" in ovhg[0]):
+                #ideally we take note of what type of overhang it is
+                #but for now i'll just take the top strand sequence
+                oseq = str(Dseq(oseq).rc())
+            accpart.add_feature(plen-len(oseq),plen,label="?",type="scar")
             accpart=accpart.looped()
         if(npart):
             #this checks if the part we think is good already exists
@@ -699,13 +742,15 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
     if("." in fname):
         fname = fname[:fname.index(".")]
 
-    #the following is for making a spreadsheet style sequence list for performing further assemblies
+    #the following is for making a spreadsheet style sequence list for
+    #performing further assemblies
     prodSeqSpread = "well,part,description,type,left,right,conc (nM),date,numvalue,sequence,circular,5pend,3pend,length\n"
     prevplate = None
     prevtype = None
     maxprog = float(len(aslist))
 
     for assnum in range(len(aslist)):
+        #this goes row by row
         if(progbar != None):
             progbar.value=float(assnum+1)/maxprog
         assembly = aslist[assnum:assnum+1] #cuts out one row of dataframe
@@ -724,6 +769,8 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
             cprt_temp = "gga"
             if(selenzyme == "gibson"):
                 cprt_temp = "gibson"
+            #iloc[0] is used in case there are multiple parts with the same
+            #name. Only the first one is used in that case.
             curprot = {"dnasln": protocolsDF[(protocolsDF.protocol==cprt_temp)&\
                             (protocolsDF.component == "dnasln")].amount.iloc[0]}
             partsFm = curprot[curprot.component==partfm].amount.iloc[0]
@@ -802,26 +849,31 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
                 num = 0
                 for prod in allprod:
                     Cnamenum = Cname
+                    #filename = Cname+".gbk"
                     if(len(allprod) > 1):
-                        wout = open(os.path.join(newpath,Cname+"_"+str(num)+".gbk"),"w")
+                        #filename = Cname+"_"+str(num)+".gbk"
+                        #wout = open(os.path.join(newpath,filename),"w")
                         Cnamenum = Cname+"_"+str(num)
                     else:
-                        wout = open(os.path.join(newpath,Cname+".gbk"),"w")
+                        pass
+                        #wout = open(os.path.join(newpath,filename),"w")
                     if((bluntLeft(prod) and bluntRight(prod)) or (prod.circular)):
                         num+=1
                         goodprod+=[prod]
-                        topo = ["linear","circular"][int(prod.circular)]
+                        #topo = ["linear","circular"][int(prod.circular)]
                         booltopo = ["FALSE","TRUE"][int(prod.circular)]
                         #wout.write("\r\n>Construct"+str(num)+"_"+topo)
                         un_prod = "_".join(Cnamenum.split())
-                        wout.write("LOCUS       {}                {} bp ds-DNA     {} SYN 01-JAN-0001\n".format(un_prod,len(prod),topo))
-                        wout.write("ORIGIN\n")
-                        wout.write(str(prod)+"\n//")
+                        #wout.write("LOCUS       {}                {} bp ds-DNA     {} SYN 01-JAN-0001\n".format(un_prod,len(prod),topo))
+                        #wout.write("ORIGIN\n")
+                        #wout.write(str(prod)+"\n//")
                         now = datetime.datetime.now()
                         nowdate = "{}/{}/{}".format(now.month,now.day,now.year)
+                        prod.name = Cnamenum
+                        prod.write(os.path.join(newpath,Cnamenum+".gbk"))
                         prodSeqSpread += "{},{},assembled with {},,,,30,{},,{},{},{},{},{}\n".format(\
-                                        dwell,un_prod,          selenzyme,nowdate,prod,booltopo,0,0,len(prod))
-                    wout.close()
+                                        dwell,un_prod,          selenzyme,nowdate,prod.seq,booltopo,0,0,len(prod))
+                    #wout.close()
                 assembend = ["y","ies"][int(len(goodprod)>1)]
                 if(printstuff):
                     print("Detected {} possible assembl{}".format(len(goodprod),assembend))
@@ -1381,7 +1433,8 @@ def process_assembly_file(mypath=".",printstuff=True):
     display(cbox)
 
 #def fixPart(partseq,enz="BsaI",circ=True,end5p=0,end3p=0,goodends=ENDDICT):
-
+def drawConstruct(construct):
+    """creates a dnaplotlib image of a construct in dnaseqrecord format!"""
 def runProgram():
     """runs the process_assembly_file function with command line prompts.
     Probably doesn't work"""
