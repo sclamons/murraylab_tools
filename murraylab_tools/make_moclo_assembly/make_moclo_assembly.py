@@ -48,7 +48,17 @@ ENDDICT = { \
 "CGCT":"F", \
 "TGCC":"G", \
 "ACTA":"H", \
-"TAGA":"sc3"\
+"TAGA":"sc3",\
+"CATTACTCGCATCCATTCTCAGGCTGTCTCGTCTCGTCTC" : "1",\
+"GCTGGGAGTTCGTAGACGGAAACAAACGCAGAATCCAAGC" : "2",\
+"GCACTGAAGGTCCTCAATCGCACTGGAAACATCAAGGTCG" : "3",\
+"CTGACCTCCTGCCAGCAATAGTAAGACAACACGCAAAGTC" : "4",\
+"GAGCCAACTCCCTTTACAACCTCACTCAAGTCCGTTAGAG" : "5",\
+"CTCGTTCGCTGCCACCTAAGAATACTCTACGGTCACATAC" : "6",\
+"CAAGACGCTGGCTCTGACATTTCCGCTACTGAACTACTCG" : "7",\
+"CCTCGTCTCAACCAAAGCAATCAACCCATCAACCACCTGG" : "8",\
+"GTTCCTTATCATCTGGCGAATCGGACCCACAAGAGCACTG" : "9",\
+"CCAGGATACATAGATTACCACAACTCCGAGCCCTTCCACC" : "X",\
 }
 #have a dictionary of the reverse complement too
 rcENDDICT = {str(Dseq(a).rc()):ENDDICT[a] for a in ENDDICT}
@@ -1524,16 +1534,18 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2):
     part_renderers = dr.SBOL_part_renderers()
     start,end = dr.renderDNA(ax,design,part_renderers)
     if(not construct.linear):
-        curves = 4
-        plasmid = FancyBboxPatch((-curves, -curves*2), end-start+curves*2, curves*2,\
+        vheight = 5
+        curves = (end-start)*.05
+        plasmid = FancyBboxPatch((start-curves, -vheight*2), \
+                            (end-start)+(end-start)*.1+curves*2, vheight*2,\
                 fc="none",ec="black", linewidth=dnaline, \
                 boxstyle='round,pad=0,rounding_size={}'.format(curves), \
-                joinstyle="round", capstyle='round')
+                joinstyle="round", capstyle='round',mutation_aspect=vheight/curves)
         ax.add_patch(plasmid)
     else:
         curves = 0
-    ax.set_xlim([start-2*curves, end+2*curves])
-    ax.set_ylim([-10,10])
+    ax.set_xlim([start-1.2*curves, end+1.2*curves+(end-start)*.1*(1-construct.linear)])
+    ax.set_ylim([-12,12])
     #ax_dna.set_aspect('equal')
     ax.set_xticks([])
     ax.set_yticks([])
