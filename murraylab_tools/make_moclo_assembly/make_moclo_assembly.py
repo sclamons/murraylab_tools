@@ -9,6 +9,11 @@ import time
 import pydna
 import itertools as it
 import datetime
+import dnaplotlib as dpl
+import matplotlib.pyplot as plt
+import matplotlib.transforms as mtransforms
+import matplotlib.patches as mpatch
+from matplotlib.patches import FancyBboxPatch
 from pydna.dseq import Dseq
 from pydna.dseqrecord import Dseqrecord
 from pydna.assembly import Assembly as pydAssembly
@@ -42,7 +47,8 @@ ENDDICT = { \
 "GCTT":"E", \
 "CGCT":"F", \
 "TGCC":"G", \
-"ACTA":"H" \
+"ACTA":"H", \
+"TAGA":"sc3"\
 }
 #have a dictionary of the reverse complement too
 rcENDDICT = {str(Dseq(a).rc()):ENDDICT[a] for a in ENDDICT}
@@ -355,17 +361,30 @@ def isNewDseq(newpart,partlist):
     """checks to see if newpart is contained within partlist, returns true
     if it isn't"""
     new = True
-    seqnewpart = str(newpart).upper()
+    if(type(newpart)==Dseqrecord):
+        newdseqpart = newpart.seq
+    #seqnewpart = str(newpart).upper()
     newcirc = newpart.circular
+    #dsequid = (newpart.seq).seguid()
+    #print("dsequid is "+str(dsequid))
     #dsnewpart = Dseqrecord(newpart)
-    rcnewpart = newpart.rc()
+    #rcnewpart = newpart.rc()
+    newseguid = newdseqpart.seguid()
+    #print("newseguid is "+str(newseguid))
     cseguid = None
     if(newcirc and type(newpart)==Dseqrecord):
         cseguid = newpart.cseguid()
     for part in partlist:
+        if(type(part == Dseqrecord)):
+            dseqpart = part.seq
+        partseguid = dseqpart.seguid()
 
-        if(len(part) != len(newpart)):
-            continue
+        if(newseguid==partseguid):
+            new=False
+            break
+
+        #if(len(part) != len(newpart)):
+            #continue
         #dspart = Dseqrecord(part)
         if(newcirc and part.circular):
             if(type(part) == Dseqrecord and cseguid != None):
@@ -373,15 +392,15 @@ def isNewDseq(newpart,partlist):
                 if(comparid == cseguid):
                     new=False
                     break
-            if(seqnewpart in (str(part.seq).upper()*3)):
-                new=False
-                break
-            elif(seqnewpart in (str(part.seq.rc()).upper()*3)):
-                new=False
-                break
-        elif(part == newpart or part == rcnewpart):
-            new=False
-            break
+            #if(seqnewpart in (str(part.seq).upper()*3)):
+            #    new=False
+            #    break
+            #elif(seqnewpart in (str(part.seq.rc()).upper()*3)):
+            #    new=False
+            #    break
+        #elif(part == newpart or part == rcnewpart):
+            #new=False
+            #break
     return new
 def allCombDseq(partslist,resultlist = []):
     '''recursively finds all possible paths through the partslist'''
@@ -588,7 +607,51 @@ def appendPart(part,pind,edgeDict,nodeDict):
             Rend = str(Rseq).lower()
         edgeDict[Rend].append([pind,1])
     nodeDict[pind] = (Lend,Rend)
-
+def annotateScar(part, end='3prime'):
+    plen = len(part)
+    if(end=='3prime'):
+        ovhg = part.seq.three_prime_end()
+        loc1 = plen-len(ovhg[1])
+        loc2 = plen
+    else:
+        ovhg = part.seq.five_prime_end()
+        loc1 = 0
+        loc2 = len(ovhg[1])
+    oseq = str(ovhg[1]).upper()
+    scarname = "?"
+    floc = int(loc1)
+    sloc = int(loc2)
+    dir = 1
+    #scardir = "fwd"
+    if((oseq in ENDDICT.keys()) or (oseq in rcENDDICT.keys())):
+        #either direction for now...
+        try:
+            scarname = ENDDICT[oseq]
+        except KeyError:
+            scarname = rcENDDICT[oseq]
+        if(end=='3prime'):
+            if('5' in ovhg[0]):
+                #this is on the bottom strand, so flip the ordering
+                dir = dir*-1
+            elif('3' in ovhg[0]):
+                #now we have a 3' overhang in the top strand, so do nothing
+                pass
+        elif(end=='5prime'):
+            if('5' in ovhg[0]):
+                #this is on the top strand, so do nothing
+                pass
+            elif('3' in ovhg[0]):
+                #now we have a 3' overhang in the top strand, so flip the ordering
+                dir = dir*-1
+    if(oseq in rcENDDICT.keys()):
+        #so if we found the reverse complement in fact, then reverse everything
+        #again
+        dir = dir*-1
+    if(dir==-1):
+        floc = int(loc2)
+        sloc = int(loc1)
+    #oseq = str(Dseq(oseq).rc())
+    part.add_feature(floc,sloc,label=scarname,type="Scar")
 def DPallCombDseq(partslist):
     '''Finds all paths through the partsist using a graph type of approach.
     First a graph is constructed from all possible overhang interactions,
@@ -635,6 +698,8 @@ def DPallCombDseq(partslist):
                 #this traces back the path
                 #we want to add features as we go representing the cloning
                 #scars. These scars could be gibson or golden gate in nature
+                #SCARANNOT
+                '''
                 ovhg = accpart.seq.three_prime_end()
                 oseq = ovhg[1]
                 plen = len(accpart)
@@ -643,6 +708,8 @@ def DPallCombDseq(partslist):
                     #but for now i'll just take the top strand sequence
                     oseq = str(Dseq(oseq).rc())
                 accpart.add_feature(plen-len(oseq),plen,label="?",type="scar")
+                #/scarannot'''
+                annotateScar(accpart)
                 accpart+=partslist[pind]
 
 
@@ -653,6 +720,8 @@ def DPallCombDseq(partslist):
             #this means we have a circular part! also good!
             #accpart = partslist[fpart]
             for pind in path[1:]:
+                #SCARANNOT
+                '''
                 ovhg = accpart.seq.three_prime_end()
                 oseq = ovhg[1]
                 plen = len(accpart)
@@ -661,7 +730,11 @@ def DPallCombDseq(partslist):
                     #but for now i'll just take the top strand sequence
                     oseq = str(Dseq(oseq).rc())
                 accpart.add_feature(plen-len(oseq),plen,label="?",type="scar")
+                #/scarannot'''
+                annotateScar(accpart)
                 accpart+=partslist[pind]
+            #SCARANNOT
+            '''
             ovhg = accpart.seq.three_prime_end()
             oseq = ovhg[1]
             plen = len(accpart)
@@ -670,6 +743,8 @@ def DPallCombDseq(partslist):
                 #but for now i'll just take the top strand sequence
                 oseq = str(Dseq(oseq).rc())
             accpart.add_feature(plen-len(oseq),plen,label="?",type="scar")
+            #/scarannot'''
+            annotateScar(accpart)
             accpart=accpart.looped()
         if(npart):
             #this checks if the part we think is good already exists
@@ -870,6 +945,10 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
                         now = datetime.datetime.now()
                         nowdate = "{}/{}/{}".format(now.month,now.day,now.year)
                         prod.name = Cnamenum
+                        plt.figure(figsize=(8,1))
+                        ax = plt.gca()
+                        drawConstruct(ax,prod)
+                        plt.show()
                         prod.write(os.path.join(newpath,Cnamenum+".gbk"))
                         prodSeqSpread += "{},{},assembled with {},,,,30,{},,{},{},{},{},{}\n".format(\
                                         dwell,un_prod,          selenzyme,nowdate,prod.seq,booltopo,0,0,len(prod))
@@ -1433,8 +1512,50 @@ def process_assembly_file(mypath=".",printstuff=True):
     display(cbox)
 
 #def fixPart(partseq,enz="BsaI",circ=True,end5p=0,end3p=0,goodends=ENDDICT):
-def drawConstruct(construct):
+
+def drawConstruct(ax,construct,dnaline=3,dnascale=2):
     """creates a dnaplotlib image of a construct in dnaseqrecord format!"""
+    seqlen = len(construct)
+    sp = {'type':'EmptySpace', 'name':'base', 'fwd':True, \
+                                        'opts':{'x_extent':seqlen+10}}
+    design = [sp]
+    dnaline = dnaline
+    dr = dpl.DNARenderer(scale = dnascale,linewidth=dnaline)
+    part_renderers = dr.SBOL_part_renderers()
+    start,end = dr.renderDNA(ax,design,part_renderers)
+    if(not construct.linear):
+        curves = 4
+        plasmid = FancyBboxPatch((-curves, -curves*2), end-start+curves*2, curves*2,\
+                fc="none",ec="black", linewidth=dnaline, \
+                boxstyle='round,pad=0,rounding_size={}'.format(curves), \
+                joinstyle="round", capstyle='round')
+        ax.add_patch(plasmid)
+    else:
+        curves = 0
+    ax.set_xlim([start-2*curves, end+2*curves])
+    ax.set_ylim([-10,10])
+    #ax_dna.set_aspect('equal')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.axis('off')
+    conlist = []
+    for feature in construct.features:
+        featname = feature.qualifiers["label"][0]
+        feattype = feature.type
+        #print(feature.location)
+        loclist = [feature.location.start,feature.location.end]
+        if(loclist[1]<loclist[0]):
+            featstrand = False
+        else:
+            featstrand = True
+        featstart = min(loclist)
+        featend = max(loclist)
+        featlen = featend-featstart
+        feat = {'type':feattype, 'name':featname, 'fwd':featstrand, \
+                                'start':featstart,'end':featend,\
+                                'opts':{'label':featname,'label_size':20,\
+                                'label_y_offset':-5,'x_extent':featlen}}
+        dr.annotate(ax,part_renderers,feat)
 def runProgram():
     """runs the process_assembly_file function with command line prompts.
     Probably doesn't work"""
