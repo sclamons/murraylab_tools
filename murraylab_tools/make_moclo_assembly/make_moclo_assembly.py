@@ -1477,9 +1477,12 @@ def make_assembly_file(mypath=".",externalDF = None):
     """this function will assist the user with making assembly .csv files!"""
     x=assemblyFileMaker(mypath=mypath,partsdf=externalDF)
 
-def process_assembly_file(mypath=".",printstuff=True):
+def process_assembly_file(mypath=".",printstuff=True,partsdf=None):
     oplist = findFilesDict(os.path.join(mypath,"assemblies"))
-    parts = findPartsListsDict(os.path.join(mypath,"partslist"))
+    if(type(partsdf)==pd.DataFrame):
+        parts = {"google doc":"google doc"}
+    else:
+        parts = findPartsListsDict(os.path.join(mypath,"partslist"))
 
     drop1 = widgets.Dropdown(
         options=oplist,
@@ -1508,14 +1511,18 @@ def process_assembly_file(mypath=".",printstuff=True):
             max=1.0
         )
         display(pbar)
-        dfs = pd.read_excel(drop2.value,None)
-        #print(drop1.value)
         if(drop1.value[-4:]=="xlsx" or drop1.value[-3:]=="xls"):
             x=pd.read_excel(drop1.value)
         else:
             x=pd.read_csv(drop1.value)
-        sheetlist = list(dfs.keys())
-        p = pd.DataFrame.append(dfs["parts_1"],dfs["Gibson"])
+        if(type(partsdf)==pd.DataFrame):
+            p = partsdf
+        else:
+            dfs = pd.read_excel(drop2.value,None)
+            #print(drop1.value)
+
+            sheetlist = list(dfs.keys())
+            p = pd.DataFrame.append(dfs["parts_1"],dfs["Gibson"])
 
         makeEchoFile(p,x,fname = drop1.value, \
                     output = os.path.join(mypath,"output","output.csv"),\
