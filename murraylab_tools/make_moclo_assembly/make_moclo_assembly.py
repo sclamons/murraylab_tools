@@ -1062,7 +1062,8 @@ outitems = []
 
 
 class assemblyFileMaker():
-    def __init__(self,mypath="."):
+    def __init__(self,mypath=".",partsdf = None):
+        self.p = partsdf
         self.holdup=False
         self.ddlay = widgets.Layout(width='75px',height='30px')
         self.eblay = widgets.Layout(width='50px',height='30px')
@@ -1076,7 +1077,11 @@ class assemblyFileMaker():
                                 13,14,15,16,17,18,19,20,21,22,23,24)
         self.PlateRowsCols=(16,24)
         self.mypath = mypath
-        self.parts = findPartsListsDict(os.path.join(self.mypath,"partslist"))
+        if(type(self.p)==pd.DataFrame):
+            self.parts={"google doc":"google doc"}
+        else:
+            self.parts = findPartsListsDict(os.path.join(self.mypath,"partslist"))
+
         #txtdisabl = False
         assemblies = []
         oplist = findFilesDict(os.path.join(mypath,"assemblies"))
@@ -1267,9 +1272,11 @@ class assemblyFileMaker():
                 pass
 
             self.AddCols.value=len(ftoload.columns)-9
-        dfs = pd.read_excel(self.drop2.value,None)
-        sheetlist = list(dfs.keys())
-        self.p = pd.DataFrame.append(dfs["parts_1"],dfs["Gibson"])
+
+        if(not(type(self.p)==pd.DataFrame)):
+            dfs = pd.read_excel(self.drop2.value,None)
+            sheetlist = list(dfs.keys())
+            self.p = pd.DataFrame.append(dfs["parts_1"],dfs["Gibson"])
         self.collabels = ["vector1","promoter","UTR","CDS","Terminator","vector2","enzyme","name",""]
         if(self.AddCols.value>0):
             newclabeld = self.collabels
@@ -1466,9 +1473,9 @@ class assemblyFileMaker():
                 pass
 
 
-def make_assembly_file(mypath="."):
+def make_assembly_file(mypath=".",externalDF = None):
     """this function will assist the user with making assembly .csv files!"""
-    x=assemblyFileMaker(mypath=mypath)
+    x=assemblyFileMaker(mypath=mypath,partsdf=externalDF)
 
 def process_assembly_file(mypath=".",printstuff=True):
     oplist = findFilesDict(os.path.join(mypath,"assemblies"))
