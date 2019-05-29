@@ -2,4 +2,5 @@ numpy
 pandas>=0.24
 scipy>=1.0
 pydna
+matplotlib
 -e git+git://github.com/dr3y/dnaplotlib.git@master#egg=dnaplotlib
