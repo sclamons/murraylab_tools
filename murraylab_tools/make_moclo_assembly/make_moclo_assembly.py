@@ -789,7 +789,7 @@ def chewback(seqtochew,chewamt,end="fiveprime"):
 def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
             output = "output.csv",selenzyme=selenzyme,fname="recentassembly",\
             protocolsDF=None,sepfiles=True,sepfilename="outputLDV.csv",\
-            printstuff=True,progbar=None,mypath="."):
+            printstuff=True,progbar=None,mypath=".",annotateDF=None):
     """makes an echo csv using the given list of assemblies and source plate of
     parts..
     inputs:
@@ -957,7 +957,7 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
                         prod.name = Cnamenum
                         plt.figure(figsize=(8,1))
                         ax = plt.gca()
-                        drawConstruct(ax,prod)
+                        drawConstruct(ax,prod,annotateDF=annotateDF)
                         plt.show()
                         prod.write(os.path.join(newpath,Cnamenum+".gbk"))
                         prodSeqSpread += "{},{},assembled with {},,,,30,{},,{},{},{},{},{}\n".format(\
@@ -1477,7 +1477,7 @@ def make_assembly_file(mypath=".",externalDF = None):
     """this function will assist the user with making assembly .csv files!"""
     x=assemblyFileMaker(mypath=mypath,partsdf=externalDF)
 
-def process_assembly_file(mypath=".",printstuff=True,partsdf=None):
+def process_assembly_file(mypath=".",printstuff=True,partsdf=None,annotateDF=None):
     oplist = findFilesDict(os.path.join(mypath,"assemblies"))
     if(type(partsdf)==pd.DataFrame):
         parts = {"google doc":"google doc"}
@@ -1527,7 +1527,7 @@ def process_assembly_file(mypath=".",printstuff=True,partsdf=None):
         makeEchoFile(p,x,fname = drop1.value, \
                     output = os.path.join(mypath,"output","output.csv"),\
                     sepfilename=os.path.join(mypath,"output","outputLDV.csv"),\
-                    printstuff=printstuff,progbar=pbar,mypath=mypath)
+                    printstuff=printstuff,progbar=pbar,mypath=mypath,annotateDF=annotateDF)
 
         #print(drop1.value+" and "+drop2.value)
 
@@ -1537,11 +1537,27 @@ def process_assembly_file(mypath=".",printstuff=True,partsdf=None):
 
 #def fixPart(partseq,enz="BsaI",circ=True,end5p=0,end3p=0,goodends=ENDDICT):
 
-def drawConstruct(ax,construct,dnaline=3,dnascale=2):
+def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None):
     """creates a dnaplotlib image of a construct in dnaseqrecord format!"""
+    def substring_indexes(substring, string):
+        """
+        Generate indices of where substring begins in string
+
+        >>> list(find_substring('me', "The cat says meow, meow"))
+        [13, 19]
+        """
+        last_found = -1  # Begin at -1 so the next position to search from is 0
+        while True:
+            # Find next index of substring, by starting after its last known position
+            last_found = string.find(substring, last_found + 1)
+            if last_found == -1:
+                break  # All occurrences have been found
+            yield last_found
+
     seqlen = len(construct)
     sp = {'type':'EmptySpace', 'name':'base', 'fwd':True, \
                                         'opts':{'x_extent':seqlen+10}}
+
     design = [sp]
     dnaline = dnaline
     dr = dpl.DNARenderer(scale = dnascale,linewidth=dnaline)
@@ -1565,6 +1581,23 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2):
     ax.set_yticks([])
     ax.axis('off')
     conlist = []
+    if(type(annotateDF)==pd.DataFrame):
+        str_conseq = str(construct.seq).lower()
+        print("annotating!")
+        #now we annotate the plasmid!!
+        for feature in annotateDF.name:
+            #iterate through all the features and see if they are in our sequence
+            #but the problem is that it could be circular
+            featseq = annotateDF[annotateDF.name==feature].sequence.iloc[0].lower()
+            featcolor = annotateDF[annotateDF.name==feature].colorlist.iloc[0]
+            feattype = annotateDF[annotateDF.name==feature].type.iloc[0]
+            featlen = len(featseq)
+            if(featseq in str_conseq):
+                #it could be in there multiple times
+                for featfound in substring_indexes(featseq,str_conseq):
+                    #every time we find the feature...
+                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=feature )
+                    construct.features[-1].qualifiers['color']=featcolor
     for feature in construct.features:
         featname = feature.qualifiers["label"][0]
         feattype = feature.type
