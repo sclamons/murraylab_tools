@@ -1537,7 +1537,7 @@ def process_assembly_file(mypath=".",printstuff=True,partsdf=None,annotateDF=Non
 
 #def fixPart(partseq,enz="BsaI",circ=True,end5p=0,end3p=0,goodends=ENDDICT):
 
-def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None):
+def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=True,labels='off',showscars=0):
     """creates a dnaplotlib image of a construct in dnaseqrecord format!"""
     def substring_indexes(substring, string):
         """
@@ -1554,15 +1554,105 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None):
                 break  # All occurrences have been found
             yield last_found
 
-    seqlen = len(construct)
-    sp = {'type':'EmptySpace', 'name':'base', 'fwd':True, \
-                                        'opts':{'x_extent':seqlen+10}}
-
-    design = [sp]
-    dnaline = dnaline
     dr = dpl.DNARenderer(scale = dnascale,linewidth=dnaline)
     part_renderers = dr.SBOL_part_renderers()
-    start,end = dr.renderDNA(ax,design,part_renderers)
+
+    conlist = []
+    if(type(annotateDF)==pd.DataFrame):
+        str_conseq = str(construct.seq).lower()
+        #print("annotating!")
+        #now we annotate the plasmid!!
+        for feature in annotateDF.name:
+            #iterate through all the features and see if they are in our sequence
+            #but the problem is that it could be circular
+            featseq = annotateDF[annotateDF.name==feature].sequence.iloc[0].lower()
+
+            colorstr = annotateDF[annotateDF.name==feature].colorlist.iloc[0]
+
+            #print(featcolor)
+            feattype = annotateDF[annotateDF.name==feature].type.iloc[0]
+            featlen = len(featseq)
+            #print(featcolor)
+            if(featseq[-3:]=="..."):
+                featseq=featseq[:-3]
+            rcfeatseq = str(Dseq(featseq).rc()).lower()
+            #if(feattype == 'CDS'):
+                #print(featseq[:10]+"..."+featseq[-10:])
+            if(featseq in str_conseq):
+                #it could be in there multiple times
+
+                for featfound in substring_indexes(featseq,str_conseq):
+                    #every time we find the feature...
+                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=feature,strand=1 )
+                    construct.features[-1].qualifiers["color"]=colorstr
+            if(rcfeatseq in str_conseq):
+                for featfound in substring_indexes(featseq,str_conseq):
+                    #every time we find the feature...
+                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=feature ,strand=-1)
+                    construct.features[-1].qualifiers["color"]=colorstr
+
+    if(schematic==False):
+        seqlen = len(construct)
+        sp = {'type':'EmptySpace', 'name':'base', 'fwd':True, \
+                                            'opts':{'x_extent':seqlen+10}}
+        design = [sp]
+        start,end = dr.renderDNA(ax,design,part_renderers)
+    sbol_featlist = []
+    flist = sorted(construct.features,key=lambda a: a.location.start)
+    for feature in flist:
+        #feature = a[1]
+        featname = feature.qualifiers["label"]
+        feattype = feature.type
+        if("color" in feature.qualifiers):
+            colorstr = feature.qualifiers["color"]
+            if(colorstr != "(255,255,255)"):
+                #don't add pure white as a color
+                featcolor = tuple([float(a)/255.0 for a in colorstr[1:-1].split(",")])
+            else:
+                featcolor = None
+        else:
+            colorstr = None
+            featcolor = None
+
+        #print(featcolor)
+        #print(feature.location)
+        loclist = [feature.location.start,feature.location.end]
+        if(loclist[1]<loclist[0]):
+            featstrand = False
+        else:
+            featstrand = True
+        if(feature.strand==-1):
+            featstrand = False
+        featstart = min(loclist)
+        featend = max(loclist)
+        featlen = featend-featstart
+        if(not schematic):
+            feat = {'type':feattype, 'name':featname, 'fwd':featstrand, \
+                                    'start':featstart,'end':featend,\
+                                    'opts':{'label':featname,'label_size':13,\
+                                    'label_y_offset':-5,'x_extent':featlen}}
+        else:
+            feat = {'type':feattype, 'name':featname, 'fwd':featstrand, \
+                                    #'start':featstart,'end':featend,\
+                                    'opts':{'label':featname,'label_size':13,\
+                                    'label_y_offset':-5}}
+            if(feattype == 'CDS'):
+                feat['opts']['x_extent']=30
+            if(not (featcolor == None) ):
+                #only add the color if it exists
+                feat['opts']['color']=featcolor
+        if(labels=="off"):
+            feat['opts']['label']=""
+        if(feattype == 'Scar' and not showscars):
+            pass
+        else:
+            sbol_featlist+=[feat]
+
+    if(schematic):
+        start,end = dr.renderDNA(ax,sbol_featlist,part_renderers)
+    else:
+        for feat in sbol_featlist:
+            dr.annotate(ax,part_renderers,feat)
     if(not construct.linear):
         vheight = 5
         curves = (end-start)*.05
@@ -1580,41 +1670,6 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None):
     ax.set_xticks([])
     ax.set_yticks([])
     ax.axis('off')
-    conlist = []
-    if(type(annotateDF)==pd.DataFrame):
-        str_conseq = str(construct.seq).lower()
-        print("annotating!")
-        #now we annotate the plasmid!!
-        for feature in annotateDF.name:
-            #iterate through all the features and see if they are in our sequence
-            #but the problem is that it could be circular
-            featseq = annotateDF[annotateDF.name==feature].sequence.iloc[0].lower()
-            featcolor = annotateDF[annotateDF.name==feature].colorlist.iloc[0]
-            feattype = annotateDF[annotateDF.name==feature].type.iloc[0]
-            featlen = len(featseq)
-            if(featseq in str_conseq):
-                #it could be in there multiple times
-                for featfound in substring_indexes(featseq,str_conseq):
-                    #every time we find the feature...
-                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=feature )
-                    construct.features[-1].qualifiers['color']=featcolor
-    for feature in construct.features:
-        featname = feature.qualifiers["label"][0]
-        feattype = feature.type
-        #print(feature.location)
-        loclist = [feature.location.start,feature.location.end]
-        if(loclist[1]<loclist[0]):
-            featstrand = False
-        else:
-            featstrand = True
-        featstart = min(loclist)
-        featend = max(loclist)
-        featlen = featend-featstart
-        feat = {'type':feattype, 'name':featname, 'fwd':featstrand, \
-                                'start':featstart,'end':featend,\
-                                'opts':{'label':featname,'label_size':20,\
-                                'label_y_offset':-5,'x_extent':featlen}}
-        dr.annotate(ax,part_renderers,feat)
 def runProgram():
     """runs the process_assembly_file function with command line prompts.
     Probably doesn't work"""
