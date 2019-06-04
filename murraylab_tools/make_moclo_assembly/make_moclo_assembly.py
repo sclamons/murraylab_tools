@@ -1562,15 +1562,16 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=Tr
         str_conseq = str(construct.seq).lower()
         #print("annotating!")
         #now we annotate the plasmid!!
-        for feature in annotateDF.name:
+        for feature_index in annotateDF.index:
+            fname = annotateDF.iloc[feature_index]["name"]
             #iterate through all the features and see if they are in our sequence
             #but the problem is that it could be circular
-            featseq = annotateDF[annotateDF.name==feature].sequence.iloc[0].lower()
+            featseq = annotateDF.iloc[feature_index].sequence.lower()
 
-            colorstr = annotateDF[annotateDF.name==feature].colorlist.iloc[0]
+            colorstr = annotateDF.iloc[feature_index].colorlist
 
             #print(featcolor)
-            feattype = annotateDF[annotateDF.name==feature].type.iloc[0]
+            feattype = annotateDF.iloc[feature_index].type
             featlen = len(featseq)
             #print(featcolor)
             if(featseq[-3:]=="..."):
@@ -1583,12 +1584,12 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=Tr
 
                 for featfound in substring_indexes(featseq,str_conseq):
                     #every time we find the feature...
-                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=feature,strand=1 )
+                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=fname,strand=1 )
                     construct.features[-1].qualifiers["color"]=colorstr
             if(rcfeatseq in str_conseq):
-                for featfound in substring_indexes(featseq,str_conseq):
+                for featfound in substring_indexes(rcfeatseq,str_conseq):
                     #every time we find the feature...
-                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=feature ,strand=-1)
+                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=fname ,strand=-1)
                     construct.features[-1].qualifiers["color"]=colorstr
 
     if(schematic==False):
