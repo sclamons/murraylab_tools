@@ -973,10 +973,29 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
                     #print("water from {} to {}, {} nl".format(waterwell,dwell,ewat))
                     if(prevplate == None):
                         #print("normalwater")
-                        outfile += echoline(waterwell,dwell,ewat)
+                        #im not convinced this ever gets triggered
+                        #but just in case, i guess we can find the first water well
+                        waterrows=parts[parts.part=="water"]
+                        if(len(waterrows)==0):
+                            raise KeyError("no water wells indicated!")
+                        #print(waterrows)
+                        waterrow = waterrows.iloc[0]
+                        waterwell = waterrow.well
+                        platetype= waterrow.platetype
+                        curplatebc = waterrow.platebc
+                        outfile += echoline(waterwell,dwell,ewat,spname =curplatebc,\
+                                                sptype=platetype,platebc = curplatebc)
                     else:
                         #print("platewater")
-                        watline = echoline(waterwell,dwell,ewat,spname =prevplate,sptype=prevtype,platebc = prevplate)
+                        #print(prevplate)
+                        waterrows=parts[(parts.part=="water") & (parts.platebc==prevplate)]
+                        if(len(waterrows)==0):
+                            raise KeyError("no water wells indicated!")
+                        #print(waterrows)
+                        waterrow = waterrows.iloc[0]
+                        waterwell = waterrow.well
+                        watline = echoline(waterwell,dwell,ewat,spname =prevplate,\
+                                                sptype=prevtype,platebc = prevplate)
                         if("LDV" in prevtype):
                             outfile2+=watline
                         else:
