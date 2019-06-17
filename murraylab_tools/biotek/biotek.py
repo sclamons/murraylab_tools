@@ -1389,7 +1389,7 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
                 plotind = plotpos.index(plotlocation)
                 curconcs = axiscombs[plotind]
                 cbar_ax_to_hmap = None
-                if(!didcbar):
+                if(not didcbar):
                     cbar_ax_to_hmap = cbar_ax
                     didcbar = 1
                 hmap_plt(plotdf,dims[0],dims[1],\
