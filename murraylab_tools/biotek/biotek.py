@@ -1220,7 +1220,7 @@ def applyFunc(df, inputs, dofunc, output="Calculation", newunits="unknown"):
 
 def hmap_plt(indf,yaxis,xaxis,fixedinds=[],fixconcs=[],construct=None,\
             chan="RFP",axes=None,labels = (1,1), annot=True,vmin=0.6,vmax=0.9,
-            cmap="RdBu"):
+            cmap="RdBu",cbar_ax = None):
     '''
     2D heatmap using seaborn heatmap and matplotlib pivot_table. If you don't
     specify any columns, then it will by default average them!!
@@ -1254,13 +1254,17 @@ def hmap_plt(indf,yaxis,xaxis,fixedinds=[],fixconcs=[],construct=None,\
     #print(slicedf.head())
     pivtabl = pd.pivot_table(slicedf, index=yaxis, columns=xaxis, values='Measurement')
     #print(pivtabl)
-
+    if(cbar_ax == None):
+        cbar = False
+    else:
+        cbar = True
     outax = sns.heatmap(pivtabl,\
                 annot=annot,\
                 vmin = vmin,\
                 vmax = vmax,\
                 cmap= cmap, \
-                cbar = False, \
+                cbar = cbar, \
+                cbar_ax = cbar_ax, \
                 ax = axes)
     if(not labels[0]):
         outax.get_xaxis().set_visible(False)
@@ -1269,7 +1273,7 @@ def hmap_plt(indf,yaxis,xaxis,fixedinds=[],fixconcs=[],construct=None,\
 
 
 def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
-                                annot=False,vmin=None,vmax=None,cmap="RdBu"):
+                                annot=False,vmin=None,vmax=None,cmap="RdBu",cbar=True):
     '''
     3D or 4D heatmap plot of dataframe
     Args:
@@ -1329,6 +1333,8 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
     else:
         cols = 1
     fig, axes = plt.subplots(cols, rows,figsize=(rows*2,cols*2))
+    if(cbar):
+        cbar_ax = fig.add_axes([.91, .3, .03, .4])
     #four dimensions is about the best we can do
     #this next part populates the axes list with blanks so that the
     #plotting code still runs like a 4x4 figure
@@ -1367,6 +1373,9 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
     fig.suptitle(titstr, fontsize=16)
 
     rowcount = 0
+    didcbar = 1
+    if(cbar_ax != None):
+        didcbar = 0
     for colax in axes:
         colcount = 0
         for curax in colax:
@@ -1379,7 +1388,10 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
             if(plotlocation in plotpos):#if we are populating this plot:
                 plotind = plotpos.index(plotlocation)
                 curconcs = axiscombs[plotind]
-
+                cbar_ax_to_hmap = None
+                if(!didcbar):
+                    cbar_ax_to_hmap = cbar_ax
+                    didcbar = 1
                 hmap_plt(plotdf,dims[0],dims[1],\
                          fixedinds+dims[2:],\
                          fixconcs+curconcs,\
@@ -1389,6 +1401,7 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
                         annot=annot,\
                         vmin=vmin,\
                         vmax=vmax,\
+                        cbar_ax=cbar_ax_to_hmap,\
                         cmap=cmap)
                 if(len(dims) == 4):
                     if(dims[2:][1]=="Construct"):
