@@ -1334,7 +1334,7 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
         cols = 1
     fig, axes = plt.subplots(cols, rows,figsize=(rows*2,cols*2))
     if(cbar):
-        cbar_ax = fig.add_axes([.91, .3, .03, .4])
+        cbar_ax = fig.add_axes([.91, .15, .03, .7])
     #four dimensions is about the best we can do
     #this next part populates the axes list with blanks so that the
     #plotting code still runs like a 4x4 figure
