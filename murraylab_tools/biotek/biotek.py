@@ -1273,14 +1273,14 @@ def hmap_plt(indf,yaxis,xaxis,fixedinds=[],fixconcs=[],construct=None,\
 
 
 def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
-                                annot=False,vmin=None,vmax=None,cmap="RdBu",cbar=True):
+        annot=False,vmin=None,vmax=None,cmap="RdBu",cbar=True,scalemult = 1):
     '''
     3D or 4D heatmap plot of dataframe
     Args:
-        dims - List of inducer names to vary. Max of four!
+        dims_in - List of inducer names to vary. Max of four!
         plotdf - DataFrame of endpoint data, of the kind produced by tidy_biotek_data.
-        fixedinds - list of fixed inducer names.
-        fixconcs - list of fixed concentrations, corresponding to fixedinds.
+        fixedinds_in - list of fixed inducer names.
+        fixconcs_in - list of fixed concentrations, corresponding to fixedinds.
         constructs - list of constructs to plot. You can put multiple constructs
                     to plot here, but then dims should be only three elements long,
                     since constructs constitutes another dimension
@@ -1324,15 +1324,25 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
     else:
         fixedinds += ["Construct"]#,"ATC"]
         fixconcs += constructs#,250]
-    enddims = range(len(dims[2:])) #cut out the first two dimensions
-    axiscombs = allcomb(dimlist[2:]) #all combinations of conditions
-    plotpos = allcomb([range(len(a)) for a in dimlist[2:]]) #positions on the graph grid that above will go
-    rows = len(dimlist[2])
+    if(len(dims)>2):
+        #a 3d plot involves multiple plots, but a 2d plot is just a single heatmap.
+        #i guess "d" in this case indicates the conditions. Of course a "2d" plot
+        #is still 3d because for each of the two conditions there is a "measurement".
+        enddims = range(len(dims[2:])) #cut out the first two dimensions
+        axiscombs = allcomb(dimlist[2:]) #all combinations of conditions
+        plotpos = allcomb([range(len(a)) for a in dimlist[2:]]) #positions on the graph grid that above will go
+        rows = len(dimlist[2]) #number of constructs
+    else:
+        #this is the case where we are plotting only a single heatmap
+        enddims = []
+        axiscombs = [[]]
+        plotpos = [[0,0]]
+        rows = 1
     if(len(dimlist)>=4):
         cols = len(dimlist[3])
     else:
         cols = 1
-    fig, axes = plt.subplots(cols, rows,figsize=(rows*2,cols*2))
+    fig, axes = plt.subplots(cols, rows,figsize=(rows*2*scalemult,cols*2*scalemult))
     if(cbar):
         cbar_ax = fig.add_axes([.91, .15, .03, .7])
     #four dimensions is about the best we can do
@@ -1366,7 +1376,8 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
         if(not(c in dims+fixedinds)):
             notspecified+=[c]
     for ind in zip(fixedinds,fixconcs):
-        titstr+= "; "+ind[0]+" is "+str(ind[1])
+        if(str(ind[1])!=""):
+            titstr+= "; "+ind[0]+" is "+str(ind[1])
     if(len(notspecified)>0):
         for nsind in notspecified:
             titstr+= "; aggregate of " +nsind
@@ -1378,6 +1389,8 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
         didcbar = 0
     for colax in axes:
         colcount = 0
+        if(type(colax)!= list):
+            colax = [colax]
         for curax in colax:
             #iterate through each plot basically
 
@@ -1404,14 +1417,17 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
                         cbar_ax=cbar_ax_to_hmap,\
                         cmap=cmap)
                 if(len(dims) == 4):
-                    if(dims[2:][1]=="Construct"):
+                    if(dims[3]=="Construct"):
                         curax.set_ylabel(str(curconcs[1])+"\n"+dims[0])
                     else:
                         curax.set_ylabel(str(curconcs[1])+" of "+dims[2:][1]+"\n"+dims[0])
-                if(dims[2:][0]=="Construct"):
-                    curax.set_xlabel(dims[1]+"\n"+str(curconcs[0]))
-                else:
-                    curax.set_xlabel(dims[1]+"\n"+str(curconcs[0])+" of "+dims[2:][0])
+                elif(len(dims)==3):
+                    if(dims[2]=="Construct"):
+                        curax.set_xlabel(dims[1]+"\n"+str(curconcs[0]))
+                    else:
+                        curax.set_xlabel(dims[1]+"\n"+str(curconcs[0])+" of "+dims[2:][0])
+                elif(len(dims)==2):
+                    curax.set_xlabel(dims[1]+"\n")
             colcount+=1
         rowcount+=1
 CellSpec = namedtuple("CellSpec", ['well_name', 'color', 'label'])
