@@ -1588,6 +1588,7 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=Tr
             featseq = annotateDF.iloc[feature_index].sequence.lower()
 
             colorstr = annotateDF.iloc[feature_index].colorlist
+            colorstr2 = annotateDF.iloc[feature_index].colorlist2
 
             #print(featcolor)
             feattype = annotateDF.iloc[feature_index].type
@@ -1605,11 +1606,13 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=Tr
                     #every time we find the feature...
                     construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=fname,strand=1 )
                     construct.features[-1].qualifiers["color"]=colorstr
+                    construct.features[-1].qualifiers["color2"]=colorstr2
             if(rcfeatseq in str_conseq):
                 for featfound in substring_indexes(rcfeatseq,str_conseq):
                     #every time we find the feature...
                     construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=fname ,strand=-1)
                     construct.features[-1].qualifiers["color"]=colorstr
+                    construct.features[-1].qualifiers["color2"]=colorstr2
 
     if(schematic==False):
         seqlen = len(construct)
