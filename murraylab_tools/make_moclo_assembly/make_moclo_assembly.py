@@ -1628,11 +1628,21 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=Tr
         feattype = feature.type
         if("color" in feature.qualifiers):
             colorstr = feature.qualifiers["color"]
+            print("color is "+colorstr)
             if(colorstr != "(255,255,255)"):
                 #don't add pure white as a color
                 featcolor = tuple([float(a)/255.0 for a in colorstr[1:-1].split(",")])
             else:
                 featcolor = None
+        if("color2" in feature.qualifiers):
+
+            colorstr = feature.qualifiers["color2"]
+            print("color2 is "+colorstr)
+            if(colorstr != "(255,255,255)"):
+                #don't add pure white as a color
+                featcolor2 = tuple([float(a)/255.0 for a in colorstr[1:-1].split(",")])
+            else:
+                featcolor2 = None
         else:
             colorstr = None
             featcolor = None
@@ -1664,6 +1674,9 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=Tr
             if(not (featcolor == None) ):
                 #only add the color if it exists
                 feat['opts']['color']=featcolor
+            if(not (featcolor2 == None) ):
+                #only add the color if it exists
+                feat['opts']['color2']=featcolor2
         if(labels=="off"):
             feat['opts']['label']=""
         if(feattype == 'Scar' and not showscars):
