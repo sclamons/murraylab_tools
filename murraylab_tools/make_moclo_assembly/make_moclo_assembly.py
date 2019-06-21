@@ -1641,7 +1641,7 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=Tr
 
             colorstr2 = feature.qualifiers["color2"]
             print("color2 is "+str(colorstr2))
-            if(colorstr2 != "(255,255,255)"):
+            if(colorstr2 != "(255,255,255)" and not np.isnan(colorstr2)):
                 #don't add pure white as a color
                 featcolor2 = tuple([float(a)/255.0 for a in colorstr2[1:-1].split(",")])
             else:
