@@ -1628,7 +1628,6 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=Tr
         feattype = feature.type
         if("color" in feature.qualifiers):
             colorstr = feature.qualifiers["color"]
-            print("color is "+str(colorstr))
             if(colorstr != "(255,255,255)" and not type(colorstr)==float):
                 #don't add pure white as a color
                 featcolor = tuple([float(a)/255.0 for a in colorstr[1:-1].split(",")])
@@ -1640,7 +1639,6 @@ def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=Tr
         if("color2" in feature.qualifiers):
 
             colorstr2 = feature.qualifiers["color2"]
-            print("color2 is "+str(colorstr2))
             if(colorstr2 != "(255,255,255)" and not type(colorstr2)==float):
                 #don't add pure white as a color
                 featcolor2 = tuple([float(a)/255.0 for a in colorstr2[1:-1].split(",")])
