@@ -4,6 +4,7 @@ import warnings
 import __main__ as main
 import os
 import traceback
+import socket
 
 # We're going to use some GLOBAL VARIABLES to keep track of user information.
 # This should be set once somewhere at the beginning of the program
@@ -81,7 +82,9 @@ class notify_when_done(object):
         server.send_message(msg_email)
 
     def connect_to_server(self):
-        server = smtplib.SMTP(self.server, self.port)
+        # Use socket.gethostbyname to get an IPv4 address, which connects much,
+        # much faster than an IPv6 address.
+        server = smtplib.SMTP(socket.gethostbyname(self.server), self.port)
         server.starttls()
 
         server.login(_username, _password)

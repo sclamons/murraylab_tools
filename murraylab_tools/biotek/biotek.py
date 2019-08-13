@@ -355,6 +355,9 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             # Read data blocks
             # Find a data block
             while line != None:
+                if len(line) == 0:
+                    line = next(reader, None)
+                    continue
                 info = line[0].strip()
                 if info == "":
                     line = next(reader, None)
@@ -382,12 +385,21 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                         read_idx = 0
                     else:
                         read_idx = int(info.split('[')[-1][:-1]) - 1
-                    read_properties = read_sets[read_name][read_idx]
+                    if read_name not in read_sets:
+                        line = next(reader, None)
+                        continue
+                    read_channel    = read_sets[read_name]
+                    read_properties = read_channel[read_idx]
                     gain            = read_properties.gain
+                    print(line)
                     if len(info_parts) > 1:
-                        excitation = info_parts[1].split("[")[0].split(",")[0]
+                        if line[1] != "":
+                            excitation = info_parts[1].split("[")[0]
+                            emission = line[1].split("[")[0]
+                        else:
+                            excitation = info_parts[1].split("[")[0].split(",")[0]
+                            emission   = info_parts[1].split("[")[0].split(",")[1]
                         excitation = int(excitation)
-                        emission   = info_parts[1].split("[")[0].split(",")[1]
                         emission   = int(emission)
                     else:
                         excitation      = read_properties.excitation
@@ -398,9 +410,14 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                 well_names = line
                 # Data lines
                 for line in reader:
-                    if line[1] == "":
+                    idx = 0
+                    while idx < len(line):
+                        if line[idx] != "":
+                            raw_time = line[idx]
+                            break
+                        idx += 1
+                    if idx == len(line):
                         break
-                    raw_time = line[1]
                     time_parts = raw_time.split(':')
                     days=0
                     minutes=int(time_parts[1])
