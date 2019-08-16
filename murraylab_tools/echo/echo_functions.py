@@ -798,7 +798,6 @@ class EchoRun():
             mat = self.material_dict[mat_name]
             if mat:
                 picks = mat.request_picklist()
-                print("picks is: " + str(picks))
                 for pick in picks:
                     yield pick
 
