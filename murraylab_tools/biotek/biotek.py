@@ -264,6 +264,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
             #           4.2.1) Rewrite data on that line to tidy data file,
             #                   converting to uM if possible.
             read_sets = dict()
+            read_set_idxs = dict()
             next_line = ""
             while True:
                 if next_line != "":
@@ -347,6 +348,7 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                                     break
                             if not read_name in read_sets:
                                 read_sets[read_name] = []
+                                read_set_idxs[read_name] = 0
                             read_sets[read_name].append(ReadSet(read_name,
                                                             excitation,
                                                             emission, gain))
@@ -381,13 +383,15 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     else:
                         info_parts = [info]
                         read_name = ""
-                    if not info.endswith(']'):
-                        read_idx = 0
-                    else:
-                        read_idx = int(info.split('[')[-1][:-1]) - 1
                     if read_name not in read_sets:
                         line = next(reader, None)
                         continue
+                    if not info.endswith(']'):
+                        read_idx = read_set_idxs[read_name]
+                        read_set_idxs[read_name] += 1
+                    else:
+                        read_idx = int(info.split('[')[-1][:-1]) - 1
+
                     read_channel    = read_sets[read_name]
                     read_properties = read_channel[read_idx]
                     gain            = read_properties.gain
@@ -875,7 +879,8 @@ def moving_average_fit(df, column = "Measurement", window_size = 1,
     grouped_df = df.groupby(group_cols)
     smoothed_groups = []
     for name, group in grouped_df:
-        group.sort_values("Time (sec)", ascending = True, inplace = True)
+        group = group.sort_values("Time (sec)", ascending = True,
+                                  inplace = False)
 
         # Figure out the window size, in frames.
         if units == "index":
@@ -945,8 +950,9 @@ def smoothed_derivatives(df, column = "Measurement", window_size = 1,
         if column == "Measurement":
             deriv_name = "%s (%s/sec)" % (column, group.Units.unique()[0])
             group.Units = deriv_name
+        group = group.copy()
         group[column] = np.gradient(group[column].to_numpy(),
-                                        group["Time (sec)"].to_numpy())
+                                    group["Time (sec)"].to_numpy())
         deriv_df = deriv_df.append(group)
     return deriv_df
 

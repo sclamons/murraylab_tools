@@ -1103,7 +1103,7 @@ class MasterMix(EchoSourceMaterial, Reaction):
     '''
     def __init__(self, plate, extract_fraction = 0.33, mm_excess = 1.1,
                  rxn_vol = 10000, add_txtl = True, extract_per_aliquot = 30000,
-                 buffer_per_aliquot = 37000):
+                 buffer_per_aliquot = 37000, txtl_fraction = 0.75):
         '''
         extract_fraction: If TX-TL is added, this is the fraction of the final
                             mix made up of TX-TL extract. Default 0.33 (lowest
@@ -1119,6 +1119,8 @@ class MasterMix(EchoSourceMaterial, Reaction):
                                 Default 30000.
         buffer_per_aliquot: Volume of TX-TL buffer in one aliquot, in nL.
                                 Default 37000.
+        txtl_fraction: Fraction of the total reaction allocated to
+                        (extract + buffer)
         '''
         if add_txtl:
             self.name = "txtl_mm"
@@ -1141,7 +1143,7 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.extract_fraction = extract_fraction
         self.extract_per_aliquot = extract_per_aliquot
         self.buffer_per_aliquot = buffer_per_aliquot
-        self.txtl_fraction = 0.75
+        self.txtl_fraction = txtl_fraction
         self.materials = []
         self.current_well = -1
         if add_txtl:
