@@ -1091,7 +1091,7 @@ class BiotekCellPlotter(object):
 
     def plot(self, title = None, column = "Measurement", split_plots = False,
              filename = None, show = True, figsize = (8, 4), linewidth = 1,
-             show_legend = True):
+             ymax = None, od_ymax = None, show_legend = True):
         '''
         Plot/show/save the figure.
 
@@ -1113,6 +1113,12 @@ class BiotekCellPlotter(object):
             figsize -- 2-tuple of the size of the figure. Is passed directly
                         to figure creation.
             linewidth -- Default 1. Passed to plot commands.
+            ymax -- Optional flag to set a maximum y limit on the fluorescence
+                    axis.
+            od_ymax -- Optional flag to set a maximum y limit on the
+                        OD axis.
+            show_legend -- Boolean that determines whether the legend is
+                            displayed.
         '''
         plt.clf()
 
@@ -1170,6 +1176,11 @@ class BiotekCellPlotter(object):
                      label = well_spec.label if split_plots else "")
         ax2.set_ylabel(self.od_channel)
         ax2.set_xlabel("Time (hr)")
+
+        if ymax:
+            ax1.set_ylim(0, ymax)
+        if od_ymax:
+            ax2.set_ylim(0, od_ymax)
 
         if show_legend:
             if split_plots:
