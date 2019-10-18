@@ -799,13 +799,11 @@ class EchoRun():
         if well not in self.reactions or self.reactions[well] == None:
             self.reactions[well] = WellReaction(self.rxn_vol, well)
         self.reactions[well].fill_with(material)
-        #self.reactions[well].finalize_reaction()
 
     def fill_all_wells_with(self, material):
         self.add_material(material)
         for well in self.reactions:
             self.reactions[well].fill_with(material)
-            #self.reactions[well].finalize_reaction()
 
 
     def generate_picklist(self):
