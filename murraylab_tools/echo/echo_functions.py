@@ -335,6 +335,7 @@ class EchoRun():
             self.material_dict[material.name] = material
             return 0
 
+
     def build_picklist_from_txtl_setup_excel(self, input_filename):
         '''
         CURRENTLY NONFUNCTIONAL DO NOT USE
@@ -792,6 +793,18 @@ class EchoRun():
                                                                destination)
                 vol = final_conc * (self.rxn_vol / material.nM)
                 self.reactions[destination].add_material(material, final_conc)
+
+    def fill_well_with(self, well, material):
+        self.add_material(material)
+        if well not in self.reactions or self.reactions[well] == None:
+            self.reactions[well] = WellReaction(self.rxn_vol, well)
+        self.reactions[well].fill_with(material)
+
+    def fill_all_wells_with(self, material):
+        self.add_material(material)
+        for well in self.reactions:
+            self.reactions[well].fill_with(material)
+
 
     def generate_picklist(self):
         for mat_name in self.material_dict:
