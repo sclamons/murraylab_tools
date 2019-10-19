@@ -16,10 +16,10 @@ water:
 	stock concentration: 1.00 nM
 	total volume: 177.50 uL
 
-Instructions:
-	65.00 uL of txtl_mm in wells I01, I02, I03, I04, I05, I06, I07, I08, I09, I10
-	38.50 uL txtl_mm --> I11
-	32.00 uL GFP Plasmid --> I13
-	48.00 uL ATc --> I15
-	65.00 uL of water in wells I17, I18
-	47.50 uL water --> I19
+On the source plate:
+	65.00 uL of txtl_mm in wells G01, G02, G03, G04, G05, G06, G07, G08, G09, G10
+	38.50 uL txtl_mm --> G11
+	32.00 uL GFP Plasmid --> G13
+	48.00 uL ATc --> G15
+	65.00 uL of water in wells G17, G18
+	47.50 uL water --> G19
