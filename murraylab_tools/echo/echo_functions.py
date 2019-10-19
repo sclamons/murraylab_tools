@@ -8,6 +8,7 @@ import collections
 import os
 import warnings
 from ..utils import *
+from datetime import date as pydate
 
 __all__ = ["dna2nM_convert", "echo_round", "Reaction", "WellReaction",
            "MasterMix", "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
@@ -155,7 +156,7 @@ class EchoSourceMaterial():
             conc = self.nM
         return "%s (%.3f %s)" % (self.name, conc, conc_string)
 
-    def request_material(self, destination_well, volume):
+    def request_material(self, destination_well, volume, pipette_by_hand = False):
         '''
         Request some material be made available for picking.
 
@@ -173,6 +174,7 @@ class EchoSourceMaterial():
                           "you want to do this?")
         else:
             self.total_volume_requested += actual_volume
+
             self.picklist.append(Pick(self, None, destination_well,
                                       actual_volume))
 
@@ -805,12 +807,24 @@ class EchoRun():
         for well in self.reactions:
             self.reactions[well].fill_with(material)
 
+    def initialize_source_plate(self):
+        new_well_dict = {}
+        for mat_name in self.material_dict:
+            mat = self.material_dict[mat_name]
+            if mat:
+                mat_well_dict = mat.plate.request_source_wells(mat)
+
+                for w in mat_well_dict:
+                    new_well_dict[w] = mat_well_dict[w]
+        return new_well_dict
 
     def generate_picklist(self):
         for mat_name in self.material_dict:
             mat = self.material_dict[mat_name]
             if mat:
-                picks = mat.request_picklist()
+                picks = mat.plate.request_picklist(mat)
+                print("picks", picks)
+                #picks = mat.request_picklist()
                 for pick in picks:
                     yield pick
 
@@ -837,15 +851,15 @@ class EchoRun():
                              "Destination Well","Transfer Volume",
                              "Sample Comment"])
 
+            #initialize source plate
+            new_source_plate_wells = self.initialize_source_plate()
             # Write picks
             for pick in self.generate_picklist():
                 if pick.source_material.name == "txtl_mm" \
                    or pick.source_material.name == "water":
                     comment = ""
                 else:
-                    comment = "Actual concentration: %.2f nM" % \
-                              (pick.source_material.nM * pick.volume \
-                              /self.rxn_vol)
+                    comment = "Actual concentration: %.2f nM" % (pick.source_material.nM * pick.volume / self.rxn_vol)
                 plate = pick.source_material.plate
                 row = [plate.name, plate.type, pick.source_well,
                        pick.source_material.name, self.DPtype,
@@ -1160,6 +1174,7 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.txtl_fraction = txtl_fraction
         self.materials = []
         self.current_well = -1
+        self.concentration = 1.0
         if add_txtl:
             self.buffer_fraction = self.txtl_fraction - self.extract_fraction
             txtl_extract = EchoSourceMaterial("Extract", 1, 0, None)
@@ -1256,7 +1271,7 @@ class SourcePlate():
     One Echo source plate. Responsible for allocating wells for
     EchoSourceMaterials.
     '''
-    def __init__(self, filename = None, SPname = None, SPtype = None):
+    def __init__(self, filename = None, SPname = None, SPtype = None, reuse_wells = False):
         '''
         SPname -- A(n arbitrary) string representing this plate. Default is
                     "Plate[1]"
@@ -1266,7 +1281,13 @@ class SourcePlate():
         filename -- Name of a file holding a list of used wells for this plate.
                     If that file doesn't exist yet, it will be created and
                     populated when write_to_file is called.
+        reuse_wells -- if False (default): well ingredients, concentrations and volumes
+                        are not stored in the .dat file. 
+                       if True: well ingredients, concentrations, and volumes are stored
+                        in the .dat file. When loaded again, these wells are automatically
+                        re-used if they match user added source materials.
         '''
+        self.reuse_wells = reuse_wells
         if SPname == None:
             self.name = "Source[1]"
         else:
@@ -1293,32 +1314,16 @@ class SourcePlate():
             self.type = SPtype
         else:
             raise ValueError("'%s' is not a recognized plate type." % SPtype)
-        self.wells_used   = np.zeros((self.rows, self.cols), dtype=bool)
+        self.wells_used   = {} #well(str)-->name, concentration, volume, date
+        self.materials = {} #(well, name, concentration) --> [...(volume, date)...]
+        self.wells_to_fill = {} #well --> (material, volume)
         self.current_row  = 0
         self.current_col  = 0
 
         self.used_well_file = filename
         if self.used_well_file:
             if os.path.isfile(filename):
-                self.load_from_file(filename)
-
-    def load_well_definitions(self, filename):
-        """
-        Import source plate definitions from CSV.
-
-        Arguments:
-            self: object
-            filename: filname of CSV
-        Returns:
-            Nothing
-        Raises:
-            AssertionError when a necessary column is missing
-        """
-        in_plate = pd.read_csv(filename)
-        necessary_cols = ['Location', 'Name', 'Concentration', 'Plate']
-        for col in necessary_cols:
-            assert col in in_plate.columns
-        self.plate = in_plate
+                self.load_from_file(filename, reuse_wells = reuse_wells)
 
     def get_location(self, name, conc=None, i=0):
         """
@@ -1354,23 +1359,56 @@ class SourcePlate():
                 c_group = grouped_by_conc.get_group(conc)
                 return get_from_values(c_group.Location.values)
 
-    def load_from_file(self, filename):
+    def load_from_file(self, filename, reuse_wells = False):
         '''
         Reads which wells have been used from a data file. The well-use file
         lists wells that have been used, with one line per well used.
         '''
+        self.reuse_wells = reuse_wells
         with mt_open(filename, 'r') as infile:
+            if not reuse_wells:
+                well_ind = 0
+
             for line in infile:
                 line = line.strip()
                 if line == "":
                     continue
-                col_name = ""
-                while line[-1] in string.digits:
-                    col_name = line[-1] + col_name
-                    line = line[:-1]
-                col_num = int(col_name) - 1
-                row_num = string.ascii_uppercase.find(line.upper())
-                self.wells_used[row_num, col_num] = True
+                elif line.lower()[:4]=="well" and not reuse_wells:
+                    continue
+                elif line.lower()[:4]=="well" and reuse_wells:
+                    L = [l.strip() for l in line.lower().split(",")]
+                    try:
+                        well_ind = L.index("well")
+                        name_ind = L.index("name")
+                        conc_ind = L.index("concentration")
+                        vol_ind = L.index("volume")
+                        date_ind = L.index("date")
+                    except ValueError:
+                        raise ValueError("reuse_wells = True flag requires a .dat file with a header line (csv format) including the entries 'well', 'name', 'concentration', 'volume', 'date created'")
+                    continue
+
+                L = line.split(",")
+                well = L[well_ind]
+
+                if self.reuse_wells:
+                    name = L[name_ind]
+                    try:
+                        conc = float(L[conc_ind])
+                    except ValueError: 
+                        conc = None
+                    try:
+                        vol = float(L[vol_ind])
+                    except ValueError:
+                        vol = None
+                    date = L[date_ind]
+
+                    self.wells_used[well] = (name, conc, vol, date)
+                    if (name, conc) in self.materials:
+                        self.materials[(name, conc)].append((well, vol, date))
+                    else:
+                        self.materials[(name, conc)] = [(well, vol, date)]
+                else:
+                    self.wells_used[well] = True
 
     def write_to_file(self):
         '''
@@ -1382,17 +1420,21 @@ class SourcePlate():
         '''
         if not self.used_well_file:
             return
-        used_well_indices = self.wells_used.nonzero()
-        used_well_rows = used_well_indices[0]
-        used_well_cols = used_well_indices[1]
+
         with mt_open(self.used_well_file, 'w+') as outfile:
-            for row_num, col_num in zip(used_well_rows, used_well_cols):
-                row_string = string.ascii_uppercase[row_num]
-                col_string = str(col_num + 1)
-                outfile.write(row_string + col_string + "\n")
+            if self.reuse_wells:
+                outfile.write("well,name,concentration,volume,date\n")
+
+            for well in self.wells_used:
+                (name, conc, vol, date) = self.wells_used[well]
+                if self.reuse_wells:
+                    outfile.write(well +","+name+","+str(conc)+","+str(vol)+","+str(date)+"\n")
+                else:
+                    outfile.write(well+"\n")     
 
     def request_wells(self, n_wells):
         '''
+
         Called when an EchoSourceMaterial wants to get some wells. Returns a
         list of wells for the material, which are marked internally as used.
 
@@ -1403,6 +1445,13 @@ class SourcePlate():
         number of wells requested is smaller than the number of wells per row,
         also require that the entire block be able to fit in one row.
         '''
+        wells_used_array = np.zeros((self.rows, self.cols))
+        for well in self.wells_used:
+            row = well[0]
+            row_ind = ord(row)-ord("A")
+            col_ind = int(well[1:])-1
+            wells_used_array[row_ind, col_ind] = 1
+
         if n_wells == 0:
             return []
         return_wells = np.empty(shape=(n_wells,), dtype=object)
@@ -1413,7 +1462,7 @@ class SourcePlate():
                 if flat_idx + n_wells > self.rows * self.cols:
                     raise Exception("Source plate %s is out of available " + \
                                     "wells." % self.name)
-                block = self.wells_used.ravel()[flat_idx:flat_idx + n_wells]
+                block = wells_used_array.ravel()[flat_idx:flat_idx + n_wells]
                 # If it will, return that block and mark it used
                 if True not in block:
                     block[:]    = True
@@ -1428,7 +1477,7 @@ class SourcePlate():
                     # Move on, leaving an extra well as a buffer (unless it
                     # just crossed to a new line)
                     if self.current_col != 0:
-                        self.wells_used[self.current_row, self.current_col] = \
+                        wells_used_array[self.current_row, self.current_col] = \
                                                                         True
                         self.increment_position(1)
                     return return_list
@@ -1437,6 +1486,7 @@ class SourcePlate():
 
     def increment_position(self, n):
         '''
+        DEPRICATED
         For internal use. Increments the plate's current position by n.
         '''
         if n < 0:
@@ -1449,7 +1499,138 @@ class SourcePlate():
         if self.current_row >= self.rows:
             raise Exception("Source plate %s is out of available wells." % \
                             self.name)
+    
+    def next_well(self, well):
+        '''
+        For internal use. Increments a well position by 1
+        '''
+        row = well[0]
+        row_ind = ord(row)
+        col = int(well[1:])
 
+        if col <= self.cols:
+            col+=1
+            return row+str(col)
+        elif row_ind < ord("A")+self.rows:
+            row_ind+=1
+            col = 1
+            return chr(row_ind)+str(col)
+        else:
+            return None
+
+
+
+    #Returns total available amount of a given material across all wells
+    def get_available_material(self, material):
+        name, conc = material.name, material.concentration
+        tot_vol = 0
+        if (name, conc) in self.materials:
+            for (well, source_vol, date) in self.materials[name, conc]:
+                tot_vol += source_vol-dead_volume
+        return tot_vol
+
+    def request_source_wells(self, material):
+        """
+            Returns the wells to fill with a given material as a dictionary [well] -> (material, volume)
+        """
+        #Material name and concentration
+        name, conc = material.name, material.concentration
+        #usable volume in a source well
+        usable_volume  = max_volume - dead_volume 
+        #Total echo volume requested
+        echo_volume = material.total_volume_requested
+        print("Need to change above to echo_volume_requested")
+
+        #Available material:
+        tot_available_vol = self.get_available_material(material)
+        #new material needed:
+        volume_additional = echo_volume-tot_available_vol
+        #Number of new source wells needed
+        n_source_wells = math.ceil(float(volume_additional) /  usable_volume)
+
+        #Fill Wells here
+        wells_to_fill_list = self.request_wells(int(n_source_wells))
+        wells_to_fill = {}
+        date = pydate.today().strftime("%d/%m/%Y")
+        well_ind = 0
+
+        while tot_available_vol < echo_volume:
+            well = wells_to_fill_list[well_ind]
+            if tot_available_vol+usable_volume >= echo_volume:
+                fill_volume = echo_volume - tot_available_vol 
+                wells_to_fill[well] = (material, dead_volume+fill_volume)
+                tot_available_vol=echo_volume
+                if (name, conc) in self.materials:
+                    self.materials[name, conc] += [(well, dead_volume+fill_volume, date)]
+                else:
+                    self.materials[name, conc] = [(well, dead_volume+fill_volume, date)]
+                self.wells_used[well] = (name, conc, dead_volume+fill_volume, date)
+            elif tot_available_vol + usable_volume < echo_volume:
+                wells_to_fill[well] = (material, max_volume)
+                tot_available_vol += usable_volume
+                if (name, conc) in self.materials:
+                    self.materials[name, conc] += [(well, max_volume, date)]
+                else:
+                    self.materials[name, conc] = [(well, max_volume, date)]
+                self.wells_used[well] = (name, conc, max_volume, date)
+            well_ind += 1
+
+        return wells_to_fill
+
+    def request_picklist(self, material):
+        '''
+        Commit to wells, and return a list of finalized picks from this
+        material.
+        '''
+
+        #Material name and concentration
+        name, conc = material.name, material.concentration
+        #usable volume in a source well
+        usable_volume  = max_volume - dead_volume 
+        
+        print("self.materials start", self.materials)
+        tot_vol_recieved = 0
+        tot_vol_requested = 0
+        picks = []
+        #Iterate through picks (material --> Destinations)
+        for pick in material.picklist:
+            #print("Pick:", pick.destination_well, pick.volume, end = "...")
+            volume_requested = pick.volume
+            tot_vol_requested += volume_requested
+            #How much volume has been used so far for this pick
+            volume_recieved = 0
+            print("self.materials.keys()", self.materials.keys())
+
+            for m_ind in range(len(self.materials[name, conc])):
+                (well, source_vol, date) = self.materials[name, conc][m_ind]
+                available_vol = source_vol-dead_volume
+                #source well can fulfil the pick request
+                if available_vol+volume_recieved >= volume_requested:
+                    #Amount to send
+                    volume_picked = volume_requested - volume_recieved
+                    volume_recieved += volume_picked
+                    #Update Source Plate Internal Data
+                    self.materials[name, conc][m_ind] = (well, source_vol-volume_picked, date)
+                    self.wells_used[well] = (name, conc, source_vol-volume_picked, date)
+
+                    #print(well,"-->",pick.destination_well, ":", volume_picked, "/", volume_recieved)
+                    picks.append(Pick(material, well, pick.destination_well, volume_picked))
+                    break
+                #Additional source wells needed
+                elif available_vol+volume_recieved < volume_requested and available_vol > 0:
+                    #Amount to send
+                    volume_picked = available_vol
+                    volume_recieved += volume_picked
+                    #Update Source Plate Internal Data
+                    self.materials[name, conc][m_ind] = (well, source_vol-volume_picked, date)
+                    self.wells_used[well] = (name, conc, source_vol-volume_picked, date)
+                    #print(well,"-->",pick.destination_well, ":", volume_picked, "/", volume_recieved, end = "...")
+                    picks.append(Pick(material, well, pick.destination_well, volume_picked))
+            tot_vol_recieved += volume_recieved
+        
+        print("tot_vol_recieved", tot_vol_recieved, "tot_vol_requested", tot_vol_requested)    
+        print("self.materials end", self.materials)
+        return picks#, wells_to_fill
 
 class DestinationPlate():
     '''
