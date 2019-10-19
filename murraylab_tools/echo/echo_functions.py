@@ -808,22 +808,31 @@ class EchoRun():
             self.reactions[well].fill_with(material)
 
     def initialize_source_plate(self):
-        new_well_dict = {}
+        """
+        Initializes source plate and returns a dictionary of wells to fill:
+        {(material name, material conc)--> [(well, volume)]}
+        """
+        material_well_dict = {}
         for mat_name in self.material_dict:
             mat = self.material_dict[mat_name]
             if mat:
-                mat_well_dict = mat.plate.request_source_wells(mat)
+                name, conc = mat.name, mat.concentration
 
-                for w in mat_well_dict:
-                    new_well_dict[w] = mat_well_dict[w]
-        return new_well_dict
+                wells_to_fill = mat.plate.request_source_wells(mat)
+
+                material_well_dict[(name, conc)] = wells_to_fill
+
+                if (name, conc) in mat.plate.materials_to_add:
+                    material_well_dict[(name, conc)] += mat.plate.materials_to_add[name, conc]
+        #Empty Materials to_add
+        materials_to_add = {}
+        return material_well_dict
 
     def generate_picklist(self):
         for mat_name in self.material_dict:
             mat = self.material_dict[mat_name]
             if mat:
                 picks = mat.plate.request_picklist(mat)
-                print("picks", picks)
                 #picks = mat.request_picklist()
                 for pick in picks:
                     yield pick
@@ -852,7 +861,7 @@ class EchoRun():
                              "Sample Comment"])
 
             #initialize source plate
-            new_source_plate_wells = self.initialize_source_plate()
+            mat_well_dict = self.initialize_source_plate()
             # Write picks
             for pick in self.generate_picklist():
                 if pick.source_material.name == "txtl_mm" \
@@ -897,10 +906,37 @@ class EchoRun():
             text_file.write("\n\nInstructions:")
 
             for material in self.material_dict.values():
+                name, conc = material.name, material.concentration
                 vol_list = material.well_volumes
-                if material.current_well == None:
-                    print("Material '" + str(material) + "' has no current well.")
-                if material.current_well < 0:
+                #if material.current_well == None:
+                #    print("Material '" + str(material) + "' has no current well.")
+
+                #Fill wells from reusable source plate
+                if (name, conc) in mat_well_dict and len(mat_well_dict[name, conc]) > 0:
+                    volumes_to_add = list(set([i[1] for i in mat_well_dict[name, conc]]))
+                    volumes_to_add.sort()
+                    volumes_to_add.reverse()
+                    wells_by_volume = {v:[i[0] for i in mat_well_dict[name, conc] if i[1]==v] for v in volumes_to_add}
+                    for vol in volumes_to_add:
+                        text_file.write("\n\tAdd "+str(vol/1000.0)+"uL of "+name+" in ")
+                        if len(wells_by_volume[vol]) > 1:
+                            text_file.write("wells: ")
+                        else:
+                            text_file.write("well: ")
+                        first_well = True
+                        for w in wells_by_volume[vol]:
+                            if first_well:
+                                first_well = False
+                            else:
+                                text_file.write(", ")
+
+                            text_file.write(w)
+                    #for (well, vol) in mat_well_dict[name, conc]:
+                    #    text_file.write("\n"+str(vol/1000.0)+"uL of "+name+" in well "+well+"\n")
+
+                #Old way below - shouldn't do anything
+                """
+                elif material.current_well < 0:
                     text_file.write("\n\t%s not used!" % material.name)
                     continue
                 if material.current_well != 0:
@@ -916,7 +952,7 @@ class EchoRun():
                 text_file.write("\n\t%.2f uL %s --> %s" % \
                         (material.well_volumes[material.current_well] / 1000.0,
                          material.name,
-                         material.wells[material.current_well]))
+                         material.wells[material.current_well]))"""
 
             # Make the plates write out their usage.
             for plate in self.plates:
@@ -1288,6 +1324,7 @@ class SourcePlate():
                         re-used if they match user added source materials.
         '''
         self.reuse_wells = reuse_wells
+        self.materials_to_add = {} #stores materials added to wells for instruction printing purposes
         if SPname == None:
             self.name = "Source[1]"
         else:
@@ -1384,7 +1421,7 @@ class SourcePlate():
                         vol_ind = L.index("volume")
                         date_ind = L.index("date")
                     except ValueError:
-                        raise ValueError("reuse_wells = True flag requires a .dat file with a header line (csv format) including the entries 'well', 'name', 'concentration', 'volume', 'date created'")
+                        raise ValueError("reuse_wells = True flag requires a .dat file with a header line (csv format) including the entries 'well', 'name', 'concentration', 'volume', 'date'")
                     continue
 
                 L = line.split(",")
@@ -1400,7 +1437,10 @@ class SourcePlate():
                         vol = float(L[vol_ind])
                     except ValueError:
                         vol = None
-                    date = L[date_ind]
+                    try:
+                        date = L[date_ind]
+                    except ValueError:
+                        date = None
 
                     self.wells_used[well] = (name, conc, vol, date)
                     if (name, conc) in self.materials:
@@ -1531,7 +1571,7 @@ class SourcePlate():
 
     def request_source_wells(self, material):
         """
-            Returns the wells to fill with a given material as a dictionary [well] -> (material, volume)
+            Returns the wells to fill with the given material as a list [(well, volume)]
         """
         #Material name and concentration
         name, conc = material.name, material.concentration
@@ -1550,7 +1590,7 @@ class SourcePlate():
 
         #Fill Wells here
         wells_to_fill_list = self.request_wells(int(n_source_wells))
-        wells_to_fill = {}
+        wells_to_fill = []
         date = pydate.today().strftime("%d/%m/%Y")
         well_ind = 0
 
@@ -1558,7 +1598,9 @@ class SourcePlate():
             well = wells_to_fill_list[well_ind]
             if tot_available_vol+usable_volume >= echo_volume:
                 fill_volume = echo_volume - tot_available_vol 
-                wells_to_fill[well] = (material, dead_volume+fill_volume)
+
+                wells_to_fill += [(well, dead_volume+fill_volume)]
+                
                 tot_available_vol=echo_volume
                 if (name, conc) in self.materials:
                     self.materials[name, conc] += [(well, dead_volume+fill_volume, date)]
@@ -1566,7 +1608,9 @@ class SourcePlate():
                     self.materials[name, conc] = [(well, dead_volume+fill_volume, date)]
                 self.wells_used[well] = (name, conc, dead_volume+fill_volume, date)
             elif tot_available_vol + usable_volume < echo_volume:
-                wells_to_fill[well] = (material, max_volume)
+
+                wells_to_fill += [(well, max_volume)]
+
                 tot_available_vol += usable_volume
                 if (name, conc) in self.materials:
                     self.materials[name, conc] += [(well, max_volume, date)]
@@ -1588,7 +1632,6 @@ class SourcePlate():
         #usable volume in a source well
         usable_volume  = max_volume - dead_volume 
         
-        print("self.materials start", self.materials)
         tot_vol_recieved = 0
         tot_vol_requested = 0
         picks = []
@@ -1599,7 +1642,6 @@ class SourcePlate():
             tot_vol_requested += volume_requested
             #How much volume has been used so far for this pick
             volume_recieved = 0
-            print("self.materials.keys()", self.materials.keys())
 
             for m_ind in range(len(self.materials[name, conc])):
                 (well, source_vol, date) = self.materials[name, conc][m_ind]
@@ -1621,16 +1663,67 @@ class SourcePlate():
                     #Amount to send
                     volume_picked = available_vol
                     volume_recieved += volume_picked
-                    #Update Source Plate Internal Data
+
                     self.materials[name, conc][m_ind] = (well, source_vol-volume_picked, date)
                     self.wells_used[well] = (name, conc, source_vol-volume_picked, date)
-                    #print(well,"-->",pick.destination_well, ":", volume_picked, "/", volume_recieved, end = "...")
+
                     picks.append(Pick(material, well, pick.destination_well, volume_picked))
             tot_vol_recieved += volume_recieved
         
-        print("tot_vol_recieved", tot_vol_recieved, "tot_vol_requested", tot_vol_requested)    
-        print("self.materials end", self.materials)
         return picks#, wells_to_fill
+
+    def add_material_to_well(self, well, material, volume, update_date = False):
+        """
+        Adds a material to a well. 
+        Throws an error if the well is already full of a different material 
+        (or the same material at a different concentration).
+        """
+
+
+        name, conc = material.name, material.concentration
+        if volume <= 0:
+            warnings.warn("Adding volume="+str(volume)+"<=0 of "+name+" to "+well+". Unecessary step omitted.")
+            return
+
+        date = pydate.today().strftime("%d/%m/%Y")
+
+        if well not in self.wells_used:
+            if volume > max_volume:
+                raise ValueError("Cannot add volumes greater than "+str(max_volume)+" to source plate.")
+
+            self.wells_used[well] = (name, conc, volume, date)
+            if (name, conc) in self.materials:
+                self.materials[(name, conc)]+=[(well, volume, date)]
+            else:
+                self.materials[(name, conc)] =[(well, volume, date)]
+
+        elif self.wells_used[well][0] == name and self.wells_used[well][1] == conc:
+            print("Refilling Well "+well+" with additional material "+name+".")
+            old_vol = self.wells_used[well][2]
+            old_date = self.wells_used[well][3]
+            if volume+ old_vol> max_volume:
+                raise ValueError("Cannot add volumes greater than "+str(max_volume - old_vol)+" to this well (which already contains "+str(old_vol)+").")
+
+            self.materials[(name, conc)].remove((well, old_vol, old_date))
+
+            if update_date:
+                self.wells_used[well] = (name, conc, volume+old_vol, date)
+                self.materials[(name, conc)].append((well, volume+old_vol, date))
+            else:
+                self.wells_used[well] = (name, conc, volume+old_vol, old_date)
+                self.materials[(name, conc)].append((well, volume+old_vol, old_date))
+
+        else:
+            raise ValueError("Well "+well+" already contains "+self.wells_used[well][0]+" at concentration "+str(self.wells_used[well][1]))
+
+        material.plate = self
+
+        if (name, conc) in self.materials_to_add:
+            self.materials_to_add[(name, conc)]+=[(well, volume)]
+        else:
+            self.materials_to_add[(name, conc)] = [(well, volume)]
+        
+
 
 class DestinationPlate():
     '''
