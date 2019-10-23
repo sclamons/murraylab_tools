@@ -1,15 +1,15 @@
 Materials used:
 Mat1:
 	stock concentration: 200.00 nM
-	total volume: 42.85 uL
+	total volume: 33.83 uL
 Mat2:
 	stock concentration: 500.00 nM
-	total volume: 17.15 uL
+	total volume: 13.47 uL
 water:
 	stock concentration: 1.00 nM
-	total volume: 60.00 uL
+	total volume: 72.70 uL
 
 Instructions:
-	Add 47.725uL of Mat1 in well: A17
-	Add 65.0uL of water in well: A19
-	Add 37.0uL of water in well: A20
+	Add 36.7uL of Mat1 in well: A18
+	Add 65.0uL of water in well: A21
+	Add 49.7uL of water in well: A22
