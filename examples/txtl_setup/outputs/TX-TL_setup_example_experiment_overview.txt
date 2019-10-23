@@ -23,10 +23,10 @@ GFP Plasmid:
 	stock concentration: 72.47 nM (149.00 ng/uL)
 	total volume: 21.65 uL
 
-Instructions:
-	59.00 uL master_mix --> F13
-	30.68 uL water --> F15
-	21.55 uL Positive Control --> F17
-	21.45 uL RFP Plasmid --> F19
-	21.68 uL CFP Plasmid --> F21
-	21.65 uL GFP Plasmid --> F23
+On the source plate:
+	59.00 uL master_mix --> B21
+	30.68 uL water --> B23
+	21.55 uL Positive Control --> C01
+	21.45 uL RFP Plasmid --> C03
+	21.68 uL CFP Plasmid --> C05
+	21.65 uL GFP Plasmid --> C07

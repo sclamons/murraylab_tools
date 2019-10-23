@@ -8,6 +8,7 @@ import collections
 import os
 import warnings
 from ..utils import *
+from datetime import date as pydate
 
 __all__ = ["dna2nM_convert", "echo_round", "Reaction", "WellReaction",
            "MasterMix", "SourcePlate", "EchoSourceMaterial", "Pick", "EchoRun",
@@ -142,7 +143,9 @@ class EchoSourceMaterial():
 
         self.wells    = None
         self.picklist = []
+        self.pipettelist = []
         self.total_volume_requested = 0
+        self.echo_volume_requested  = 0
         self.well_volumes = None
         self.current_well = -1
 
@@ -155,26 +158,30 @@ class EchoSourceMaterial():
             conc = self.nM
         return "%s (%.3f %s)" % (self.name, conc, conc_string)
 
-    def request_material(self, destination_well, volume):
+    def request_material(self, destination_well, volume, pipette_by_hand=False):
         '''
         Request some material be made available for picking.
 
-        volume is the volume of material requested, in nL. If that volume is
-        greater than the total amount of material that could possibly be in the
-        wells designated for this material, throws an error.
+        volume is the volume of material requested, in nL.
 
         Updates this material's total requested volume and list of
-        destionations.
+        destinations.
         '''
-        actual_volume = echo_round(volume)
-        if actual_volume == 0:
-            warnings.warn("Requesting 0 volume from material " + self.name + \
-                          " into well " + destination_well + "; are you sure "+\
-                          "you want to do this?")
+        if pipette_by_hand:
+            self.pipettelist.append(Pick(self, None, destination_well, volume))
+            self.total_volume_requested += volume
         else:
-            self.total_volume_requested += actual_volume
-            self.picklist.append(Pick(self, None, destination_well,
-                                      actual_volume))
+            actual_volume = echo_round(volume)
+            if actual_volume == 0:
+                warnings.warn(f"Requesting 0 volume from material {self.name}"
+                              f" into well {destination_well}; are you sure "
+                              "you want to do this?")
+            else:
+                self.total_volume_requested += actual_volume
+                self.echo_volume_requested += actual_volume
+                self.picklist.append(Pick(self, None, destination_well,
+                                          actual_volume))
+
 
     def request_picklist(self):
         '''
@@ -182,23 +189,24 @@ class EchoSourceMaterial():
         material.
         '''
         usable_volume  = max_volume - dead_volume
-        n_source_wells = math.ceil(float(self.total_volume_requested) \
+        n_source_wells = math.ceil(float(self.echo_volume_requested) \
                                          / usable_volume)
         if n_source_wells == 0:
             print(("Warning: Material %s is requesting 0 wells in its " +\
                   "source plate to give %f total volume") % \
-                  (self.name, self.total_volume_requested))
+                  (self.name, self.echo_volume_requested))
+            return
         if self.wells == None:
             self.wells = self.plate.request_wells(int(n_source_wells))
         if len(self.wells) < 1:
             warnings.warn(("Material %s has requested no wells. Are you sure "+\
                           "this is correct?") % self.name)
-            return
-            yield
+
         self.well_volumes    = np.zeros(len(self.wells))
         self.well_volumes[0] = dead_volume
         self.current_well    = 0
         self.total_volume_requested += dead_volume
+        self.echo_volume_requested += dead_volume
 
         for pick in self.picklist:
             volume_requested = pick.volume # For error-writing purposes.
@@ -210,6 +218,7 @@ class EchoSourceMaterial():
                 self.well_volumes[self.current_well] = max_volume
                 self.current_well += 1
                 self.total_volume_requested += dead_volume
+                self.echo_volume_requested += dead_volume
                 if self.current_well >= len(self.wells):
                     raise ValueError(("Material %s has been asked to donate " +\
                                       "too much material with a call for " +\
@@ -220,7 +229,6 @@ class EchoSourceMaterial():
                 available_volume = usable_volume
 
             self.well_volumes[self.current_well] += pick.volume
-            pick.source_well = self.wells[self.current_well]
             yield pick
 
 class EchoRun():
@@ -454,7 +462,9 @@ class EchoRun():
                             "use the wrong amounts of ingredients. Are you " + \
                             "sure this is what you want?")
                 continue
-            material_name          = stock_sheet[i+2,1]
+            material_name          = stock_sheet[i+2, 1]
+            if isinstance(material_name, float):
+                continue
             material_concentration = stock_sheet[i+2, 2]
             material_length        = stock_sheet[i+2, 3]
             new_material           = EchoSourceMaterial(material_name,
@@ -749,7 +759,8 @@ class EchoRun():
             if fill_with_water:
                 self.reactions[neg_ctrl_well].fill_with(water)
 
-    def add_material_to_well(self, material, final_conc, well):
+    def add_material_to_well(self, material, final_conc, well,
+                             pipette_by_hand = False):
         '''
         Add a single material, at a single concentration, to a single well.
 
@@ -759,11 +770,17 @@ class EchoRun():
             final_conc - The final concentration of material, in nM (or the
                             same units as the material)
             well - Name of the well to add to.
+            pipette_by_hand - If True, the material will have to
+                                be added by hand by the user (and instructions
+                                will be printed to that effect). Default False,
+                                in which case the material will be pipetted by
+                                the Echo.
         '''
-        self.add_material_to_block(material, final_conc, well, well)
+        self.add_material_to_block(material, final_conc, well, well,
+                                   pipette_by_hand)
 
-    def add_material_to_block(self, material, final_conc,
-                              top_left, bottom_right):
+    def add_material_to_block(self, material, final_conc, top_left,
+                              bottom_right, pipette_by_hand = False):
         '''
         Add a single material, at a single concentration, to every well in a
         block on the destination plate.
@@ -775,6 +792,11 @@ class EchoRun():
                             same units as the material)
             top_left - top-left-most well of the block to add to.
             bottom_right - bottom-right-most well of the block to add to.
+            pipette_by_hand - If True, the material will have to
+                                be added by hand by the user (and instructions
+                                will be printed to that effect). Default False,
+                                in which case the material will be pipetted by
+                                the Echo.
         '''
         self.add_material(material)
         material.plate = self.plates[0]
@@ -792,25 +814,48 @@ class EchoRun():
                     self.reactions[destination] = WellReaction(self.rxn_vol,
                                                                destination)
                 vol = final_conc * (self.rxn_vol / material.nM)
-                self.reactions[destination].add_material(material, final_conc)
+                self.reactions[destination].add_material(material, final_conc,
+                                                        pipette_by_hand)
 
-    def fill_well_with(self, well, material):
+    def fill_well_with(self, well, material, pipette_by_hand = False):
         self.add_material(material)
         if well not in self.reactions or self.reactions[well] == None:
             self.reactions[well] = WellReaction(self.rxn_vol, well)
-        self.reactions[well].fill_with(material)
+        self.reactions[well].fill_with(material, pipette_by_hand)
 
-    def fill_all_wells_with(self, material):
+    def fill_all_wells_with(self, material, pipette_by_hand = False):
         self.add_material(material)
         for well in self.reactions:
-            self.reactions[well].fill_with(material)
+            self.reactions[well].fill_with(material, pipette_by_hand)
 
+    def initialize_source_plate(self):
+        """
+        Initializes source plate and returns a dictionary of wells to fill:
+        {(material name, material conc)--> [(well, volume)]}
+        """
+        material_well_dict = {}
+        for mat_name in self.material_dict:
+            mat = self.material_dict[mat_name]
+            if mat:
+                name, conc = mat.name, mat.concentration
+
+                wells_to_fill = mat.plate.request_source_wells(mat)
+
+                material_well_dict[(name, conc)] = wells_to_fill
+
+                if (name, conc) in mat.plate.materials_to_add:
+                    material_well_dict[(name, conc)] += mat.plate.materials_to_add[name, conc]
+        #Empty Materials to_add
+        materials_to_add = {}
+        return material_well_dict
+>>>>>>> WPdev
 
     def generate_picklist(self):
         for mat_name in self.material_dict:
             mat = self.material_dict[mat_name]
             if mat:
-                picks = mat.request_picklist()
+                picks = mat.plate.request_picklist(mat)
+                #picks = mat.request_picklist()
                 for pick in picks:
                     yield pick
 
@@ -837,15 +882,15 @@ class EchoRun():
                              "Destination Well","Transfer Volume",
                              "Sample Comment"])
 
+            #initialize source plate
+            mat_well_dict = self.initialize_source_plate()
             # Write picks
             for pick in self.generate_picklist():
                 if pick.source_material.name == "txtl_mm" \
                    or pick.source_material.name == "water":
                     comment = ""
                 else:
-                    comment = "Actual concentration: %.2f nM" % \
-                              (pick.source_material.nM * pick.volume \
-                              /self.rxn_vol)
+                    comment = "Actual concentration: %.2f nM" % (pick.source_material.nM * pick.volume / self.rxn_vol)
                 plate = pick.source_material.plate
                 row = [plate.name, plate.type, pick.source_well,
                        pick.source_material.name, self.DPtype,
@@ -879,14 +924,46 @@ class EchoRun():
                     for name, vol in master_mix.recipe():
                         text_file.write("\n\t\t%.2f uL %s" % \
                                         (vol / 1000, name))
-            # Explicit loading instructions
-            text_file.write("\n\nInstructions:")
+            # Source plate loading instructions
+            text_file.write("\n\nOn the source plate:")
 
             for material in self.material_dict.values():
+                name, conc = material.name, material.concentration
                 vol_list = material.well_volumes
-                if material.current_well == None:
-                    print("Material '" + str(material) + "' has no current well.")
-                if material.current_well < 0:
+
+                #if material.current_well == None:
+                #    print("Material '" + str(material) + "' has no current well.")
+
+                #Fill wells from reusable source plate
+                if (name, conc) in mat_well_dict \
+                        and len(mat_well_dict[name, conc]) > 0:
+                    volumes_to_add = list(set(
+                                     [i[1] for i in mat_well_dict[name, conc]]))
+                    volumes_to_add.sort()
+                    volumes_to_add.reverse()
+                    wells_by_volume = \
+                        {v:[i[0] for i in mat_well_dict[name, conc] \
+                                 if i[1]==v] for v in volumes_to_add}
+                    for vol in volumes_to_add:
+                        text_file.write(f"\n\tAdd {vol/1000.0}uL of {name} in ")
+                        if len(wells_by_volume[vol]) > 1:
+                            text_file.write("wells: ")
+                        else:
+                            text_file.write("well: ")
+                        first_well = True
+                        for w in wells_by_volume[vol]:
+                            if first_well:
+                                first_well = False
+                            else:
+                                text_file.write(", ")
+
+                            text_file.write(w)
+                    #for (well, vol) in mat_well_dict[name, conc]:
+                    #    text_file.write("\n"+str(vol/1000.0)+"uL of "+name+" in well "+well+"\n")
+
+                #Old way below - shouldn't do anything
+                """
+                elif material.current_well < 0:
                     text_file.write("\n\t%s not used!" % material.name)
                     continue
                 if material.current_well != 0:
@@ -902,7 +979,18 @@ class EchoRun():
                 text_file.write("\n\t%.2f uL %s --> %s" % \
                         (material.well_volumes[material.current_well] / 1000.0,
                          material.name,
-                         material.wells[material.current_well]))
+                         material.wells[material.current_well]))"""
+
+            # Destination plate loading instructions (for hand-pipetted stuff).
+            header_written = False
+            for material in self.material_dict.values():
+                for pipette_step in material.pipettelist:
+                    if not header_written:
+                        text_file.write("\n\nOn destination plate:")
+                    text_file.write("\n\t%.2f uL of %s in well %s" %
+                                        (pipette_step.volume,
+                                         material.name,
+                                         pipette_step.destination_well))
 
             # Make the plates write out their usage.
             for plate in self.plates:
@@ -1021,14 +1109,25 @@ class Reaction(object):
 
 class WellReaction(Reaction):
     '''
-    A reaction in a well on an Echo destination plate. Has a well, and has
-    volumes that are rounded to Echo-compatible numbers.
+    A reaction in a well on an Echo destination plate. Has a well, has
+    volumes that are rounded to Echo-compatible numbers, and has a concept of
+    echo-pipetted vs. hand-pipetted materials.
     '''
     def __init__(self, rxn_vol, well):
         super(WellReaction, self).__init__(rxn_vol)
         self.well = well
+        self.hand_pipetted = dict()
 
-    def add_material(self, material, final_conc):
+    def fill_with(self, material, pipette_by_hand = False):
+        '''
+        Fill all unfilled volume in the reaction with some material (usually
+        water). If another material was assigned to fill this well, it will
+        be overwritten by this call.
+        '''
+        self.fill_material_hand_pipetted = pipette_by_hand
+        super(WellReaction, self).fill_with(material)
+
+    def add_material(self, material, final_conc, pipette_by_hand = False):
         '''
         Add a material at a known final concentration. Final concentrations are
         assumed to use the same units as the material (usually nM). Does NOT
@@ -1036,21 +1135,34 @@ class WellReaction(Reaction):
         finalize_reaction is called (happens automatically when recipe is
         called).
 
-        Rounding to Echo-compatible volumes occurs at this step.
+        Rounding to Echo-compatible volumes occurs at this step, unless the
+        material is added by hand.
         '''
         target_vol  = self.rxn_vol * final_conc / material.nM
-        actual_vol  = echo_round(target_vol)
-        actual_conc = actual_vol * material.nM / self.rxn_vol
 
-        self.materials.append((material, actual_conc))
+        if pipette_by_hand:
+            self.materials.append((material, final_conc))
+            self.hand_pipetted[material] = True
+        else:
+            actual_vol  = echo_round(target_vol)
+            actual_conc = actual_vol * material.nM / self.rxn_vol
+            self.materials.append((material, actual_conc))
+            self.hand_pipetted[material] = False
+
         self.finalized = False
 
-    def add_volume_of_material(self, material, vol):
+    def add_volume_of_material(self, material, vol, pipette_by_hand = False):
         '''
         Add a fixed volume of a material (in nL).
         '''
-        actual_vol = echo_round(vol)
-        super(WellReaction, self).add_volume_of_material(material, actual_vol)
+        if pipette_by_hand:
+            self.hand_pipetted[material] = True
+            super(WellReaction, self).add_volume_of_material(material, vol)
+        else:
+            self.hand_pipetted[material] = False
+            actual_vol = echo_round(vol)
+            super(WellReaction, self).add_volume_of_material(material,
+                                                             actual_vol)
         self.finalized = False
 
     def finalize_reaction(self):
@@ -1077,7 +1189,8 @@ class WellReaction(Reaction):
             fill_volume         = self.rxn_vol - self.current_vol()
             fill_mat_final_conc = self.fill_material.nM * fill_volume \
                                   / self.rxn_vol
-            self.add_material(self.fill_material, fill_mat_final_conc)
+            self.add_material(self.fill_material, fill_mat_final_conc,
+                              self.fill_material_hand_pipetted)
 
         current_vol = self.current_vol()
         if current_vol > self.rxn_vol:
@@ -1103,7 +1216,8 @@ class WellReaction(Reaction):
 
         for material, conc in self.materials:
             vol = conc * self.rxn_vol / material.nM
-            material.request_material(self.well, vol)
+            material.request_material(self.well, vol,
+                                      self.hand_pipetted[material])
 
         self.finalized = True
 
@@ -1147,7 +1261,9 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.wells    = None
         self.well     = "Master Mix"
         self.picklist = []
+        self.pipettelist = []
         self.total_volume_requested = 0
+        self.echo_volume_requested = 0
         self.well_volumes  = None
         self.finalized     = False
         self.fill_material = None
@@ -1160,6 +1276,7 @@ class MasterMix(EchoSourceMaterial, Reaction):
         self.txtl_fraction = txtl_fraction
         self.materials = []
         self.current_well = -1
+        self.concentration = 1.0
         if add_txtl:
             self.buffer_fraction = self.txtl_fraction - self.extract_fraction
             txtl_extract = EchoSourceMaterial("Extract", 1, 0, None)
@@ -1256,7 +1373,7 @@ class SourcePlate():
     One Echo source plate. Responsible for allocating wells for
     EchoSourceMaterials.
     '''
-    def __init__(self, filename = None, SPname = None, SPtype = None):
+    def __init__(self, filename = None, SPname = None, SPtype = None, reuse_wells = False):
         '''
         SPname -- A(n arbitrary) string representing this plate. Default is
                     "Plate[1]"
@@ -1266,7 +1383,14 @@ class SourcePlate():
         filename -- Name of a file holding a list of used wells for this plate.
                     If that file doesn't exist yet, it will be created and
                     populated when write_to_file is called.
+        reuse_wells -- if False (default): well ingredients, concentrations and volumes
+                        are not stored in the .dat file.
+                       if True: well ingredients, concentrations, and volumes are stored
+                        in the .dat file. When loaded again, these wells are automatically
+                        re-used if they match user added source materials.
         '''
+        self.reuse_wells = reuse_wells
+        self.materials_to_add = {} #stores materials added to wells for instruction printing purposes
         if SPname == None:
             self.name = "Source[1]"
         else:
@@ -1293,32 +1417,16 @@ class SourcePlate():
             self.type = SPtype
         else:
             raise ValueError("'%s' is not a recognized plate type." % SPtype)
-        self.wells_used   = np.zeros((self.rows, self.cols), dtype=bool)
+        self.wells_used   = {} #well(str)-->name, concentration, volume, date
+        self.materials = {} #(well, name, concentration) --> [...(volume, date)...]
+        self.wells_to_fill = {} #well --> (material, volume)
         self.current_row  = 0
         self.current_col  = 0
 
         self.used_well_file = filename
         if self.used_well_file:
             if os.path.isfile(filename):
-                self.load_from_file(filename)
-
-    def load_well_definitions(self, filename):
-        """
-        Import source plate definitions from CSV.
-
-        Arguments:
-            self: object
-            filename: filname of CSV
-        Returns:
-            Nothing
-        Raises:
-            AssertionError when a necessary column is missing
-        """
-        in_plate = pd.read_csv(filename)
-        necessary_cols = ['Location', 'Name', 'Concentration', 'Plate']
-        for col in necessary_cols:
-            assert col in in_plate.columns
-        self.plate = in_plate
+                self.load_from_file(filename, reuse_wells = reuse_wells)
 
     def get_location(self, name, conc=None, i=0):
         """
@@ -1354,23 +1462,59 @@ class SourcePlate():
                 c_group = grouped_by_conc.get_group(conc)
                 return get_from_values(c_group.Location.values)
 
-    def load_from_file(self, filename):
+    def load_from_file(self, filename, reuse_wells = False):
         '''
         Reads which wells have been used from a data file. The well-use file
         lists wells that have been used, with one line per well used.
         '''
+        self.reuse_wells = reuse_wells
         with mt_open(filename, 'r') as infile:
+            if not reuse_wells:
+                well_ind = 0
+
             for line in infile:
                 line = line.strip()
                 if line == "":
                     continue
-                col_name = ""
-                while line[-1] in string.digits:
-                    col_name = line[-1] + col_name
-                    line = line[:-1]
-                col_num = int(col_name) - 1
-                row_num = string.ascii_uppercase.find(line.upper())
-                self.wells_used[row_num, col_num] = True
+                elif line.lower()[:4]=="well" and not reuse_wells:
+                    continue
+                elif line.lower()[:4]=="well" and reuse_wells:
+                    L = [l.strip() for l in line.lower().split(",")]
+                    try:
+                        well_ind = L.index("well")
+                        name_ind = L.index("name")
+                        conc_ind = L.index("concentration")
+                        vol_ind = L.index("volume")
+                        date_ind = L.index("date")
+                    except ValueError:
+                        raise ValueError("reuse_wells = True flag requires a .dat file with a header line (csv format) including the entries 'well', 'name', 'concentration', 'volume', 'date'")
+                    continue
+
+                L = line.split(",")
+                well = L[well_ind]
+
+                if self.reuse_wells:
+                    name = L[name_ind]
+                    try:
+                        conc = float(L[conc_ind])
+                    except ValueError:
+                        conc = None
+                    try:
+                        vol = float(L[vol_ind])
+                    except ValueError:
+                        vol = None
+                    try:
+                        date = L[date_ind]
+                    except ValueError:
+                        date = None
+
+                    self.wells_used[well] = (name, conc, vol, date)
+                    if (name, conc) in self.materials:
+                        self.materials[(name, conc)].append((well, vol, date))
+                    else:
+                        self.materials[(name, conc)] = [(well, vol, date)]
+                else:
+                    self.wells_used[well] = True
 
     def write_to_file(self):
         '''
@@ -1382,17 +1526,21 @@ class SourcePlate():
         '''
         if not self.used_well_file:
             return
-        used_well_indices = self.wells_used.nonzero()
-        used_well_rows = used_well_indices[0]
-        used_well_cols = used_well_indices[1]
+
         with mt_open(self.used_well_file, 'w+') as outfile:
-            for row_num, col_num in zip(used_well_rows, used_well_cols):
-                row_string = string.ascii_uppercase[row_num]
-                col_string = str(col_num + 1)
-                outfile.write(row_string + col_string + "\n")
+            if self.reuse_wells:
+                outfile.write("well,name,concentration,volume,date\n")
+
+            for well in self.wells_used:
+                (name, conc, vol, date) = self.wells_used[well]
+                if self.reuse_wells:
+                    outfile.write(well +","+name+","+str(conc)+","+str(vol)+","+str(date)+"\n")
+                else:
+                    outfile.write(well+"\n")
 
     def request_wells(self, n_wells):
         '''
+
         Called when an EchoSourceMaterial wants to get some wells. Returns a
         list of wells for the material, which are marked internally as used.
 
@@ -1403,6 +1551,13 @@ class SourcePlate():
         number of wells requested is smaller than the number of wells per row,
         also require that the entire block be able to fit in one row.
         '''
+        wells_used_array = np.zeros((self.rows, self.cols))
+        for well in self.wells_used:
+            row = well[0]
+            row_ind = ord(row)-ord("A")
+            col_ind = int(well[1:])-1
+            wells_used_array[row_ind, col_ind] = 1
+
         if n_wells == 0:
             return []
         return_wells = np.empty(shape=(n_wells,), dtype=object)
@@ -1413,7 +1568,7 @@ class SourcePlate():
                 if flat_idx + n_wells > self.rows * self.cols:
                     raise Exception("Source plate %s is out of available " + \
                                     "wells." % self.name)
-                block = self.wells_used.ravel()[flat_idx:flat_idx + n_wells]
+                block = wells_used_array.ravel()[flat_idx:flat_idx + n_wells]
                 # If it will, return that block and mark it used
                 if True not in block:
                     block[:]    = True
@@ -1428,7 +1583,7 @@ class SourcePlate():
                     # Move on, leaving an extra well as a buffer (unless it
                     # just crossed to a new line)
                     if self.current_col != 0:
-                        self.wells_used[self.current_row, self.current_col] = \
+                        wells_used_array[self.current_row, self.current_col] = \
                                                                         True
                         self.increment_position(1)
                     return return_list
@@ -1437,6 +1592,7 @@ class SourcePlate():
 
     def increment_position(self, n):
         '''
+        DEPRICATED
         For internal use. Increments the plate's current position by n.
         '''
         if n < 0:
@@ -1449,6 +1605,190 @@ class SourcePlate():
         if self.current_row >= self.rows:
             raise Exception("Source plate %s is out of available wells." % \
                             self.name)
+
+    def next_well(self, well):
+        '''
+        For internal use. Increments a well position by 1
+        '''
+        row = well[0]
+        row_ind = ord(row)
+        col = int(well[1:])
+
+        if col <= self.cols:
+            col+=1
+            return row+str(col)
+        elif row_ind < ord("A")+self.rows:
+            row_ind+=1
+            col = 1
+            return chr(row_ind)+str(col)
+        else:
+            return None
+
+
+
+    #Returns total available amount of a given material across all wells
+    def get_available_material(self, material):
+        name, conc = material.name, material.concentration
+        tot_vol = 0
+        if (name, conc) in self.materials:
+            for (well, source_vol, date) in self.materials[name, conc]:
+                tot_vol += source_vol-dead_volume
+        return tot_vol
+
+    def request_source_wells(self, material):
+        """
+            Returns the wells to fill with the given material as a list [(well, volume)]
+        """
+        #Material name and concentration
+        name, conc = material.name, material.concentration
+        #usable volume in a source well
+        usable_volume  = max_volume - dead_volume
+        #Total echo volume requested
+        echo_volume = material.total_volume_requested
+        print("Need to change above to echo_volume_requested")
+
+        #Available material:
+        tot_available_vol = self.get_available_material(material)
+        #new material needed:
+        volume_additional = echo_volume-tot_available_vol
+        #Number of new source wells needed
+        n_source_wells = math.ceil(float(volume_additional) /  usable_volume)
+
+        #Fill Wells here
+        wells_to_fill_list = self.request_wells(int(n_source_wells))
+        wells_to_fill = []
+        date = pydate.today().strftime("%d/%m/%Y")
+        well_ind = 0
+
+        while tot_available_vol < echo_volume:
+            well = wells_to_fill_list[well_ind]
+            if tot_available_vol+usable_volume >= echo_volume:
+                fill_volume = echo_volume - tot_available_vol
+
+                wells_to_fill += [(well, dead_volume+fill_volume)]
+
+                tot_available_vol=echo_volume
+                if (name, conc) in self.materials:
+                    self.materials[name, conc] += [(well, dead_volume+fill_volume, date)]
+                else:
+                    self.materials[name, conc] = [(well, dead_volume+fill_volume, date)]
+                self.wells_used[well] = (name, conc, dead_volume+fill_volume, date)
+            elif tot_available_vol + usable_volume < echo_volume:
+
+                wells_to_fill += [(well, max_volume)]
+
+                tot_available_vol += usable_volume
+                if (name, conc) in self.materials:
+                    self.materials[name, conc] += [(well, max_volume, date)]
+                else:
+                    self.materials[name, conc] = [(well, max_volume, date)]
+                self.wells_used[well] = (name, conc, max_volume, date)
+            well_ind += 1
+
+        return wells_to_fill
+
+    def request_picklist(self, material):
+        '''
+        Commit to wells, and return a list of finalized picks from this
+        material.
+        '''
+
+        #Material name and concentration
+        name, conc = material.name, material.concentration
+        #usable volume in a source well
+        usable_volume  = max_volume - dead_volume
+
+        tot_vol_recieved = 0
+        tot_vol_requested = 0
+        picks = []
+        #Iterate through picks (material --> Destinations)
+        for pick in material.picklist:
+            #print("Pick:", pick.destination_well, pick.volume, end = "...")
+            volume_requested = pick.volume
+            tot_vol_requested += volume_requested
+            #How much volume has been used so far for this pick
+            volume_recieved = 0
+
+            for m_ind in range(len(self.materials[name, conc])):
+                (well, source_vol, date) = self.materials[name, conc][m_ind]
+                available_vol = source_vol-dead_volume
+                #source well can fulfil the pick request
+                if available_vol+volume_recieved >= volume_requested:
+                    #Amount to send
+                    volume_picked = volume_requested - volume_recieved
+                    volume_recieved += volume_picked
+                    #Update Source Plate Internal Data
+                    self.materials[name, conc][m_ind] = (well, source_vol-volume_picked, date)
+                    self.wells_used[well] = (name, conc, source_vol-volume_picked, date)
+
+                    #print(well,"-->",pick.destination_well, ":", volume_picked, "/", volume_recieved)
+                    picks.append(Pick(material, well, pick.destination_well, volume_picked))
+                    break
+                #Additional source wells needed
+                elif available_vol+volume_recieved < volume_requested and available_vol > 0:
+                    #Amount to send
+                    volume_picked = available_vol
+                    volume_recieved += volume_picked
+
+                    self.materials[name, conc][m_ind] = (well, source_vol-volume_picked, date)
+                    self.wells_used[well] = (name, conc, source_vol-volume_picked, date)
+
+                    picks.append(Pick(material, well, pick.destination_well, volume_picked))
+            tot_vol_recieved += volume_recieved
+
+        return picks#, wells_to_fill
+
+    def add_material_to_well(self, well, material, volume, update_date = False):
+        """
+        Adds a material to a well.
+        Throws an error if the well is already full of a different material
+        (or the same material at a different concentration).
+        """
+
+
+        name, conc = material.name, material.concentration
+        if volume <= 0:
+            warnings.warn("Adding volume="+str(volume)+"<=0 of "+name+" to "+well+". Unecessary step omitted.")
+            return
+
+        date = pydate.today().strftime("%d/%m/%Y")
+
+        if well not in self.wells_used:
+            if volume > max_volume:
+                raise ValueError("Cannot add volumes greater than "+str(max_volume)+" to source plate.")
+
+            self.wells_used[well] = (name, conc, volume, date)
+            if (name, conc) in self.materials:
+                self.materials[(name, conc)]+=[(well, volume, date)]
+            else:
+                self.materials[(name, conc)] =[(well, volume, date)]
+
+        elif self.wells_used[well][0] == name and self.wells_used[well][1] == conc:
+            print("Refilling Well "+well+" with additional material "+name+".")
+            old_vol = self.wells_used[well][2]
+            old_date = self.wells_used[well][3]
+            if volume+ old_vol> max_volume:
+                raise ValueError("Cannot add volumes greater than "+str(max_volume - old_vol)+" to this well (which already contains "+str(old_vol)+").")
+
+            self.materials[(name, conc)].remove((well, old_vol, old_date))
+
+            if update_date:
+                self.wells_used[well] = (name, conc, volume+old_vol, date)
+                self.materials[(name, conc)].append((well, volume+old_vol, date))
+            else:
+                self.wells_used[well] = (name, conc, volume+old_vol, old_date)
+                self.materials[(name, conc)].append((well, volume+old_vol, old_date))
+
+        else:
+            raise ValueError("Well "+well+" already contains "+self.wells_used[well][0]+" at concentration "+str(self.wells_used[well][1]))
+
+        material.plate = self
+
+        if (name, conc) in self.materials_to_add:
+            self.materials_to_add[(name, conc)]+=[(well, volume)]
+        else:
+            self.materials_to_add[(name, conc)] = [(well, volume)]
+
 
 
 class DestinationPlate():

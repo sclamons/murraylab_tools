@@ -27,7 +27,7 @@ CFP plasmid:
 	stock concentration: 67.91 nM (125.00 ng/uL)
 	total volume: 21.23 uL
 
-Instructions:
+On the source plate:
 	28.50 uL primer_1F --> A1
 	28.50 uL primer_1R --> A2
 	28.50 uL primer_2F --> A3

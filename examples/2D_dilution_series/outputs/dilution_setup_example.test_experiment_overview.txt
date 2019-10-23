@@ -1,0 +1,18 @@
+Materials used:
+Cavendish:
+	stock concentration: 100.00 nM
+	total volume: 21.40 uL
+Gros Michel:
+	stock concentration: 100.00 nM
+	total volume: 21.30 uL
+Viscous:
+	stock concentration: 100.00 nM
+	total volume: 0.50 uL
+
+On the source plate:
+	21.40 uL Cavendish --> A18
+	21.30 uL Gros Michel --> A20
+	Viscous not used!
+
+On destination plate:
+	500.00 uL of Viscous in well E4
