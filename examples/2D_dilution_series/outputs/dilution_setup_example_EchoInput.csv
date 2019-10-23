@@ -1,4 +1,5 @@
 Source Plate,Source Plate Type,Source Well,Sample ID,Destination Plate Name,Destination Well,Transfer Volume,Sample Comment
+<<<<<<< HEAD
 Source[1],384PP_AQ_BP,,txtl_mm,Nunc_384_black_glassbottom,D2,7500,
 Source[1],384PP_AQ_BP,,txtl_mm,Nunc_384_black_glassbottom,D3,7500,
 Source[1],384PP_AQ_BP,,txtl_mm,Nunc_384_black_glassbottom,D4,7500,
