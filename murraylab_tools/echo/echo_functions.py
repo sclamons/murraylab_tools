@@ -844,7 +844,8 @@ class EchoRun():
                 material_well_dict[(name, conc)] = wells_to_fill
 
                 if (name, conc) in mat.plate.materials_to_add:
-                    material_well_dict[(name, conc)] += mat.plate.materials_to_add[name, conc]
+                    material_well_dict[(name, conc)] += \
+                                          mat.plate.materials_to_add[name, conc]
         #Empty Materials to_add
         materials_to_add = {}
         return material_well_dict
@@ -889,7 +890,8 @@ class EchoRun():
                    or pick.source_material.name == "water":
                     comment = ""
                 else:
-                    comment = "Actual concentration: %.2f nM" % (pick.source_material.nM * pick.volume / self.rxn_vol)
+                    comment = "Actual concentration: %.2f nM" \
+                        % (pick.source_material.nM * pick.volume / self.rxn_vol)
                 plate = pick.source_material.plate
                 row = [plate.name, plate.type, pick.source_well,
                        pick.source_material.name, self.DPtype,
@@ -1372,7 +1374,8 @@ class SourcePlate():
     One Echo source plate. Responsible for allocating wells for
     EchoSourceMaterials.
     '''
-    def __init__(self, filename = None, SPname = None, SPtype = None, reuse_wells = False):
+    def __init__(self, filename = None, SPname = None, SPtype = None,
+                 reuse_wells = False):
         '''
         SPname -- A(n arbitrary) string representing this plate. Default is
                     "Plate[1]"
@@ -1382,14 +1385,16 @@ class SourcePlate():
         filename -- Name of a file holding a list of used wells for this plate.
                     If that file doesn't exist yet, it will be created and
                     populated when write_to_file is called.
-        reuse_wells -- if False (default): well ingredients, concentrations and volumes
-                        are not stored in the .dat file.
-                       if True: well ingredients, concentrations, and volumes are stored
-                        in the .dat file. When loaded again, these wells are automatically
-                        re-used if they match user added source materials.
+        reuse_wells -- if False (default): well ingredients, concentrations and
+                        volumes are not stored in the .dat file.
+                       if True: well ingredients, concentrations, and volumes
+                        are stored in the .dat file. When loaded again, these
+                        wells are automatically re-used if they match user added
+                        source materials.
         '''
         self.reuse_wells = reuse_wells
-        self.materials_to_add = {} #stores materials added to wells for instruction printing purposes
+        self.materials_to_add = {} # stores materials added to wells for
+                                   # instruction printing purposes
         if SPname == None:
             self.name = "Source[1]"
         else:
@@ -1417,7 +1422,7 @@ class SourcePlate():
         else:
             raise ValueError("'%s' is not a recognized plate type." % SPtype)
         self.wells_used   = {} #well(str)-->name, concentration, volume, date
-        self.materials = {} #(well, name, concentration) --> [...(volume, date)...]
+        self.materials = {}#(well, name, concentration)-->[...(volume, date)...]
         self.wells_to_fill = {} #well --> (material, volume)
         self.current_row  = 0
         self.current_col  = 0
@@ -1486,7 +1491,10 @@ class SourcePlate():
                         vol_ind = L.index("volume")
                         date_ind = L.index("date")
                     except ValueError:
-                        raise ValueError("reuse_wells = True flag requires a .dat file with a header line (csv format) including the entries 'well', 'name', 'concentration', 'volume', 'date'")
+                        raise ValueError("reuse_wells = True flag requires a "
+                            ".dat file with a header line (csv format) "
+                            "including the entries 'well', 'name', "
+                            "'concentration', 'volume', 'date'")
                     continue
 
                 L = line.split(",")
@@ -1531,9 +1539,9 @@ class SourcePlate():
                 outfile.write("well,name,concentration,volume,date\n")
 
             for well in self.wells_used:
-                (name, conc, vol, date) = self.wells_used[well]
                 if self.reuse_wells:
-                    outfile.write(well +","+name+","+str(conc)+","+str(vol)+","+str(date)+"\n")
+                    (name, conc, vol, date) = self.wells_used[well]
+                    outfile.write(f"{well},{name},{str(conc)},{vol},{date}\n")
                 else:
                     outfile.write(well+"\n")
 
@@ -1636,7 +1644,8 @@ class SourcePlate():
 
     def request_source_wells(self, material):
         """
-            Returns the wells to fill with the given material as a list [(well, volume)]
+            Returns the wells to fill with the given material as a list
+            [(well, volume)]
         """
         #Material name and concentration
         name, conc = material.name, material.concentration
@@ -1668,10 +1677,13 @@ class SourcePlate():
 
                 tot_available_vol=echo_volume
                 if (name, conc) in self.materials:
-                    self.materials[name, conc] += [(well, dead_volume+fill_volume, date)]
+                    self.materials[name, conc] += \
+                                    [(well, dead_volume+fill_volume, date)]
                 else:
-                    self.materials[name, conc] = [(well, dead_volume+fill_volume, date)]
-                self.wells_used[well] = (name, conc, dead_volume+fill_volume, date)
+                    self.materials[name, conc] = \
+                                        [(well, dead_volume+fill_volume, date)]
+                self.wells_used[well] = (name, conc,
+                                         dead_volume+fill_volume, date)
             elif tot_available_vol + usable_volume < echo_volume:
 
                 wells_to_fill += [(well, max_volume)]
@@ -1717,22 +1729,29 @@ class SourcePlate():
                     volume_picked = volume_requested - volume_recieved
                     volume_recieved += volume_picked
                     #Update Source Plate Internal Data
-                    self.materials[name, conc][m_ind] = (well, source_vol-volume_picked, date)
-                    self.wells_used[well] = (name, conc, source_vol-volume_picked, date)
+                    self.materials[name, conc][m_ind] = \
+                                          (well, source_vol-volume_picked, date)
+                    self.wells_used[well] = (name, conc,
+                                             source_vol-volume_picked, date)
 
                     #print(well,"-->",pick.destination_well, ":", volume_picked, "/", volume_recieved)
-                    picks.append(Pick(material, well, pick.destination_well, volume_picked))
+                    picks.append(Pick(material, well, pick.destination_well,
+                                      volume_picked))
                     break
                 #Additional source wells needed
-                elif available_vol+volume_recieved < volume_requested and available_vol > 0:
+                elif available_vol+volume_recieved < volume_requested \
+                        and available_vol > 0:
                     #Amount to send
                     volume_picked = available_vol
                     volume_recieved += volume_picked
 
-                    self.materials[name, conc][m_ind] = (well, source_vol-volume_picked, date)
-                    self.wells_used[well] = (name, conc, source_vol-volume_picked, date)
+                    self.materials[name, conc][m_ind] = \
+                                          (well, source_vol-volume_picked, date)
+                    self.wells_used[well] = (name, conc,
+                                             source_vol-volume_picked, date)
 
-                    picks.append(Pick(material, well, pick.destination_well, volume_picked))
+                    picks.append(Pick(material, well, pick.destination_well,
+                                      volume_picked))
             tot_vol_recieved += volume_recieved
 
         return picks#, wells_to_fill
@@ -1747,14 +1766,16 @@ class SourcePlate():
 
         name, conc = material.name, material.concentration
         if volume <= 0:
-            warnings.warn("Adding volume="+str(volume)+"<=0 of "+name+" to "+well+". Unecessary step omitted.")
+            warnings.warn(f"Adding volume={volume}<=0 of {name} to {well}. "
+                          "Unecessary step omitted.")
             return
 
         date = pydate.today().strftime("%d/%m/%Y")
 
         if well not in self.wells_used:
             if volume > max_volume:
-                raise ValueError("Cannot add volumes greater than "+str(max_volume)+" to source plate.")
+                raise ValueError(f"Cannot add volumes greater than "
+                                 f"{max_volume} to source plate.")
 
             self.wells_used[well] = (name, conc, volume, date)
             if (name, conc) in self.materials:
@@ -1762,24 +1783,31 @@ class SourcePlate():
             else:
                 self.materials[(name, conc)] =[(well, volume, date)]
 
-        elif self.wells_used[well][0] == name and self.wells_used[well][1] == conc:
+        elif self.wells_used[well][0] == name \
+                    and self.wells_used[well][1] == conc:
             print("Refilling Well "+well+" with additional material "+name+".")
             old_vol = self.wells_used[well][2]
             old_date = self.wells_used[well][3]
             if volume+ old_vol> max_volume:
-                raise ValueError("Cannot add volumes greater than "+str(max_volume - old_vol)+" to this well (which already contains "+str(old_vol)+").")
+                raise ValueError("Cannot add volumes greater than "
+                                 f"{max_volume-old_vol} to this well (which "
+                                 f"already contains {old_vol}).")
 
             self.materials[(name, conc)].remove((well, old_vol, old_date))
 
             if update_date:
                 self.wells_used[well] = (name, conc, volume+old_vol, date)
-                self.materials[(name, conc)].append((well, volume+old_vol, date))
+                self.materials[(name, conc)].append((well,
+                                                     volume+old_vol, date))
             else:
                 self.wells_used[well] = (name, conc, volume+old_vol, old_date)
-                self.materials[(name, conc)].append((well, volume+old_vol, old_date))
+                self.materials[(name, conc)].append((well, volume+old_vol,
+                                                     old_date))
 
         else:
-            raise ValueError("Well "+well+" already contains "+self.wells_used[well][0]+" at concentration "+str(self.wells_used[well][1]))
+            raise ValueError(f"Well {well} already contains "
+                             f"{self.wells_used[well][0]} at concentration "
+                             f"{self.wells_used[well][1]}")
 
         material.plate = self
 
@@ -1833,7 +1861,8 @@ class DestinationPlate():
         self.n_wells = self.rows * self.cols
         lets = string.ascii_uppercase[:self.rows]
         nums = range(1,1+self.cols)
-        self.wells  = np.array(["{}{:02}".format(let, num) for let in lets for num in nums])
+        self.wells  = np.array(["{}{:02}".format(let, num) for let in lets \
+                               for num in nums])
         self.indices = np.arange(self.n_wells)
         self.wells_used   = np.zeros((self.rows * self.cols,), dtype=bool)
         self.current_idx  = 0
