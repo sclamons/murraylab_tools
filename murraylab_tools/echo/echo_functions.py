@@ -848,7 +848,6 @@ class EchoRun():
         #Empty Materials to_add
         materials_to_add = {}
         return material_well_dict
->>>>>>> WPdev
 
     def generate_picklist(self):
         for mat_name in self.material_dict:
