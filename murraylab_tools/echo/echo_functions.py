@@ -961,10 +961,10 @@ class Reaction(object):
         otherwise in obvious error, and raising a Warning if the reaction is
         underfull.
         '''
-        if self.current_vol() < self.rxn_vol and self.well != "Master Mix":
+        if self.current_vol() < int(self.rxn_vol) and self.well != "Master Mix":
             warn_string = "Reaction "
             warn_string += "%s has %d nL volume but only contains %.2f nL of " \
-                            % (self.well, self.rxn_vol, self.current_vol)
+                            % (self.well, self.rxn_vol, self.current_vol())
             warn_string += "ingredients. Are you sure you want to underfill " \
                             + "this reaction?"
             warnings.warn(warn_string, Warning)
@@ -976,7 +976,7 @@ class Reaction(object):
             self.add_material(self.fill_material, fill_mat_final_conc)
 
         current_vol = self.current_vol()
-        if current_vol > self.rxn_vol:
+        if current_vol > int(self.rxn_vol):
             error_string = "Reaction "
             error_string += "%s has %d nL volume but contains %.2f nL of " \
                             % (self.well, self.rxn_vol, current_vol)
