@@ -1011,14 +1011,17 @@ class Reaction(object):
         otherwise in obvious error, and raising a Warning if the reaction is
         underfull.
         '''
-        if self.current_vol() < self.rxn_vol and self.well != "Master Mix":
-            warn_string = "Reaction "
-            warn_string += "%s has %d nL volume but only contains %.2f nL of " \
-                            % (self.well, self.rxn_vol, self.current_vol)
-            warn_string += "ingredients. Are you sure you want to underfill " \
-                            + "this reaction?"
-            warnings.warn(warn_string, Warning)
+        
 
+        #Why is this here twice? Why is it before the final fill?
+        #if self.current_vol < self.rxn_vol and self.well != "Master Mix":
+        #    warn_string = "Reaction "
+        #    warn_string += "%s has %d nL volume but only contains %.2f nL of " \
+        #                    % (self.well, self.rxn_vol, self.current_vol)
+        #    warn_string += "ingredients. Are you sure you want to underfill " \
+        #                    + "this reaction?"
+        #    warnings.warn(warn_string, Warning)
+        print("current_vol before fill", current_vol)
         if self.fill_material:
             fill_volume         = self.rxn_vol - self.current_vol()
             fill_mat_final_conc = self.fill_material.nM * fill_volume \
@@ -1026,6 +1029,7 @@ class Reaction(object):
             self.add_material(self.fill_material, fill_mat_final_conc)
 
         current_vol = self.current_vol()
+        print("current_vol after fill", current_vol)
         if current_vol > self.rxn_vol:
             error_string = "Reaction "
             error_string += "%s has %d nL volume but contains %.2f nL of " \
@@ -1466,8 +1470,8 @@ class SourcePlate():
                 outfile.write("well,name,concentration,volume,date\n")
 
             for well in self.wells_used:
-                (name, conc, vol, date) = self.wells_used[well]
                 if self.reuse_wells:
+                    (name, conc, vol, date) = self.wells_used[well]
                     outfile.write(well +","+name+","+str(conc)+","+str(vol)+","+str(date)+"\n")
                 else:
                     outfile.write(well+"\n")     
