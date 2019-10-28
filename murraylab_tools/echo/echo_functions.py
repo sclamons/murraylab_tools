@@ -935,7 +935,6 @@ class EchoRun():
                 vol_list = list(set([ps.volume for ps in material.pipettelist]))
                 vol_list.sort()
                 vol_list.reverse()
-                print(material.name, "vol_list", vol_list)
                 for vol in vol_list:
                     first_entry = True
                     
