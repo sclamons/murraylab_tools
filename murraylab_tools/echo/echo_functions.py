@@ -927,13 +927,29 @@ class EchoRun():
             # Destination plate loading instructions (for hand-pipetted stuff).
             header_written = False
             for material in self.material_dict.values():
-                for pipette_step in material.pipettelist:
-                    if not header_written:
-                        text_file.write("\n\nOn destination plate:")
-                    text_file.write("\n\t%.2f uL of %s in well %s" %
-                                        (pipette_step.volume,
-                                         material.name,
-                                         pipette_step.destination_well))
+
+                if not header_written:
+                    text_file.write("\n\nOn destination plate:")
+                    header_written = True
+
+                vol_list = list(set([ps.volume for ps in material.pipettelist]))
+                vol_list.sort()
+                vol_list.reverse()
+                print(material.name, "vol_list", vol_list)
+                for vol in vol_list:
+                    first_entry = True
+                    
+                    for pipette_step in material.pipettelist:
+                        if first_entry and pipette_step.volume == vol:
+                            first_entry = False
+                            text_file.write("\n\t%.2f uL of %s in wells: %s" %
+                                            (pipette_step.volume,
+                                             material.name,
+                                             pipette_step.destination_well))
+                        elif pipette_step.volume == vol:
+                            text_file.write(", %s" % pipette_step.destination_well)
+
+                        
 
             # Make the plates write out their usage.
             for plate in self.plates:
