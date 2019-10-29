@@ -1,9 +1,0 @@
-Mix the following MM: 
-	Extract: 580.8000000000001uL
-	Amino Acids: 220.00000000000003uL
-	Energy Buffer: 132.0uL
-	PEG: 88.00000000000001uL
-	MG-glut: 176.00000000000003uL
-	K-glut: 46.93333333333334uL
-
-Add 7.05uL of MM to wells:G11...P17
