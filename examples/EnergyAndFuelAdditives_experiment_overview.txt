@@ -1,0 +1,528 @@
+Materials used:
+MM:
+	stock concentration: 1.00 nM
+	total volume: 1128.00 uL
+pos ctrl gfp:
+	stock concentration: 40.00 nM
+	total volume: 66.00 uL
+energy buffer:
+	stock concentration: 1.00 nM
+	total volume: 12.40 uL
+amino acids:
+	stock concentration: 1.00 nM
+	total volume: 24.40 uL
+ntps:
+	stock concentration: 1.00 nM
+	total volume: 12.40 uL
+superoxide dismutase:
+	stock concentration: 1.00 nM
+	total volume: 25.00 uL
+pyrophosphatase:
+	stock concentration: 1.00 nM
+	total volume: 10.00 uL
+vitamin_C:
+	stock concentration: 1.00 nM
+	total volume: 5.00 uL
+vitamin_E:
+	stock concentration: 1.00 nM
+	total volume: 25.00 uL
+polyphosphate kinase:
+	stock concentration: 1.00 nM
+	total volume: 5.00 uL
+water:
+	stock concentration: 1.00 nM
+	total volume: 286.80 uL
+
+On the source plate:
+	Add 65.0uL of pos ctrl gfp in well: A01
+	Add 43.0uL of pos ctrl gfp in well: A02
+	Add 33.4uL of energy buffer in well: A04
+	Add 45.4uL of amino acids in well: A06
+	Add 33.4uL of ntps in well: A08
+	Add 46.0uL of superoxide dismutase in well: A10
+	Add 31.0uL of pyrophosphatase in well: A12
+	Add 26.0uL of vitamin_C in well: A14
+	Add 46.0uL of vitamin_E in well: A16
+	Add 26.0uL of polyphosphate kinase in well: A18
+	Add 65.0uL of water in wells: B01, B02, B03, B04, B05, B06
+	Add 43.8uL of water in well: B07
+
+On destination plate:
+	7050.00 uL of MM in well G11
+
+On destination plate:
+	7050.00 uL of MM in well G12
+
+On destination plate:
+	7050.00 uL of MM in well G13
+
+On destination plate:
+	7050.00 uL of MM in well G14
+
+On destination plate:
+	7050.00 uL of MM in well G15
+
+On destination plate:
+	7050.00 uL of MM in well G16
+
+On destination plate:
+	7050.00 uL of MM in well G17
+
+On destination plate:
+	7050.00 uL of MM in well G18
+
+On destination plate:
+	7050.00 uL of MM in well G19
+
+On destination plate:
+	7050.00 uL of MM in well G20
+
+On destination plate:
+	7050.00 uL of MM in well G21
+
+On destination plate:
+	7050.00 uL of MM in well G22
+
+On destination plate:
+	7050.00 uL of MM in well G23
+
+On destination plate:
+	7050.00 uL of MM in well G24
+
+On destination plate:
+	7050.00 uL of MM in well H8
+
+On destination plate:
+	7050.00 uL of MM in well H9
+
+On destination plate:
+	7050.00 uL of MM in well H10
+
+On destination plate:
+	7050.00 uL of MM in well H11
+
+On destination plate:
+	7050.00 uL of MM in well H12
+
+On destination plate:
+	7050.00 uL of MM in well H13
+
+On destination plate:
+	7050.00 uL of MM in well H14
+
+On destination plate:
+	7050.00 uL of MM in well H15
+
+On destination plate:
+	7050.00 uL of MM in well H16
+
+On destination plate:
+	7050.00 uL of MM in well H17
+
+On destination plate:
+	7050.00 uL of MM in well H18
+
+On destination plate:
+	7050.00 uL of MM in well H19
+
+On destination plate:
+	7050.00 uL of MM in well H20
+
+On destination plate:
+	7050.00 uL of MM in well H21
+
+On destination plate:
+	7050.00 uL of MM in well H22
+
+On destination plate:
+	7050.00 uL of MM in well H23
+
+On destination plate:
+	7050.00 uL of MM in well H24
+
+On destination plate:
+	7050.00 uL of MM in well I8
+
+On destination plate:
+	7050.00 uL of MM in well I9
+
+On destination plate:
+	7050.00 uL of MM in well I10
+
+On destination plate:
+	7050.00 uL of MM in well I11
+
+On destination plate:
+	7050.00 uL of MM in well I12
+
+On destination plate:
+	7050.00 uL of MM in well I13
+
+On destination plate:
+	7050.00 uL of MM in well I14
+
+On destination plate:
+	7050.00 uL of MM in well I15
+
+On destination plate:
+	7050.00 uL of MM in well I16
+
+On destination plate:
+	7050.00 uL of MM in well I17
+
+On destination plate:
+	7050.00 uL of MM in well I18
+
+On destination plate:
+	7050.00 uL of MM in well I19
+
+On destination plate:
+	7050.00 uL of MM in well I20
+
+On destination plate:
+	7050.00 uL of MM in well I21
+
+On destination plate:
+	7050.00 uL of MM in well I22
+
+On destination plate:
+	7050.00 uL of MM in well I23
+
+On destination plate:
+	7050.00 uL of MM in well I24
+
+On destination plate:
+	7050.00 uL of MM in well J8
+
+On destination plate:
+	7050.00 uL of MM in well J9
+
+On destination plate:
+	7050.00 uL of MM in well J10
+
+On destination plate:
+	7050.00 uL of MM in well J11
+
+On destination plate:
+	7050.00 uL of MM in well J12
+
+On destination plate:
+	7050.00 uL of MM in well J13
+
+On destination plate:
+	7050.00 uL of MM in well J14
+
+On destination plate:
+	7050.00 uL of MM in well J15
+
+On destination plate:
+	7050.00 uL of MM in well J16
+
+On destination plate:
+	7050.00 uL of MM in well J17
+
+On destination plate:
+	7050.00 uL of MM in well J18
+
+On destination plate:
+	7050.00 uL of MM in well J19
+
+On destination plate:
+	7050.00 uL of MM in well J20
+
+On destination plate:
+	7050.00 uL of MM in well J21
+
+On destination plate:
+	7050.00 uL of MM in well J22
+
+On destination plate:
+	7050.00 uL of MM in well J23
+
+On destination plate:
+	7050.00 uL of MM in well J24
+
+On destination plate:
+	7050.00 uL of MM in well K8
+
+On destination plate:
+	7050.00 uL of MM in well K9
+
+On destination plate:
+	7050.00 uL of MM in well K10
+
+On destination plate:
+	7050.00 uL of MM in well K11
+
+On destination plate:
+	7050.00 uL of MM in well K12
+
+On destination plate:
+	7050.00 uL of MM in well K13
+
+On destination plate:
+	7050.00 uL of MM in well K14
+
+On destination plate:
+	7050.00 uL of MM in well K15
+
+On destination plate:
+	7050.00 uL of MM in well K16
+
+On destination plate:
+	7050.00 uL of MM in well K17
+
+On destination plate:
+	7050.00 uL of MM in well K18
+
+On destination plate:
+	7050.00 uL of MM in well K19
+
+On destination plate:
+	7050.00 uL of MM in well K20
+
+On destination plate:
+	7050.00 uL of MM in well K21
+
+On destination plate:
+	7050.00 uL of MM in well K22
+
+On destination plate:
+	7050.00 uL of MM in well K23
+
+On destination plate:
+	7050.00 uL of MM in well K24
+
+On destination plate:
+	7050.00 uL of MM in well L8
+
+On destination plate:
+	7050.00 uL of MM in well L9
+
+On destination plate:
+	7050.00 uL of MM in well L10
+
+On destination plate:
+	7050.00 uL of MM in well L11
+
+On destination plate:
+	7050.00 uL of MM in well L12
+
+On destination plate:
+	7050.00 uL of MM in well L13
+
+On destination plate:
+	7050.00 uL of MM in well L14
+
+On destination plate:
+	7050.00 uL of MM in well L15
+
+On destination plate:
+	7050.00 uL of MM in well L16
+
+On destination plate:
+	7050.00 uL of MM in well L17
+
+On destination plate:
+	7050.00 uL of MM in well L18
+
+On destination plate:
+	7050.00 uL of MM in well L19
+
+On destination plate:
+	7050.00 uL of MM in well L20
+
+On destination plate:
+	7050.00 uL of MM in well L21
+
+On destination plate:
+	7050.00 uL of MM in well L22
+
+On destination plate:
+	7050.00 uL of MM in well L23
+
+On destination plate:
+	7050.00 uL of MM in well L24
+
+On destination plate:
+	7050.00 uL of MM in well M8
+
+On destination plate:
+	7050.00 uL of MM in well M9
+
+On destination plate:
+	7050.00 uL of MM in well M10
+
+On destination plate:
+	7050.00 uL of MM in well M11
+
+On destination plate:
+	7050.00 uL of MM in well M12
+
+On destination plate:
+	7050.00 uL of MM in well M13
+
+On destination plate:
+	7050.00 uL of MM in well M14
+
+On destination plate:
+	7050.00 uL of MM in well M15
+
+On destination plate:
+	7050.00 uL of MM in well M16
+
+On destination plate:
+	7050.00 uL of MM in well M17
+
+On destination plate:
+	7050.00 uL of MM in well M18
+
+On destination plate:
+	7050.00 uL of MM in well M19
+
+On destination plate:
+	7050.00 uL of MM in well M20
+
+On destination plate:
+	7050.00 uL of MM in well M21
+
+On destination plate:
+	7050.00 uL of MM in well M22
+
+On destination plate:
+	7050.00 uL of MM in well M23
+
+On destination plate:
+	7050.00 uL of MM in well M24
+
+On destination plate:
+	7050.00 uL of MM in well N8
+
+On destination plate:
+	7050.00 uL of MM in well N9
+
+On destination plate:
+	7050.00 uL of MM in well N10
+
+On destination plate:
+	7050.00 uL of MM in well N11
+
+On destination plate:
+	7050.00 uL of MM in well N12
+
+On destination plate:
+	7050.00 uL of MM in well N13
+
+On destination plate:
+	7050.00 uL of MM in well N14
+
+On destination plate:
+	7050.00 uL of MM in well N15
+
+On destination plate:
+	7050.00 uL of MM in well N16
+
+On destination plate:
+	7050.00 uL of MM in well N17
+
+On destination plate:
+	7050.00 uL of MM in well N18
+
+On destination plate:
+	7050.00 uL of MM in well N19
+
+On destination plate:
+	7050.00 uL of MM in well N20
+
+On destination plate:
+	7050.00 uL of MM in well N21
+
+On destination plate:
+	7050.00 uL of MM in well N22
+
+On destination plate:
+	7050.00 uL of MM in well N23
+
+On destination plate:
+	7050.00 uL of MM in well N24
+
+On destination plate:
+	7050.00 uL of MM in well O8
+
+On destination plate:
+	7050.00 uL of MM in well O9
+
+On destination plate:
+	7050.00 uL of MM in well O10
+
+On destination plate:
+	7050.00 uL of MM in well O11
+
+On destination plate:
+	7050.00 uL of MM in well O12
+
+On destination plate:
+	7050.00 uL of MM in well O13
+
+On destination plate:
+	7050.00 uL of MM in well O14
+
+On destination plate:
+	7050.00 uL of MM in well O15
+
+On destination plate:
+	7050.00 uL of MM in well O16
+
+On destination plate:
+	7050.00 uL of MM in well O17
+
+On destination plate:
+	7050.00 uL of MM in well O18
+
+On destination plate:
+	7050.00 uL of MM in well O19
+
+On destination plate:
+	7050.00 uL of MM in well O20
+
+On destination plate:
+	7050.00 uL of MM in well O21
+
+On destination plate:
+	7050.00 uL of MM in well O22
+
+On destination plate:
+	7050.00 uL of MM in well O23
+
+On destination plate:
+	7050.00 uL of MM in well O24
+
+On destination plate:
+	7050.00 uL of MM in well P8
+
+On destination plate:
+	7050.00 uL of MM in well P9
+
+On destination plate:
+	7050.00 uL of MM in well P10
+
+On destination plate:
+	7050.00 uL of MM in well P11
+
+On destination plate:
+	7050.00 uL of MM in well P12
+
+On destination plate:
+	7050.00 uL of MM in well P13
+
+On destination plate:
+	7050.00 uL of MM in well P14
+
+On destination plate:
+	7050.00 uL of MM in well P15
+
+On destination plate:
+	7050.00 uL of MM in well P16
+
+On destination plate:
+	7050.00 uL of MM in well P17

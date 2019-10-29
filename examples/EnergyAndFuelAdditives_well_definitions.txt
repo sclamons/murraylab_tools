@@ -1,0 +1,161 @@
+well	tab seperated additives
+G11	pos ctrl gfp	1.5
+G12	pos ctrl gfp	3.0
+G13	pos ctrl gfp	1.5	energy buffer	0.01875
+G14	pos ctrl gfp	1.5	energy buffer	0.0375
+G15	pos ctrl gfp	1.5	amino acids	0.03125
+G16	pos ctrl gfp	1.5	amino acids	0.0625
+G17	pos ctrl gfp	1.5	ntps	0.01875
+G18	pos ctrl gfp	1.5	ntps	0.0375
+G19	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125
+G20	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125
+G21	pos ctrl gfp	1.5	superoxide dismutase	0.05
+G22	pos ctrl gfp	3.0	superoxide dismutase	0.05
+G23	pos ctrl gfp	1.5	energy buffer	0.01875	superoxide dismutase	0.05
+G24	pos ctrl gfp	1.5	energy buffer	0.0375	superoxide dismutase	0.05
+H8	pos ctrl gfp	1.5	amino acids	0.03125	superoxide dismutase	0.05
+H9	pos ctrl gfp	1.5	amino acids	0.0625	superoxide dismutase	0.05
+H10	pos ctrl gfp	1.5	ntps	0.01875	superoxide dismutase	0.05
+H11	pos ctrl gfp	1.5	ntps	0.0375	superoxide dismutase	0.05
+H12	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	superoxide dismutase	0.05
+H13	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	superoxide dismutase	0.05
+H14	pos ctrl gfp	1.5	pyrophosphatase	0.02
+H15	pos ctrl gfp	3.0	pyrophosphatase	0.02
+H16	pos ctrl gfp	1.5	energy buffer	0.01875	pyrophosphatase	0.02
+H17	pos ctrl gfp	1.5	energy buffer	0.0375	pyrophosphatase	0.02
+H18	pos ctrl gfp	1.5	amino acids	0.03125	pyrophosphatase	0.02
+H19	pos ctrl gfp	1.5	amino acids	0.0625	pyrophosphatase	0.02
+H20	pos ctrl gfp	1.5	ntps	0.01875	pyrophosphatase	0.02
+H21	pos ctrl gfp	1.5	ntps	0.0375	pyrophosphatase	0.02
+H22	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	pyrophosphatase	0.02
+H23	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	pyrophosphatase	0.02
+H24	pos ctrl gfp	1.5	vitamin_C	0.01
+I8	pos ctrl gfp	3.0	vitamin_C	0.01
+I9	pos ctrl gfp	1.5	energy buffer	0.01875	vitamin_C	0.01
+I10	pos ctrl gfp	1.5	energy buffer	0.0375	vitamin_C	0.01
+I11	pos ctrl gfp	1.5	amino acids	0.03125	vitamin_C	0.01
+I12	pos ctrl gfp	1.5	amino acids	0.0625	vitamin_C	0.01
+I13	pos ctrl gfp	1.5	ntps	0.01875	vitamin_C	0.01
+I14	pos ctrl gfp	1.5	ntps	0.0375	vitamin_C	0.01
+I15	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	vitamin_C	0.01
+I16	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	vitamin_C	0.01
+I17	pos ctrl gfp	1.5	vitamin_E	0.05
+I18	pos ctrl gfp	3.0	vitamin_E	0.05
+I19	pos ctrl gfp	1.5	energy buffer	0.01875	vitamin_E	0.05
+I20	pos ctrl gfp	1.5	energy buffer	0.0375	vitamin_E	0.05
+I21	pos ctrl gfp	1.5	amino acids	0.03125	vitamin_E	0.05
+I22	pos ctrl gfp	1.5	amino acids	0.0625	vitamin_E	0.05
+I23	pos ctrl gfp	1.5	ntps	0.01875	vitamin_E	0.05
+I24	pos ctrl gfp	1.5	ntps	0.0375	vitamin_E	0.05
+J8	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	vitamin_E	0.05
+J9	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	vitamin_E	0.05
+J10	pos ctrl gfp	1.5	polyphosphate kinase	0.01
+J11	pos ctrl gfp	3.0	polyphosphate kinase	0.01
+J12	pos ctrl gfp	1.5	energy buffer	0.01875	polyphosphate kinase	0.01
+J13	pos ctrl gfp	1.5	energy buffer	0.0375	polyphosphate kinase	0.01
+J14	pos ctrl gfp	1.5	amino acids	0.03125	polyphosphate kinase	0.01
+J15	pos ctrl gfp	1.5	amino acids	0.0625	polyphosphate kinase	0.01
+J16	pos ctrl gfp	1.5	ntps	0.01875	polyphosphate kinase	0.01
+J17	pos ctrl gfp	1.5	ntps	0.0375	polyphosphate kinase	0.01
+J18	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	polyphosphate kinase	0.01
+J19	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	polyphosphate kinase	0.01
+J20	pos ctrl gfp	1.5	superoxide dismutase	0.05	pyrophosphatase	0.02
+J21	pos ctrl gfp	3.0	superoxide dismutase	0.05	pyrophosphatase	0.02
+J22	pos ctrl gfp	1.5	energy buffer	0.01875	superoxide dismutase	0.05	pyrophosphatase	0.02
+J23	pos ctrl gfp	1.5	energy buffer	0.0375	superoxide dismutase	0.05	pyrophosphatase	0.02
+J24	pos ctrl gfp	1.5	amino acids	0.03125	superoxide dismutase	0.05	pyrophosphatase	0.02
+K8	pos ctrl gfp	1.5	amino acids	0.0625	superoxide dismutase	0.05	pyrophosphatase	0.02
+K9	pos ctrl gfp	1.5	ntps	0.01875	superoxide dismutase	0.05	pyrophosphatase	0.02
+K10	pos ctrl gfp	1.5	ntps	0.0375	superoxide dismutase	0.05	pyrophosphatase	0.02
+K11	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	superoxide dismutase	0.05	pyrophosphatase	0.02
+K12	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	superoxide dismutase	0.05	pyrophosphatase	0.02
+K13	pos ctrl gfp	1.5	superoxide dismutase	0.05	vitamin_C	0.01
+K14	pos ctrl gfp	3.0	superoxide dismutase	0.05	vitamin_C	0.01
+K15	pos ctrl gfp	1.5	energy buffer	0.01875	superoxide dismutase	0.05	vitamin_C	0.01
+K16	pos ctrl gfp	1.5	energy buffer	0.0375	superoxide dismutase	0.05	vitamin_C	0.01
+K17	pos ctrl gfp	1.5	amino acids	0.03125	superoxide dismutase	0.05	vitamin_C	0.01
+K18	pos ctrl gfp	1.5	amino acids	0.0625	superoxide dismutase	0.05	vitamin_C	0.01
+K19	pos ctrl gfp	1.5	ntps	0.01875	superoxide dismutase	0.05	vitamin_C	0.01
+K20	pos ctrl gfp	1.5	ntps	0.0375	superoxide dismutase	0.05	vitamin_C	0.01
+K21	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	superoxide dismutase	0.05	vitamin_C	0.01
+K22	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	superoxide dismutase	0.05	vitamin_C	0.01
+K23	pos ctrl gfp	1.5	superoxide dismutase	0.05	vitamin_E	0.05
+K24	pos ctrl gfp	3.0	superoxide dismutase	0.05	vitamin_E	0.05
+L8	pos ctrl gfp	1.5	energy buffer	0.01875	superoxide dismutase	0.05	vitamin_E	0.05
+L9	pos ctrl gfp	1.5	energy buffer	0.0375	superoxide dismutase	0.05	vitamin_E	0.05
+L10	pos ctrl gfp	1.5	amino acids	0.03125	superoxide dismutase	0.05	vitamin_E	0.05
+L11	pos ctrl gfp	1.5	amino acids	0.0625	superoxide dismutase	0.05	vitamin_E	0.05
+L12	pos ctrl gfp	1.5	ntps	0.01875	superoxide dismutase	0.05	vitamin_E	0.05
+L13	pos ctrl gfp	1.5	ntps	0.0375	superoxide dismutase	0.05	vitamin_E	0.05
+L14	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	superoxide dismutase	0.05	vitamin_E	0.05
+L15	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	superoxide dismutase	0.05	vitamin_E	0.05
+L16	pos ctrl gfp	1.5	superoxide dismutase	0.05	polyphosphate kinase	0.01
+L17	pos ctrl gfp	3.0	superoxide dismutase	0.05	polyphosphate kinase	0.01
+L18	pos ctrl gfp	1.5	energy buffer	0.01875	superoxide dismutase	0.05	polyphosphate kinase	0.01
+L19	pos ctrl gfp	1.5	energy buffer	0.0375	superoxide dismutase	0.05	polyphosphate kinase	0.01
+L20	pos ctrl gfp	1.5	amino acids	0.03125	superoxide dismutase	0.05	polyphosphate kinase	0.01
+L21	pos ctrl gfp	1.5	amino acids	0.0625	superoxide dismutase	0.05	polyphosphate kinase	0.01
+L22	pos ctrl gfp	1.5	ntps	0.01875	superoxide dismutase	0.05	polyphosphate kinase	0.01
+L23	pos ctrl gfp	1.5	ntps	0.0375	superoxide dismutase	0.05	polyphosphate kinase	0.01
+L24	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	superoxide dismutase	0.05	polyphosphate kinase	0.01
+M8	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	superoxide dismutase	0.05	polyphosphate kinase	0.01
+M9	pos ctrl gfp	1.5	pyrophosphatase	0.02	vitamin_C	0.01
+M10	pos ctrl gfp	3.0	pyrophosphatase	0.02	vitamin_C	0.01
+M11	pos ctrl gfp	1.5	energy buffer	0.01875	pyrophosphatase	0.02	vitamin_C	0.01
+M12	pos ctrl gfp	1.5	energy buffer	0.0375	pyrophosphatase	0.02	vitamin_C	0.01
+M13	pos ctrl gfp	1.5	amino acids	0.03125	pyrophosphatase	0.02	vitamin_C	0.01
+M14	pos ctrl gfp	1.5	amino acids	0.0625	pyrophosphatase	0.02	vitamin_C	0.01
+M15	pos ctrl gfp	1.5	ntps	0.01875	pyrophosphatase	0.02	vitamin_C	0.01
+M16	pos ctrl gfp	1.5	ntps	0.0375	pyrophosphatase	0.02	vitamin_C	0.01
+M17	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	pyrophosphatase	0.02	vitamin_C	0.01
+M18	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	pyrophosphatase	0.02	vitamin_C	0.01
+M19	pos ctrl gfp	1.5	pyrophosphatase	0.02	vitamin_E	0.05
+M20	pos ctrl gfp	3.0	pyrophosphatase	0.02	vitamin_E	0.05
+M21	pos ctrl gfp	1.5	energy buffer	0.01875	pyrophosphatase	0.02	vitamin_E	0.05
+M22	pos ctrl gfp	1.5	energy buffer	0.0375	pyrophosphatase	0.02	vitamin_E	0.05
+M23	pos ctrl gfp	1.5	amino acids	0.03125	pyrophosphatase	0.02	vitamin_E	0.05
+M24	pos ctrl gfp	1.5	amino acids	0.0625	pyrophosphatase	0.02	vitamin_E	0.05
+N8	pos ctrl gfp	1.5	ntps	0.01875	pyrophosphatase	0.02	vitamin_E	0.05
+N9	pos ctrl gfp	1.5	ntps	0.0375	pyrophosphatase	0.02	vitamin_E	0.05
+N10	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	pyrophosphatase	0.02	vitamin_E	0.05
+N11	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	pyrophosphatase	0.02	vitamin_E	0.05
+N12	pos ctrl gfp	1.5	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N13	pos ctrl gfp	3.0	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N14	pos ctrl gfp	1.5	energy buffer	0.01875	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N15	pos ctrl gfp	1.5	energy buffer	0.0375	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N16	pos ctrl gfp	1.5	amino acids	0.03125	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N17	pos ctrl gfp	1.5	amino acids	0.0625	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N18	pos ctrl gfp	1.5	ntps	0.01875	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N19	pos ctrl gfp	1.5	ntps	0.0375	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N20	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N21	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	pyrophosphatase	0.02	polyphosphate kinase	0.01
+N22	pos ctrl gfp	1.5	vitamin_C	0.01	vitamin_E	0.05
+N23	pos ctrl gfp	3.0	vitamin_C	0.01	vitamin_E	0.05
+N24	pos ctrl gfp	1.5	energy buffer	0.01875	vitamin_C	0.01	vitamin_E	0.05
+O8	pos ctrl gfp	1.5	energy buffer	0.0375	vitamin_C	0.01	vitamin_E	0.05
+O9	pos ctrl gfp	1.5	amino acids	0.03125	vitamin_C	0.01	vitamin_E	0.05
+O10	pos ctrl gfp	1.5	amino acids	0.0625	vitamin_C	0.01	vitamin_E	0.05
+O11	pos ctrl gfp	1.5	ntps	0.01875	vitamin_C	0.01	vitamin_E	0.05
+O12	pos ctrl gfp	1.5	ntps	0.0375	vitamin_C	0.01	vitamin_E	0.05
+O13	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	vitamin_C	0.01	vitamin_E	0.05
+O14	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	vitamin_C	0.01	vitamin_E	0.05
+O15	pos ctrl gfp	1.5	vitamin_C	0.01	polyphosphate kinase	0.01
+O16	pos ctrl gfp	3.0	vitamin_C	0.01	polyphosphate kinase	0.01
+O17	pos ctrl gfp	1.5	energy buffer	0.01875	vitamin_C	0.01	polyphosphate kinase	0.01
+O18	pos ctrl gfp	1.5	energy buffer	0.0375	vitamin_C	0.01	polyphosphate kinase	0.01
+O19	pos ctrl gfp	1.5	amino acids	0.03125	vitamin_C	0.01	polyphosphate kinase	0.01
+O20	pos ctrl gfp	1.5	amino acids	0.0625	vitamin_C	0.01	polyphosphate kinase	0.01
+O21	pos ctrl gfp	1.5	ntps	0.01875	vitamin_C	0.01	polyphosphate kinase	0.01
+O22	pos ctrl gfp	1.5	ntps	0.0375	vitamin_C	0.01	polyphosphate kinase	0.01
+O23	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	vitamin_C	0.01	polyphosphate kinase	0.01
+O24	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	vitamin_C	0.01	polyphosphate kinase	0.01
+P8	pos ctrl gfp	1.5	vitamin_E	0.05	polyphosphate kinase	0.01
+P9	pos ctrl gfp	3.0	vitamin_E	0.05	polyphosphate kinase	0.01
+P10	pos ctrl gfp	1.5	energy buffer	0.01875	vitamin_E	0.05	polyphosphate kinase	0.01
+P11	pos ctrl gfp	1.5	energy buffer	0.0375	vitamin_E	0.05	polyphosphate kinase	0.01
+P12	pos ctrl gfp	1.5	amino acids	0.03125	vitamin_E	0.05	polyphosphate kinase	0.01
+P13	pos ctrl gfp	1.5	amino acids	0.0625	vitamin_E	0.05	polyphosphate kinase	0.01
+P14	pos ctrl gfp	1.5	ntps	0.01875	vitamin_E	0.05	polyphosphate kinase	0.01
+P15	pos ctrl gfp	1.5	ntps	0.0375	vitamin_E	0.05	polyphosphate kinase	0.01
+P16	pos ctrl gfp	1.5	energy buffer	0.01875	amino acids	0.03125	vitamin_E	0.05	polyphosphate kinase	0.01
+P17	pos ctrl gfp	1.5	ntps	0.01875	amino acids	0.03125	vitamin_E	0.05	polyphosphate kinase	0.01

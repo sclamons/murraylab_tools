@@ -988,6 +988,7 @@ class EchoRun():
                 for pipette_step in material.pipettelist:
                     if not header_written:
                         text_file.write("\n\nOn destination plate:")
+                        header_written = True
                     text_file.write("\n\t%.2f uL of %s in well %s" %
                                         (pipette_step.volume,
                                          material.name,
@@ -1652,8 +1653,8 @@ class SourcePlate():
         #usable volume in a source well
         usable_volume  = max_volume - dead_volume
         #Total echo volume requested
-        echo_volume = material.total_volume_requested
-        print("Need to change above to echo_volume_requested")
+        echo_volume = material.echo_volume_requested
+        #print("Need to change above to echo_volume_requested")
 
         #Available material:
         tot_available_vol = self.get_available_material(material)

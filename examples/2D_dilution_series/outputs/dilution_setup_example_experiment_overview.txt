@@ -17,9 +17,9 @@ water:
 	total volume: 114.50 uL
 
 On the source plate:
-	Add 65.0uL of txtl_mm in wells: A01, A02, A03, A04, A05, A06, A07, A08, A09, A10
-	Add 38.5uL of txtl_mm in well: A11
-	Add 32.0uL of GFP Plasmid in well: A13
-	Add 48.0uL of ATc in well: A15
-	Add 65.0uL of water in wells: A17, A18
-	Add 47.5uL of water in well: A19
+	Add 65.0uL of txtl_mm in wells: B01, B02, B03, B04, B05, B06, B07, B08, B09, B10
+	Add 38.5uL of txtl_mm in well: B11
+	Add 32.0uL of GFP Plasmid in well: B13
+	Add 48.0uL of ATc in well: B15
+	Add 65.0uL of water in wells: B17, B18
+	Add 47.5uL of water in well: B19
