@@ -1,0 +1,13 @@
+Source Plate,Source Plate Type,Source Well,Sample ID,Destination Plate Name,Destination Well,Transfer Volume,Sample Comment
+Source[1],384PP_AQ_BP,B24,Cavendish,Nunc_384_black_glassbottom,D2,100,Actual concentration: 1.00 nM
+Source[1],384PP_AQ_BP,B24,Cavendish,Nunc_384_black_glassbottom,D3,100,Actual concentration: 1.00 nM
+Source[1],384PP_AQ_BP,B24,Cavendish,Nunc_384_black_glassbottom,E2,100,Actual concentration: 1.00 nM
+Source[1],384PP_AQ_BP,B24,Cavendish,Nunc_384_black_glassbottom,E3,100,Actual concentration: 1.00 nM
+Source[1],384PP_AQ_BP,C12,Gros Michel,Nunc_384_black_glassbottom,F5,300,Actual concentration: 3.00 nM
+Source[1],384PP_AQ_BP,C22,Salt Water,Nunc_384_black_glassbottom,D2,9900,Actual concentration: 0.99 nM
+Source[1],384PP_AQ_BP,C22,Salt Water,Nunc_384_black_glassbottom,D3,9900,Actual concentration: 0.99 nM
+Source[1],384PP_AQ_BP,C22,Salt Water,Nunc_384_black_glassbottom,E2,9900,Actual concentration: 0.99 nM
+Source[1],384PP_AQ_BP,C22,Salt Water,Nunc_384_black_glassbottom,E3,9900,Actual concentration: 0.99 nM
+Source[1],384PP_AQ_BP,C22,Salt Water,Nunc_384_black_glassbottom,F5,4400,Actual concentration: 0.44 nM
+Source[1],384PP_AQ_BP,C23,Salt Water,Nunc_384_black_glassbottom,F5,5300,Actual concentration: 0.53 nM
+Source[1],384PP_AQ_BP,C23,Salt Water,Nunc_384_black_glassbottom,E4,9500,Actual concentration: 0.95 nM

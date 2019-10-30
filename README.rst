@@ -10,9 +10,9 @@ Tools for Common Murray Lab Protocols
 
 Code for common tasks in the Murray lab. Currently supported in 3.5. It may also work in Python 2.7 if you are careful to use only ASCII characters.
 
-Install with the following (probably requires sudo): ``pip install git+git://github.com/dr3y/murraylab_tools.git@master``
+Install with the following (probably requires sudo): ``pip install git+git://github.com/sclamons/murraylab_tools.git@master``
 
-To update, run (also with superuser privilege): ``pip install --upgrade --no-deps git+git://github.com/dr3y/murraylab_tools.git@master``
+To update, run (also with superuser privilege): ``pip install --upgrade --no-deps git+git://github.com/sclamons/murraylab_tools.git@master``
 
 Currently includes the following subpackages:
 
