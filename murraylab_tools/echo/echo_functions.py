@@ -965,7 +965,7 @@ class EchoRun():
                 for vol in wells_by_vol:
 
                     wells = [(w[0], int(w[1:])) for w in wells_by_vol[vol]]
-                    text_file.write("\n\tPipette %.2f ul of %s into wells: " % (vol/1000, material.name))
+                    text_file.write("\n\tPipette %.2f ul of %s into wells:" % (vol/1000, material.name))
                     wells.sort()
                     current_row = wells[0][0]
                     for row, col in wells:
@@ -973,8 +973,8 @@ class EchoRun():
                         if current_row != row:
                             text_file.write("\n\t\t"+well)
                             current_row = row
-                        elif well == wells[0]:
-                            text_file.write(well)
+                        elif well == wells[0] and len(wells):
+                            text_file.write("\n\t\t"+well)
                         else:
                             text_file.write(", "+well)
 
