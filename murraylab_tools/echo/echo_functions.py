@@ -917,7 +917,7 @@ class EchoRun():
                 # Rewrite with new MasterMixMaterial definitions (final concs
                 # now in terms of final reaction)
                 if isinstance(material, Mixture):
-                    text_file.write(material.text_recipe)
+                    text_file.write(material.text_recipe())
 
             # Source plate loading instructions
             text_file.write("\n\nOn the source plate:")
@@ -925,9 +925,6 @@ class EchoRun():
             for material in self.material_dict.values():
                 name, conc = material.name, material.concentration
                 vol_list = material.well_volumes
-
-                #if material.current_well == None:
-                #    print("Material '" + str(material) + "' has no current well.")
 
                 #Fill wells from reusable source plate
                 if (name, conc) in mat_well_dict \
@@ -956,31 +953,14 @@ class EchoRun():
                     #for (well, vol) in mat_well_dict[name, conc]:
                     #    text_file.write("\n"+str(vol/1000.0)+"uL of "+name+" in well "+well+"\n")
 
-                #Old way below - shouldn't do anything
-                """
-                elif material.current_well < 0:
-                    text_file.write("\n\t%s not used!" % material.name)
-                    continue
-                if material.current_well != 0:
-                    text_file.write("\n\t%.2f uL of %s in wells " % \
-                                    (max_volume/1000.0, material.name))
-                    first_entry = True
-                    for full_well in material.wells[:material.current_well]:
-                        if first_entry:
-                            first_entry = False
-                        else:
-                            text_file.write(", ")
-                        text_file.write(full_well)
-                text_file.write("\n\t%.2f uL %s --> %s" % \
-                        (material.well_volumes[material.current_well] / 1000.0,
-                         material.name,
-                         material.wells[material.current_well]))"""
-
             # Destination plate loading instructions (for hand-pipetted stuff).
             for material in self.material_dict.values():
                 if len(material.pipettelist) > 0:
                     text_file.write("\n\nOn destination plate:")
                 last_well = None
+
+                vols = [ps.volume for ps in ]
+
                 for pipette_step in material.pipettelist:
                     text_file.write("\n\t%.2f uL of %s in well %s" %
                                         (pipette_step.volume,
@@ -1001,10 +981,10 @@ class AbstractMixture(object):
         * MasterMix: Alias for TXTLMasterMix for backward compatibility.
         * WellReaction: A mix of liquids in a well on a destination plate.
     '''
-    def __init__(self, vol = None, well = None):
+    def __init__(self, vol = 0, well = None):
         self.vol       = vol
         self.finalized = False
-        self.materials = []
+        self.materials = [] #List of tuples (material, amount, unit)
         self.fill_material = None
 
     def add_material(self, material, final_conc, units = "concentration"):
@@ -1035,7 +1015,7 @@ class AbstractMixture(object):
                                 f"{type(material)}; must be an "
                                 "EchoSourceMaterial when using units of "
                                 "concentration.")
-            self.materials.append((material, final_conc))
+            self.materials.append((material, final_conc, "concentration"))
             return
 
         ret_material = None
@@ -1048,10 +1028,9 @@ class AbstractMixture(object):
                                 "EchoSourceMaterial or string when using units "
                                 f"of {units}.")
         if units == "percent":
-            self.materials.append((material, final_conc * material.nM))
+            self.materials.append((material, final_conc, "percent"))
         elif units == "volume":
-            self.materials.append((material,
-                                         material.nM * final_conc / self.vol))
+            self.materials.append((material,final_conc, "volume"))
         else:
             raise ValueError(f"Attempted to add a material using units "
                              f"'{units}'. Units must be one of 'concentration',"
@@ -1098,23 +1077,21 @@ class AbstractMixture(object):
 
         current_vol = self.current_vol()
         if current_vol > int(self.vol):
-            error_string = "Reaction "
-            error_string += "has %d nL volume but contains %.2f nL of " \
+            error_string = self.__class__.__name__
+            error_string += " has %d nL volume but contains %.2f nL of " \
                             % (self.vol, current_vol)
             error_string += "ingredients:"
-            for material, conc in self.materials:
-                material_vol = conc * self.vol / material.nM
+            for material, material_vol in self.get_material_volumes():
                 error_string += "\n\t%d nL of %s" % (material_vol, material)
             raise ValueError(error_string)
 
         if current_vol < self.vol:
-            warn_string = "Reaction "
+            warn_string = self.__class__.__name__
             warn_string += "has %d nL volume but only contains %.2f nL of " \
                             % (self.vol, current_vol)
             warn_string += "ingredients. Are you sure you want to underfill " \
                             + "this reaction?"
-            for material, conc in self.materials:
-                material_vol = conc * self.vol / material.nM
+            for material, material_vol in self.get_material_volumes():
                 warn_string += "\n\t%d nL of %s" % (material_vol, material)
             warnings.warn(warn_string, Warning)
 
@@ -1136,18 +1113,43 @@ class AbstractMixture(object):
         # Make sure everything's ready to go and materials have been requested.
         if finalize and not self.finalized:
             self.finalize()
-
-        for material, final_conc in self.materials:
+        
+        for (material, vol) in self.get_material_volumes():
             name = str(material)
-            vol  = final_conc * self.vol / material.nM
             yield (name, vol)
 
+    def get_volume(self):
+        return self.vol
+
+    def get_material_volumes(self):
+        if self.get_volume == None:
+            raise ValueError("self.vol is None for object "+repr(self))
+
+        for material, final_conc, unit in self.materials:
+            if unit == "concentration":
+                vol  = final_conc * self.get_volume() / material.nM
+            elif unit == "percent":
+                vol = final_conc * self.get_volume()
+            elif unit == "volume":
+                vol = final_conc
+            yield material, vol
+
 class Mixture(AbstractMixture, EchoSourceMaterial):
+    def __init__(self, name, concentration = 1, vol = None, well = None,  length = 0, plate = None):
+        AbstractMixture.__init__(self, vol = vol, well = well)
+        EchoSourceMaterial.__init__(self, name, concentration = concentration, length = length, plate = plate)
+
+
     def text_recipe(self):
+        #print("self.get_material_volumes()", list(self.get_material_volumes()))
         ret_str = "\n\tMix:"
-        for material, final_conc in self.materials:
-            ret_str += "\n\t\t0.2f uL %s" % \
-                            (self.vol * final_conc / material.nM, material.name)
+        for material, vol in self.get_material_volumes():
+            ret_str += "\n\t\t%.2f uL %s" % \
+                            (vol/1000, material.name)
+        return ret_str
+
+    def get_volume(self):
+        return self.total_volume_requested
 
 class WellReaction(AbstractMixture):
     '''
@@ -1244,8 +1246,7 @@ class WellReaction(AbstractMixture):
             error_string += "has %d nL volume but contains %.2f nL of " \
                             % (self.vol, current_vol)
             error_string += "ingredients:"
-            for material, conc in self.materials:
-                material_vol = conc * self.vol / material.nM
+            for material, material_vol in self.get_material_volumes():
                 error_string += "\n\t%f nL of %s" % (material_vol, material)
             raise ValueError(error_string)
         if current_vol < self.vol:
@@ -1258,8 +1259,7 @@ class WellReaction(AbstractMixture):
                             + "this reaction?"
             warnings.warn(warn_string, Warning)
 
-        for material, conc in self.materials:
-            vol = conc * self.vol / material.nM
+        for material, vol in self.get_material_volumes():
             material.request_material(self.well, vol,
                                       self.hand_pipetted[material])
 
@@ -1345,8 +1345,7 @@ class TXTLMasterMix(Mixture):
             error_string += "%d nL total volume, but contains %.2f nL of " \
                             % (self.vol, current_vol)
             error_string += "ingredients per reaction:"
-            for material, conc in self.materials:
-                material_vol = conc * self.vol / material.nM
+            for material, material_vol  in self.get_material_volumes():
                 error_string += "\n\t%d nL of %s" % (material_vol, material)
             raise ValueError
 
@@ -1424,7 +1423,7 @@ class TXTLMasterMix(Mixture):
         a call to request_picklist, when picks are finalized. If
         total_volume_requested is not set, will return 0.
         '''
-        for material, conc in self.materials:
+        for material, conc, unit in self.materials:
             if material.name == "Extract":
                 extract_vol = self.total_volume_requested * conc \
                                 / material.nM / self.txtl_fraction
@@ -1440,7 +1439,7 @@ class TXTLMasterMix(Mixture):
         a call to request_picklist, when picks are finalized. If
         total_volume_requested is not set, will return 0.
         '''
-        for material, conc in self.materials:
+        for material, conc, unit in self.materials:
             if material.name == "Buffer":
                 buffer_vol = self.total_volume_requested * conc \
                                 / material.nM / self.txtl_fraction
