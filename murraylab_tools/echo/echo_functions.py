@@ -916,17 +916,9 @@ class EchoRun():
                                 (material.total_volume_requested / 1000.0))
                 # Rewrite with new MasterMixMaterial definitions (final concs
                 # now in terms of final reaction)
-                if is_master_mix and self.make_master_mix:
-                    master_mix = self.material_dict["txtl_mm"]
-                    text_file.write("\n\tTubes of extract needed: %d" % \
-                                    math.ceil(master_mix.n_extract_aliquots()))
-                    text_file.write("\n\tTubes of buffer needed: %d" % \
-                                    math.ceil(master_mix.n_buffer_aliquots()))
-                    text_file.write("\n\tMaster Mix (including %d%% excess):"\
-                                    %((master_mix.mm_excess-1) * 100))
-                    for name, vol in master_mix.recipe():
-                        text_file.write("\n\t\t%.2f uL %s" % \
-                                        (vol / 1000, name))
+                if isinstance(material, Mixture):
+                    text_file.write(material.text_recipe)
+
             # Source plate loading instructions
             text_file.write("\n\nOn the source plate:")
 
@@ -985,12 +977,11 @@ class EchoRun():
                          material.wells[material.current_well]))"""
 
             # Destination plate loading instructions (for hand-pipetted stuff).
-            header_written = False
             for material in self.material_dict.values():
+                if len(material.pipettelist) > 0:
+                    text_file.write("\n\nOn destination plate:")
+                last_well = None
                 for pipette_step in material.pipettelist:
-                    if not header_written:
-                        text_file.write("\n\nOn destination plate:")
-                        header_written = True
                     text_file.write("\n\t%.2f uL of %s in well %s" %
                                         (pipette_step.volume,
                                          material.name,
@@ -1152,8 +1143,11 @@ class AbstractMixture(object):
             yield (name, vol)
 
 class Mixture(AbstractMixture, EchoSourceMaterial):
-    pass
-
+    def text_recipe(self):
+        ret_str = "\n\tMix:"
+        for material, final_conc in self.materials:
+            ret_str += "\n\t\t0.2f uL %s" % \
+                            (self.vol * final_conc / material.nM, material.name)
 
 class WellReaction(AbstractMixture):
     '''
@@ -1407,6 +1401,19 @@ class TXTLMasterMix(Mixture):
                 ingredient_fraction = vol / one_rxn_vol
                 yield (name, self.mm_excess * ingredient_fraction \
                              * self.total_volume_requested)
+
+    def text_recipe(self):
+        ret_str = ""
+        ret_str += "\n\tTubes of extract needed: %d" % \
+                        math.ceil(self.n_extract_aliquots())
+        ret_str += "\n\tTubes of buffer needed: %d" % \
+                        math.ceil(self.n_buffer_aliquots())
+        ret_str += "\n\tMaster Mix (including %d%% excess):"\
+                        %((self.mm_excess-1) * 100)
+        for name, vol in self.recipe():
+            ret_str += "\n\t\t%.2f uL %s" % (vol / 1000, name)
+
+        return ret_str
 
     def n_extract_aliquots(self, ):
         '''
