@@ -963,14 +963,16 @@ class EchoRun():
                 vols.reverse()
                 wells_by_vol = {vol:[ps.destination_well for ps in material.pipettelist if ps.volume == vol] for vol in vols}
                 for vol in wells_by_vol:
-                    wells = wells_by_vol[vol]
+
+                    wells = [(w[0], int(w[1:])) for w in wells_by_vol[vol]]
                     text_file.write("\n\tPipette %.2f ul of %s into wells: " % (vol/1000, material.name))
                     wells.sort()
-                    row = wells[0][0]
-                    for well in wells:
-                        if well[0] != row:
+                    current_row = wells[0][0]
+                    for row, col in wells:
+                        well = row+str(col)
+                        if current_row != row:
                             text_file.write("\n\t\t"+well)
-                            row = well[0]
+                            current_row = row
                         elif well == wells[0]:
                             text_file.write(well)
                         else:
