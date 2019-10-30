@@ -840,7 +840,6 @@ class EchoRun():
             mat = self.material_dict[mat_name]
             if mat:
                 name, conc = mat.name, mat.concentration
-
                 wells_to_fill = mat.plate.request_source_wells(mat)
 
                 material_well_dict[(name, conc)] = wells_to_fill
@@ -959,17 +958,40 @@ class EchoRun():
                     text_file.write("\n\nOn destination plate:")
                 last_well = None
 
-                vols = [ps.volume for ps in ]
-
-                for pipette_step in material.pipettelist:
-                    text_file.write("\n\t%.2f uL of %s in well %s" %
-                                        (pipette_step.volume,
-                                         material.name,
-                                         pipette_step.destination_well))
+                vols = list(set([ps.volume for ps in material.pipettelist]))
+                vols.sort()
+                vols.reverse()
+                wells_by_vol = {vol:[ps.destination_well for ps in material.pipettelist if ps.volume == vol] for vol in vols}
+                for vol in wells_by_vol:
+                    wells = wells_by_vol[vol]
+                    text_file.write("\n\tPipette %.2f ul of %s into wells: " % (vol/1000, material.name))
+                    wells.sort()
+                    row = wells[0][0]
+                    for well in wells:
+                        if well[0] != row:
+                            text_file.write("\n\t\t"+well)
+                            row = well[0]
+                        elif well == wells[0]:
+                            text_file.write(well)
+                        else:
+                            text_file.write(", "+well)
 
             # Make the plates write out their usage.
             for plate in self.plates:
                 plate.write_to_file()
+
+        #Write a file with the definitions (ingredients) in each well
+        with mt_open((outputname + '_well_definitions.csv'), 'w') as well_defs:
+            well_defs.write("well,ingredient1,concentration1,unit1,ingredient2,...\n")
+            wells = list(self.reactions.keys())
+            wells.sort()
+            for well in wells:
+                well_defs.write(well)
+                for (mat, conc, unit) in self.reactions[well].materials:
+                    if mat.concentration == 1:
+                        unit = "fraction"
+                    well_defs.write(","+mat.name+","+str(conc)+","+unit)
+                well_defs.write("\n")
 
 class AbstractMixture(object):
     '''
@@ -981,11 +1003,14 @@ class AbstractMixture(object):
         * MasterMix: Alias for TXTLMasterMix for backward compatibility.
         * WellReaction: A mix of liquids in a well on a destination plate.
     '''
-    def __init__(self, vol = 0, well = None):
+    def __init__(self, vol = 0, well = None, recipe_excess = 1.0):
         self.vol       = vol
         self.finalized = False
         self.materials = [] #List of tuples (material, amount, unit)
         self.fill_material = None
+        if recipe_excess < 1:
+            raise ValueError("recipe_excess must be greater than or equal to 1.")
+        self.recipe_excess = recipe_excess #Extra fraction (typically .1) of mixture to make when printing a recipe
 
     def add_material(self, material, final_conc, units = "concentration"):
         '''
@@ -1027,7 +1052,7 @@ class AbstractMixture(object):
                                 f"{type(material)}; must be an "
                                 "EchoSourceMaterial or string when using units "
                                 f"of {units}.")
-        if units == "percent":
+        if units == "percent" or units == "fraction":
             self.materials.append((material, final_conc, "percent"))
         elif units == "volume":
             self.materials.append((material,final_conc, "volume"))
@@ -1069,6 +1094,16 @@ class AbstractMixture(object):
         otherwise in obvious error, and raising a Warning if the reaction is
         underfull.
         '''
+        #Check for overfilled wells
+        if self.vol < self.current_vol():
+            error_string = self.__class__.__name__
+            error_string += " has %d nL volume but contains %.2f nL of " \
+                            % (self.vol, self.current_vol())
+            error_string += "ingredients:"
+            for material, material_vol in self.get_material_volumes():
+                error_string += "\n\t%d nL of %s" % (material_vol, material)
+            raise ValueError(error_string)
+
         if self.fill_material:
             fill_volume         = self.vol - self.current_vol()
             fill_mat_final_conc = self.fill_material.nM * fill_volume \
@@ -1135,17 +1170,16 @@ class AbstractMixture(object):
             yield material, vol
 
 class Mixture(AbstractMixture, EchoSourceMaterial):
-    def __init__(self, name, concentration = 1, vol = None, well = None,  length = 0, plate = None):
-        AbstractMixture.__init__(self, vol = vol, well = well)
+    def __init__(self, name, concentration = 1, vol = None, well = None,  length = 0, plate = None, recipe_excess = 1.0):
+        AbstractMixture.__init__(self, vol = vol, well = well, recipe_excess = recipe_excess)
         EchoSourceMaterial.__init__(self, name, concentration = concentration, length = length, plate = plate)
 
 
     def text_recipe(self):
-        #print("self.get_material_volumes()", list(self.get_material_volumes()))
         ret_str = "\n\tMix:"
         for material, vol in self.get_material_volumes():
             ret_str += "\n\t\t%.2f uL %s" % \
-                            (vol/1000, material.name)
+                            (vol/1000*self.recipe_excess, material.name)
         return ret_str
 
     def get_volume(self):
@@ -1318,6 +1352,7 @@ class TXTLMasterMix(Mixture):
 
         self.rxn_vol = rxn_vol
         self.vol     = rxn_vol
+        self.recipe_excess = mm_excess
         self.mm_excess = mm_excess
         self.extract_fraction = extract_fraction
         self.extract_per_aliquot = extract_per_aliquot
@@ -1398,7 +1433,7 @@ class TXTLMasterMix(Mixture):
             one_rxn_vol = self.current_vol_per_rxn()
             for (name, vol) in ingredients:
                 ingredient_fraction = vol / one_rxn_vol
-                yield (name, self.mm_excess * ingredient_fraction \
+                yield (name, self.recipe_excess * ingredient_fraction \
                              * self.total_volume_requested)
 
     def text_recipe(self):
@@ -1408,7 +1443,7 @@ class TXTLMasterMix(Mixture):
         ret_str += "\n\tTubes of buffer needed: %d" % \
                         math.ceil(self.n_buffer_aliquots())
         ret_str += "\n\tMaster Mix (including %d%% excess):"\
-                        %((self.mm_excess-1) * 100)
+                        %((self.recipe_excess-1) * 100)
         for name, vol in self.recipe():
             ret_str += "\n\t\t%.2f uL %s" % (vol / 1000, name)
 
@@ -1428,7 +1463,7 @@ class TXTLMasterMix(Mixture):
                 extract_vol = self.total_volume_requested * conc \
                                 / material.nM / self.txtl_fraction
                 return extract_vol / self.extract_per_aliquot \
-                        * self.mm_excess
+                        * self.recipe_excess
         return 0
 
     def n_buffer_aliquots(self, ):
@@ -1444,7 +1479,7 @@ class TXTLMasterMix(Mixture):
                 buffer_vol = self.total_volume_requested * conc \
                                 / material.nM / self.txtl_fraction
                 return buffer_vol / self.buffer_per_aliquot \
-                        * self.mm_excess
+                        * self.recipe_excess
 
         return 0
 
@@ -1737,7 +1772,6 @@ class SourcePlate():
         usable_volume  = max_volume - dead_volume
         #Total echo volume requested
         echo_volume = material.echo_volume_requested
-        #print("Need to change above to echo_volume_requested")
 
         #Available material:
         tot_available_vol = self.get_available_material(material)
@@ -1798,7 +1832,6 @@ class SourcePlate():
         picks = []
         #Iterate through picks (material --> Destinations)
         for pick in material.picklist:
-            #print("Pick:", pick.destination_well, pick.volume, end = "...")
             volume_requested = pick.volume
             tot_vol_requested += volume_requested
             #How much volume has been used so far for this pick
