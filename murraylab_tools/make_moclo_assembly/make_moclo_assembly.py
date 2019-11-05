@@ -225,11 +225,11 @@ def pickAssembly():
         pickAssembly()
     return pd.read_csv(aslist),aslist
 def echoline(swell,dwell,tvol,sptype = source,spname = "Source[1]",\
-                                    dpname = "Destination[1]",platebc=""):
+                                    dpname = "Destination[1]",platebc="",partid="",partname=""):
     #if(platebc!=""):
     #    sptype = ptypedict[platebc]
-    return "{},{},{},{},,,,,{},{},{}\n".format(spname,platebc,sptype,swell,\
-                                                            dpname,dwell,tvol)
+    return "{},{},{},{},{},{},,,{},{},{}\n".format(spname,platebc,sptype,swell,\
+                                                    partid,partname,dpname,dwell,tvol)
 def echoSinglePart(partDF,partname,partfm,dwell,printstuff=True,enzyme=enzymes["BsaI"]):
     """calculates how much of a single part to put in for a number of fm."""
     try:
@@ -249,10 +249,10 @@ def echoSinglePart(partDF,partname,partfm,dwell,printstuff=True,enzyme=enzymes["
     pplate = partDF[partDF.part==partname]["platebc"].iloc[0]
     platet = partDF[partDF.part==partname]["platetype"].iloc[0]
     e1,e2 = echoPipet(partfm,pconc,pwell,dwell,sourceplate=pplate,sptype=platet,\
-                                                    printstuff=printstuff)
+                                                    partname=partname,printstuff=printstuff)
     return e1,e2,pDseq,pplate,platet
 def echoPipet(partFm,partConc,sourcewell,destwell,sourceplate=None,\
-                                                sptype=None,printstuff=True):
+                                                partname="",sptype=None,printstuff=True):
     """does the calculation to convert femtomoles to volumes, and returns
     the finished echo line"""
     pvol = (partFm/partConc)*1000
@@ -263,12 +263,12 @@ def echoPipet(partFm,partConc,sourcewell,destwell,sourceplate=None,\
     if(sourceplate==None):
         if(printstuff):
             print("===> transfer from {} to {}, {} nl".format(sourcewell,destwell,evol))
-        echostring = echoline(sourcewell,destwell,evol)
+        echostring = echoline(sourcewell,destwell,evol,partname=partname)
     else:
         if(printstuff):
             print("===> transfer from {}, plate {} to {}, {} nl".format(sourcewell,sourceplate,destwell,evol))
         echostring = echoline(sourcewell,destwell,evol,spname =sourceplate,\
-                                        sptype= sptype,platebc = sourceplate)
+                            sptype= sptype,platebc = sourceplate,partname=partname)
     return echostring, evol
 
 def makeDseqFromDF(part,partslist,col = "part",enzyme=enzymes["BsaI"]):
@@ -984,7 +984,7 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
                         platetype= waterrow.platetype
                         curplatebc = waterrow.platebc
                         outfile += echoline(waterwell,dwell,ewat,spname =curplatebc,\
-                                                sptype=platetype,platebc = curplatebc)
+                                                sptype=platetype,platebc = curplatebc,partname="water")
                     else:
                         #print("platewater")
                         #print(prevplate)
@@ -995,7 +995,7 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
                         waterrow = waterrows.iloc[0]
                         waterwell = waterrow.well
                         watline = echoline(waterwell,dwell,ewat,spname =prevplate,\
-                                                sptype=prevtype,platebc = prevplate)
+                                                sptype=prevtype,platebc = prevplate,partname="water")
                         if("LDV" in prevtype):
                             outfile2+=watline
                         else:
