@@ -1135,11 +1135,14 @@ class BiotekCellPlotter(object):
         # Plot out all of the fluorescence data, keeping track of the largest
         # plotted measurement.
         fig, ax1 = plt.subplots(figsize = figsize)
+        highest_observed_y = 0
         for well_spec in self.well_list:
             well_df = norm_df[norm_df.Well == well_spec.well_name]
             ax1.plot(well_df["Time (hr)"], well_df[column],
                      color = well_spec.color, label = well_spec.label,
                      linewidth = linewidth)
+            highest_observed_y = max(highest_observed_y,
+                                     np.nanmax(well_df[column]))
         ax1.set_xlabel("Time (hr)")
         if self.normalize_by_od:
             ax1.set_ylabel("%s/OD (gain %d)" % (self.channel, self.gain))
@@ -1179,8 +1182,12 @@ class BiotekCellPlotter(object):
 
         if ymax:
             ax1.set_ylim(0, ymax)
+        else:
+            ax1.set_ylim(0, highest_observed_y * 1.1)
         if od_ymax:
             ax2.set_ylim(0, od_ymax)
+        else:
+            ax2.set_ylim(0, np.nanmax(all_od_df.Measurement) * 1.1)
 
         if show_legend:
             if split_plots:

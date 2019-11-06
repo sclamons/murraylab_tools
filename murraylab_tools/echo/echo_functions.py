@@ -1146,7 +1146,7 @@ class Mixture(AbstractMixture, EchoSourceMaterial):
     def text_recipe(self):
         ret_str = "\n\tMix:"
         for material, final_conc in self.materials:
-            ret_str += "\n\t\t0.2f uL %s" % \
+            ret_str += "\n\t\t%0.2f uL %s" % \
                             (self.vol * final_conc / material.nM, material.name)
 
 class WellReaction(AbstractMixture):
