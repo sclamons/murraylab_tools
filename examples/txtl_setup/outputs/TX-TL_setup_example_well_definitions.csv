@@ -1,0 +1,11 @@
+well,ingredient1,concentration1,unit1,ingredient2,...
+A1,Positive Control,0.988965230064543,concentration,master_mix,0.76,fraction,water,0.13,fraction
+B1,RFP Plasmid,0.9404388714733543,concentration,master_mix,0.76,fraction,water,0.23,fraction
+B2,RFP Plasmid,3.9968652037617556,concentration,master_mix,0.76,fraction,water,0.1975,fraction
+C1,CFP Plasmid,1.0186120799243783,concentration,master_mix,0.76,fraction,water,0.225,fraction
+C2,CFP Plasmid,4.074448319697513,concentration,master_mix,0.76,fraction,water,0.18,fraction
+D1,GFP Plasmid,1.0871151320589525,concentration,master_mix,0.76,fraction,water,0.225,fraction
+D2,GFP Plasmid,3.9860888175494917,concentration,master_mix,0.76,fraction,water,0.185,fraction
+E1,RFP Plasmid,1.8808777429467085,concentration,CFP Plasmid,2.0372241598487566,concentration,master_mix,0.76,fraction,water,0.19,fraction
+E2,RFP Plasmid,1.8808777429467085,concentration,GFP Plasmid,1.9930444087747459,concentration,master_mix,0.76,fraction,water,0.1925,fraction
+E3,CFP Plasmid,2.0372241598487566,concentration,GFP Plasmid,1.9930444087747459,concentration,master_mix,0.76,fraction,water,0.1825,fraction

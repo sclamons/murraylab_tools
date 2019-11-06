@@ -1376,18 +1376,21 @@ class TXTLMasterMix(Mixture):
                                    self.buffer_fraction)
 
     def finalize(self):
-        try:
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                super(TXTLMasterMix, self).finalize()
-        except ValueError:
-            error_string = "TX-TL Master Mix is being used in reaction with "
-            error_string += "%d nL total volume, but contains %.2f nL of " \
-                            % (self.vol, current_vol)
-            error_string += "ingredients per reaction:"
-            for material, material_vol  in self.get_material_volumes():
-                error_string += "\n\t%d nL of %s" % (material_vol, material)
-            raise ValueError
+        # try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            super(TXTLMasterMix, self).finalize()
+        # except ValueError:
+        #     error_string = "TX-TL Master Mix is being used in reaction with "
+        #     error_string += "%d nL total volume, but contains %.2f nL of " \
+        #                     % (self.vol, self.current_vol())
+        #     error_string += "ingredients per reaction:"
+        #     for material, material_vol  in self.get_material_volumes():
+        #         error_string += "\n\t%d nL of %s" % (material_vol, material)
+        #     raise ValueError(error_string)
+
+    def get_volume(self):
+        return self.rxn_vol
 
     def one_rxn_recipe(self, finalize = True):
         '''
@@ -1430,8 +1433,8 @@ class TXTLMasterMix(Mixture):
                     EchoSourceMaterial and 'vol' is the volume of that material
                     to add to the reaction, in nL.
         '''
-        if finalize and not self.finalized:
-            self.finalize()
+        # if finalize and not self.finalized:
+        #     self.finalize()
 
         if self.total_volume_requested != 0:
             ingredients = self.one_rxn_recipe()

@@ -16,10 +16,10 @@ Salt Water:
 	total volume: 58.80 uL
 
 On the source plate:
-	Add 21.4uL of Cavendish in well: B24
-	Add 21.3uL of Gros Michel in well: C12
-	Add 65.0uL of Salt Water in well: C22
-	Add 35.8uL of Salt Water in well: C23
+	Add 21.4uL of Cavendish in well: D23
+	Add 21.3uL of Gros Michel in well: E12
+	Add 65.0uL of Salt Water in well: E20
+	Add 35.8uL of Salt Water in well: E21
 
 On destination plate:
-	500.00 uL of Viscous in well E4
+	Pipette 0.50 ul of Viscous into wells:, E4

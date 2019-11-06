@@ -1,0 +1,10 @@
+well,ingredient1,concentration1,unit1,ingredient2,...
+A1,primer_1F,500.0,concentration,primer_1R,500.0,concentration,GFP plasmid,0.10871151320589524,concentration
+A2,primer_2F,500.0,concentration,primer_2R,500.0,concentration,GFP plasmid,0.10871151320589524,concentration
+A3,primer_3F,500.0,concentration,primer_3R,500.0,concentration,GFP plasmid,0.10871151320589524,concentration
+B1,primer_1F,500.0,concentration,primer_1R,500.0,concentration,RFP plasmid,0.09404388714733543,concentration
+B2,primer_2F,500.0,concentration,primer_2R,500.0,concentration,RFP plasmid,0.09404388714733543,concentration
+B3,primer_3F,500.0,concentration,primer_3R,500.0,concentration,RFP plasmid,0.09404388714733543,concentration
+C1,primer_1F,500.0,concentration,primer_1R,500.0,concentration,CFP plasmid,0.10186120799243784,concentration
+C2,primer_2F,500.0,concentration,primer_2R,500.0,concentration,CFP plasmid,0.10186120799243784,concentration
+C3,primer_3F,500.0,concentration,primer_3R,500.0,concentration,CFP plasmid,0.10186120799243784,concentration

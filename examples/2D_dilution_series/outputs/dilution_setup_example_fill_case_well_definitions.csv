@@ -1,0 +1,7 @@
+well,ingredient1,concentration1,unit1,ingredient2,...
+D2,Cavendish,1.0,concentration,Salt Water,0.99,fraction
+D3,Cavendish,1.0,concentration,Salt Water,0.99,fraction
+E2,Cavendish,1.0,concentration,Salt Water,0.99,fraction
+E3,Cavendish,1.0,concentration,Salt Water,0.99,fraction
+E4,Viscous,5.0,concentration,Salt Water,0.95,fraction
+F5,Gros Michel,3.0,concentration,Salt Water,0.97,fraction
