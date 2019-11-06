@@ -504,7 +504,7 @@ class EchoRun():
             for mat_num in range(len(material_total_vols)):
                 colnum = mat_num + 5
                 volume = recipe_sheet[rownum, colnum] * 1e3
-                if volume > 0:
+                if volume != None and volume > 0:
                     source_material = stocks[mat_num]
                     self.reactions[well].add_volume_of_material(source_material,
                                                                 volume)
@@ -1172,14 +1172,17 @@ class AbstractMixture(object):
             yield material, vol
 
 class Mixture(AbstractMixture, EchoSourceMaterial):
-    def __init__(self, name, concentration = 1, vol = None, well = None,  length = 0, plate = None, recipe_excess = 1.0):
-        AbstractMixture.__init__(self, vol = vol, well = well, recipe_excess = recipe_excess)
-        EchoSourceMaterial.__init__(self, name, concentration = concentration, length = length, plate = plate)
+    def __init__(self, name, concentration = 1, vol = None, well = None,
+                 length = 0, plate = None, recipe_excess = 1.0):
+        AbstractMixture.__init__(self, vol = vol, well = well,
+                                 recipe_excess = recipe_excess)
+        EchoSourceMaterial.__init__(self, name, concentration = concentration,
+                                    length = length, plate = plate)
 
 
     def text_recipe(self):
         ret_str = "\n\tMix:"
-        for material, final_conc in self.materials:
+        for material, final_conc, _ in self.materials:
             ret_str += "\n\t\t%0.2f uL %s" % \
                             (self.vol * final_conc / material.nM, material.name)
         return ret_str
