@@ -485,8 +485,8 @@ class EchoRun():
         last_row  = 20 + 384
         n_rxns    = 0
         for rownum in range(first_row, last_row):
-            # Check to see if there's a name in this row; if not, skip it.
-            if recipe_sheet[rownum, 2] == 0:
+            # Check to see if there's a well used in this row; if not, skip it.
+            if recipe_sheet[rownum, 1] == 0:
                 continue
             n_rxns += 1
             well = recipe_sheet[rownum, 1]
