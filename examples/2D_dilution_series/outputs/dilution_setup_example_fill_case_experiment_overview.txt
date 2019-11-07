@@ -1,10 +1,10 @@
 Materials used:
 Cavendish:
 	stock concentration: 100.00 nM
-	total volume: 0.40 uL
+	total volume: 21.40 uL
 Gros Michel:
 	stock concentration: 100.00 nM
-	total volume: 0.30 uL
+	total volume: 21.30 uL
 Viscous:
 	stock concentration: 100.00 nM
 	total volume: 0.50 uL
@@ -13,13 +13,13 @@ Water:
 	total volume: 0.00 uL
 Salt Water:
 	stock concentration: 1.00 nM
-	total volume: 58.80 uL
+	total volume: 100.80 uL
 
 On the source plate:
-	Add 21.4uL of Cavendish in well: D23
-	Add 21.3uL of Gros Michel in well: E12
-	Add 65.0uL of Salt Water in well: E20
-	Add 35.8uL of Salt Water in well: E21
+	Add 21.4uL of Cavendish in well: H04
+	Add 21.3uL of Gros Michel in well: H19
+	Add 65.0uL of Salt Water in well: H23
+	Add 35.8uL of Salt Water in well: H24
 
 On destination plate:
 	Pipette 0.50 ul of Viscous into wells:, E4

@@ -1821,6 +1821,7 @@ class SourcePlate():
                     self.materials[name, conc] = [(well, max_volume, date)]
                 self.wells_used[well] = (name, conc, max_volume, date)
             well_ind += 1
+            material.total_volume_requested += dead_volume
 
         return wells_to_fill
 
