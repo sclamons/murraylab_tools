@@ -310,10 +310,10 @@ def makeDseqFromDF(part,partslist,col = "part",enzyme=enzymes["BsaI"]):
             warnings.warn("Be careful! sequence {} has only {} {} site"\
                             .format(part,numzymes,str(enzyme)))
         elif(numzymes>=2):
-            #try:
-            testcut = pDseq.cut(enzyme)
-            #except IndexError:
-
+            try:
+                testcut = pDseq.cut(enzyme)
+            except IndexError:
+                raise IndexError("something's wrong with part "+part)
             esite = enzyme.site.lower()
             esiterc = str(Dseq(enzyme.site).rc()).lower()
             if(numzymes > 2):
