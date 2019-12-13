@@ -176,7 +176,7 @@ def multid_dilution(inducers,wells,construct,fname,blacklist=[],constructnames =
     print("wrote "+os.path.join(mypath,"supp_"+fname))
     return wellsused
 def multid_dilution_wrapper(inducers,constructs,fname,avoidedges=[],maxinducer=500,\
-                wellvol=50,shuffle=False,wellorder="across",mypath="."):
+                wellvol=50,shuffle=False,wellorder="across",mypath=".",start=None):
     """this function contains some helpful pre-sets for doing multiple
     inducer sweeps in a 384 well plate.
     inducers:
@@ -237,15 +237,18 @@ def multid_dilution_wrapper(inducers,constructs,fname,avoidedges=[],maxinducer=5
     """
     if(avoidedges==edges):
         #print("edges")
-        start="B2"
+        if(start==None):
+             start="B2"
         rows=14
         cols=22
     elif(avoidedges==topbottom):
-        start="B1"
+        if(start==None):
+             start="B1"
         rows=14
         cols=24
     else:
-        start="A1"
+        if(start==None):
+             start="A1"
         rows=16
         cols=24
     #divideplate=int(rows/len(constructs))
