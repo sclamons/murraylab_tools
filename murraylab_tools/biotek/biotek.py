@@ -395,7 +395,6 @@ def tidy_biotek_data(input_filename, supplementary_filename = None,
                     read_channel    = read_sets[read_name]
                     read_properties = read_channel[read_idx]
                     gain            = read_properties.gain
-                    print(line)
                     if len(info_parts) > 1:
                         if line[1] != "":
                             excitation = info_parts[1].split("[")[0]
@@ -757,7 +756,7 @@ def window_averages(df, start, end, units = "seconds",
             window_df = df[(df[col] >= start) & (df[col] <= end)]
         return window_df
 
-    grouped_df = df.groupby(group_cols)
+    grouped_df = df.groupby(group_cols, as_index = False)
     window_df = grouped_df.apply(pick_out_window)
 
     # Figure out which columns are numeric and which have strings.
@@ -1141,8 +1140,9 @@ class BiotekCellPlotter(object):
             ax1.plot(well_df["Time (hr)"], well_df[column],
                      color = well_spec.color, label = well_spec.label,
                      linewidth = linewidth)
+            vals = well_df[column].values
             highest_observed_y = max(highest_observed_y,
-                                     np.nanmax(well_df[column]))
+                                     vals[np.where(np.isfinite(vals))].max())
         ax1.set_xlabel("Time (hr)")
         if self.normalize_by_od:
             ax1.set_ylabel("%s/OD (gain %d)" % (self.channel, self.gain))
@@ -1152,7 +1152,8 @@ class BiotekCellPlotter(object):
         if split_plots:
             if show_legend:
                 handles, labels = ax1.get_legend_handles_labels()
-                ax1.legend(handles, labels)
+                ax1.legend(handles, labels, bbox_to_anchor = (1.2,1.2),
+                           loc = "upper left")
             if title:
                 plt.title(title, y = 1.08)
             fig.tight_layout()
@@ -1187,14 +1188,16 @@ class BiotekCellPlotter(object):
         if od_ymax:
             ax2.set_ylim(0, od_ymax)
         else:
-            ax2.set_ylim(0, np.nanmax(all_od_df.Measurement) * 1.1)
+            measurements = all_od_df.Measurement.values
+            ax2.set_ylim(0, measurements[np.where(np.isfinite(measurements))].max() * 1.1)
 
         if show_legend:
             if split_plots:
                 handles, labels = ax2.get_legend_handles_labels()
             else:
                 handles, labels = ax1.get_legend_handles_labels()
-            ax2.legend(handles, labels)
+            ax2.legend(handles, labels, bbox_to_anchor = (1.2,1.2),
+                       loc = "upper left")
         if title:
             plt.title(title, y = 1.08)
         fig.tight_layout()
@@ -1349,8 +1352,9 @@ def multiPlot(dims_in,plotdf,fixedinds_in,fixconcs_in,constructs,FPchan,\
     logiclist = logiclist&loglist2
     subdf = plotdf[logiclist]
     #print(subdf.head())
-    maxval = max(subdf.Measurement)
-    minval = min(subdf.Measurement)
+    measurements = subdf.Measurement.values
+    maxval = measurements[np.where(np.isfinite(measurements))].max()
+    minval = measurements[np.where(np.isfinite(measurements))].min()
     if(vmin == None):
         vmin = minval
     if(vmax == None):

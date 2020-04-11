@@ -1,3 +1,9 @@
 numpy
 pandas>=0.24
 scipy>=1.0
+matplotlib>=3.0
+seaborn>=0.10.0
+pydna>=3.0
+bio
+ipywidgets
+ipython
