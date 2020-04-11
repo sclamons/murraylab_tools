@@ -1,9 +1,10 @@
-numpy
-pandas>=0.24
+-e git+git://github.com/dr3y/dnaplotlib.git@master#egg=dnaplotlib
 scipy>=1.0
+pydna
+biopython==1.70
+xlrd>=1.0.0
+pandas>=0.24
 matplotlib>=3.0
 seaborn>=0.10.0
-pydna>=3.0
-bio
 ipywidgets
 ipython

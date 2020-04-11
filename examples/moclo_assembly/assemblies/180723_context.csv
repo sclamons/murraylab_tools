@@ -1,9 +1,0 @@
-vector1,promoter,UTR,CDS,Terminator,newcol1,newcol2,vector2,enzyme,name,targwell
-bbLSK-X-1,S22bxT17m1-3,ptmdcast2m3-4,CT19m4-5,NT1DE5-6,Bg16-7,Cg27-X,,gibson,rec25,C1
-bbLSK-X-1,S22bxT17m1-3,ptmdcast2m3-4,NT19m4-5,CT1DE5-6,Bg16-7,Cg27-X,,gibson,rec26,C2
-bbLSK-X-1,S22bxT17m1-3,ptmdcast2m3-4,CT19m4-5,NT18m5-6,Bg16-7,Cg27-X,,gibson,rec27,C3
-bbLSK-X-1,S22bxT17m1-3,ptmdcast2m3-4,NT19m4-5,CT18m5-6,Bg16-7,Cg27-X,,gibson,rec28,C4
-bbLSK-X-1,SwbxT17m1-3,ptmdcast2m3-4,CT19m4-5,NT1DE5-6,Bg16-7,Cg27-X,,gibson,rec29,C5
-bbLSK-X-1,SwbxT17m1-3,ptmdcast2m3-4,NT19m4-5,CT1DE5-6,Bg16-7,Cg27-X,,gibson,rec30,C6
-bbLSK-X-1,S22bxT17m1-3,ptmdcast2m3-4,Bg14-7,Cg27-8,CT19m8-5,NT18m5-X,,gibson,rec31,C7
-bbLSK-X-1,S22bxT17m1-3,ptmdcast2m3-4,Bg24-7,Cg17-8,CT19m8-5,NT18m5-X,,gibson,rec32,C8

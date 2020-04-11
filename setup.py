@@ -10,10 +10,19 @@ here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
+install_requires=[]
+dependency_links=[]
+
 
 # To parse requirements.txt file
 with open('requirements.txt') as f:
-    install_requires = f.read().splitlines()
+    for fline in f:
+        if("git+" in fline):
+            dependency_links+=[fline]
+        else:
+            install_requires+=[fline]
+            
+    #install_requires = f.read().splitlines()
 if sys.version_info[0] == 2:
     install_requires.append("unicodecsv")
 

@@ -1,0 +1,58 @@
+LOCUS       circulartest            2089 bp    DNA     circular UNK 24-MAY-2019
+DEFINITION  description?.
+ACCESSION   id?
+VERSION     id?
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     scar            664..667
+                     /label="?"
+     scar            798..801
+                     /label="?"
+     scar            826..829
+                     /label="?"
+     scar            976..979
+                     /label="?"
+     scar            1027..1030
+                     /label="?"
+     scar            2090..2093
+                     /label="?"
+ORIGIN
+        1 cgctgcgtca gaccccgtag aaaagatcaa aggatcttct tgagatcctt tttttctgcg
+       61 cgtaatctgc tgcttgcaaa caaaaaaacc accgctacca gcggtggttt gtttgccgga
+      121 tcaagagcta ccaactcttt ttccgaaggt aactggcttc agcagagcgc agataccaaa
+      181 tactgttctt ctagtgtagc cgtagttagg ccaccacttc aagaactctg tagcaccgcc
+      241 tacatacctc gctctgctaa tcctgttacc agtggctgct gccagtggcg ataagtcgtg
+      301 tcttaccggg ttggactcaa gacgatagtt accggataag gcgcagcggt cgggctgaac
+      361 ggggggttcg tgcacacagc ccagcttgga gcgaacgacc tacaccgaac tgagatacct
+      421 acagcgtgag ctatgagaaa gcgccacgct tcccgaaggg agaaaggcgg acaggtatcc
+      481 ggtaagcggc agggtcggaa caggagagcg cacgagggag cttccagggg gaaacgcctg
+      541 gtatctttat agtcctgtcg ggtttcgcca cctctgactt gagcgtcgat ttttgtgatg
+      601 ctcgtcaggg gggcggagcc tatggaaaaa cgccagcaac gcggcctttt tacggttcct
+      661 ggcggagaca ttgattattt gcacggcgtc acactttgct atgccatagc atttttatcc
+      721 ataagattag cggatcctac ctgacgcttt ttatcgcaac tctctactgt ttctccatac
+      781 cgtttttttg ggctagctac taactttcag tttagcggtc tgttttagag ctaaccctca
+      841 cctcacctcc acctcacctc catcatctcc acatagcaag ttaaaataag gctagtccgt
+      901 tatcaacttt cccatcctca cctcactcct acacctctac acctccacca agtggcaccg
+      961 agtcggtgct tttttaggtc caattattga acacccttcg gggtgttttt ttgtttctgg
+     1021 tctgccgctt cgtgttatac gcccgttatc catgggtatg gacagttttc cctttgatat
+     1081 gtaacgcacg ttgtgtctca aaatctctga tgttacattg cacaagataa aaatatatca
+     1141 tcatgaacaa taaaactgtc tgcttacata aacagtaata caaggggtgt tatgagccat
+     1201 attcaacggg aaacgtcttg ctcccgtccg cgcttaaact ccaacatgga cgctgattta
+     1261 tatgggtata aatgggctcg cgataatgtc gggcaatcag gtgcgacaat ctatcgcttg
+     1321 tatgggaagc ccgatgcgcc agagttgttt ctgaaacatg gcaaaggtag cgttgccaat
+     1381 gatgttacag atgagatggt ccgtctcaac tggctgacgg agtttatgcc tctcccgacc
+     1441 atcaagcatt ttatccgtac tcctgatgat gcgtggttac tcaccaccgc gattcctggg
+     1501 aaaacagcct tccaggtatt agaagaatat cctgattcag gtgaaaatat tgttgatgcg
+     1561 ctggccgtgt tcctgcgccg gttacattcg attcctgttt gtaattgtcc ttttaacagc
+     1621 gatcgtgtat ttcgtcttgc tcaggcgcaa tcacgcatga ataacggttt ggttgatgcg
+     1681 agtgattttg atgacgagcg taatggctgg cctgttgaac aagtctggaa agaaatgcac
+     1741 aagctcttgc cattctcacc ggattcagtc gtcactcatg gtgatttctc acttgataac
+     1801 cttatttttg acgaggggaa attaataggt tgtattgatg ttggacgggt cggaatcgca
+     1861 gaccgttacc aggaccttgc cattctttgg aactgcctcg gtgagttttc tccttcatta
+     1921 cagaaacggc tttttcaaaa atatggtatt gataatcctg atatgaataa attgcagttt
+     1981 catttgatgc tcgatgagtt tttctaataa tactagcaga aatcatcctt agcgaaagct
+     2041 aaggattttt tttatctgat taccgccttt gagtgagcgt cgacctagt
+//
