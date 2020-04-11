@@ -1,0 +1,27 @@
+LOCUS       Lnt5-X_0                 438 bp    DNA     linear   UNK 24-MAY-2019
+DEFINITION  description?.
+ACCESSION   id?
+VERSION     id?
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     scar            41..44
+                     /label="?"
+     scar            245..248
+                     /label="?"
+     scar            329..332
+                     /label="?"
+     scar            395..398
+                     /label="?"
+ORIGIN
+        1 gagccaactc cctttacaac ctcactcaag tccgttagag ggagcaatac gcaaaccgcc
+       61 tctccccgcg cgttggccga ttcattaatg cagctggcac gacaggtttc ccgactggaa
+      121 agcgggcagt gagcgcaacg caattaatgt gagttagctc actcattagg caccccaggc
+      181 tttacacttt atgcttccgg ctcgtatgtt gtgtggaatt gtgagcggat aacaatttca
+      241 cacatactgg tggaggtgta gaggtgtagg agtgaggtga ggatgggatg tggagatgat
+      301 ggaggtgagg tggaggtgag gtgagggtag gtacggtcgg taccaaagac gaacaataag
+      361 acgctgaaaa gcgtcttttt tcgttttggt cccggcttcc aggatacata gattaccaca
+      421 actccgagcc cttccacc
+//

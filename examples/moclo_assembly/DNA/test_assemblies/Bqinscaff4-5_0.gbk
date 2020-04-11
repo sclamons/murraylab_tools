@@ -1,0 +1,29 @@
+LOCUS       Bqinscaff4-5_0           447 bp    DNA     linear   UNK 24-MAY-2019
+DEFINITION  description?.
+ACCESSION   id?
+VERSION     id?
+KEYWORDS    .
+SOURCE      .
+  ORGANISM  .
+            .
+FEATURES             Location/Qualifiers
+     scar            41..44
+                     /label="?"
+     scar            175..178
+                     /label="?"
+     scar            203..206
+                     /label="?"
+     scar            353..356
+                     /label="?"
+     scar            404..407
+                     /label="?"
+ORIGIN
+        1 ctgacctcct gccagcaata gtaagacaac acgcaaagtc ggagacattg attatttgca
+       61 cggcgtcaca ctttgctatg ccatagcatt tttatccata agattagcgg atcctacctg
+      121 acgcttttta tcgcaactct ctactgtttc tccataccgt ttttttgggc tagctactaa
+      181 ctttcagttt agcggtctgt tttagagcta accctcacct cacctccacc tcacctccat
+      241 catctccaca tagcaagtta aaataaggct agtccgttat caactttccc atcctcacct
+      301 cactcctaca cctctacacc tccaccaagt ggcaccgagt cggtgctttt ttaggtccaa
+      361 ttattgaaca cccttcgggg tgtttttttg tttctggtct gccgcttgag ccaactccct
+      421 ttacaacctc actcaagtcc gttagag
+//

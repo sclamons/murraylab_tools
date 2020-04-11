@@ -9,12 +9,18 @@ import time
 import pydna
 import itertools as it
 import datetime
+import dnaplotlib as dpl
+import matplotlib.pyplot as plt
+import matplotlib.transforms as mtransforms
+import matplotlib.patches as mpatch
+from matplotlib.patches import FancyBboxPatch
 from pydna.dseq import Dseq
 from pydna.dseqrecord import Dseqrecord
 from pydna.assembly import Assembly as pydAssembly
 from Bio.Restriction import BsaI
 from Bio.Restriction import BbsI
 from Bio.Restriction import AarI
+from Bio.Restriction import Esp3I
 from copy import deepcopy as dc
 import ipywidgets as widgets
 from collections import defaultdict
@@ -22,21 +28,17 @@ from IPython.display import FileLink, FileLinks
 import warnings
 import re
 def incrementString(s):
+    """regular expression search! I forget exactly why this is needed"""
     m = re.search(r'\d+$', s)
     if(m):
         return s[:m.start()]+str(int(m.group())+1)
     else:
         return s+str(0)
-    #return int(m.group()) if m else None
-
-enzymes = \
-          {"BsaI":BsaI,
-           "BbsI":BbsI,
-           "AarI":AarI}
-enlist = ["BsaI",
-          "BbsI",
-          "AarI",
-          "gibson"]
+#the following makes a few data members for handling restriction enzymes
+enzymelist = [BsaI,BbsI,AarI,Esp3I]
+enzymes = {str(a):a for a in enzymelist}
+enlist = [str(a) for a in enzymelist]+["gibson"]
+#the following defines the overhangs in our library!
 ENDDICT = { \
 "GGAG":"A", \
 "TACT":"B", \
@@ -45,15 +47,28 @@ ENDDICT = { \
 "GCTT":"E", \
 "CGCT":"F", \
 "TGCC":"G", \
-"ACTA":"H" \
+"ACTA":"H", \
+"TAGA":"sc3",\
+"CATTACTCGCATCCATTCTCAGGCTGTCTCGTCTCGTCTC" : "1",\
+"GCTGGGAGTTCGTAGACGGAAACAAACGCAGAATCCAAGC" : "2",\
+"GCACTGAAGGTCCTCAATCGCACTGGAAACATCAAGGTCG" : "3",\
+"CTGACCTCCTGCCAGCAATAGTAAGACAACACGCAAAGTC" : "4",\
+"GAGCCAACTCCCTTTACAACCTCACTCAAGTCCGTTAGAG" : "5",\
+"CTCGTTCGCTGCCACCTAAGAATACTCTACGGTCACATAC" : "6",\
+"CAAGACGCTGGCTCTGACATTTCCGCTACTGAACTACTCG" : "7",\
+"CCTCGTCTCAACCAAAGCAATCAACCCATCAACCACCTGG" : "8",\
+"GTTCCTTATCATCTGGCGAATCGGACCCACAAGAGCACTG" : "9",\
+"CCAGGATACATAGATTACCACAACTCCGAGCCCTTCCACC" : "X",\
 }
+#have a dictionary of the reverse complement too
 rcENDDICT = {str(Dseq(a).rc()):ENDDICT[a] for a in ENDDICT}
 
 prevplate = None
 selenzyme = "gibson" #which enzyme to assemble everything with
 chewnt = 40
 frags = [] #fragments in the reaction
-#the following lists the components in each well, in uL
+#the following lists the components in each well, in uL. I think this is outdated
+#as of 4/25/19
 gga = \
 [["component","volume"],
  #["buffer10x",0.4],
@@ -83,7 +98,7 @@ ptypedict = {
             "ASSGGA04":"384PP_PLUS_AQ_BP",
             "ASSGIB01":"384LDV_PLUS_AQ_BP",
             "ASSGIB02":"384PP_AQ_BP"}
-waterwell = "P23" #in your source plate, include one well that is just full of water.
+waterwell = "P1" #in your source plate, include one well that is just full of water.
 #dnaPath = os.path.join(".","DNA")
 
 #go down and look at makeEchoFile
@@ -210,11 +225,11 @@ def pickAssembly():
         pickAssembly()
     return pd.read_csv(aslist),aslist
 def echoline(swell,dwell,tvol,sptype = source,spname = "Source[1]",\
-                                    dpname = "Destination[1]",platebc=""):
+                                    dpname = "Destination[1]",platebc="",partid="",partname=""):
     #if(platebc!=""):
     #    sptype = ptypedict[platebc]
-    return "{},{},{},{},,,,,{},{},{}\n".format(spname,platebc,sptype,swell,\
-                                                            dpname,dwell,tvol)
+    return "{},{},{},{},{},{},,,{},{},{}\n".format(spname,platebc,sptype,swell,\
+                                                    partid,partname,dpname,dwell,tvol)
 def echoSinglePart(partDF,partname,partfm,dwell,printstuff=True,enzyme=enzymes["BsaI"]):
     """calculates how much of a single part to put in for a number of fm."""
     try:
@@ -234,10 +249,10 @@ def echoSinglePart(partDF,partname,partfm,dwell,printstuff=True,enzyme=enzymes["
     pplate = partDF[partDF.part==partname]["platebc"].iloc[0]
     platet = partDF[partDF.part==partname]["platetype"].iloc[0]
     e1,e2 = echoPipet(partfm,pconc,pwell,dwell,sourceplate=pplate,sptype=platet,\
-                                                    printstuff=printstuff)
+                                                    partname=partname,printstuff=printstuff)
     return e1,e2,pDseq,pplate,platet
 def echoPipet(partFm,partConc,sourcewell,destwell,sourceplate=None,\
-                                                sptype=None,printstuff=True):
+                                                partname="",sptype=None,printstuff=True):
     """does the calculation to convert femtomoles to volumes, and returns
     the finished echo line"""
     pvol = (partFm/partConc)*1000
@@ -248,12 +263,12 @@ def echoPipet(partFm,partConc,sourcewell,destwell,sourceplate=None,\
     if(sourceplate==None):
         if(printstuff):
             print("===> transfer from {} to {}, {} nl".format(sourcewell,destwell,evol))
-        echostring = echoline(sourcewell,destwell,evol)
+        echostring = echoline(sourcewell,destwell,evol,partname=partname)
     else:
         if(printstuff):
             print("===> transfer from {}, plate {} to {}, {} nl".format(sourcewell,sourceplate,destwell,evol))
         echostring = echoline(sourcewell,destwell,evol,spname =sourceplate,\
-                                        sptype= sptype,platebc = sourceplate)
+                            sptype= sptype,platebc = sourceplate,partname=partname)
     return echostring, evol
 
 def makeDseqFromDF(part,partslist,col = "part",enzyme=enzymes["BsaI"]):
@@ -295,7 +310,10 @@ def makeDseqFromDF(part,partslist,col = "part",enzyme=enzymes["BsaI"]):
             warnings.warn("Be careful! sequence {} has only {} {} site"\
                             .format(part,numzymes,str(enzyme)))
         elif(numzymes>=2):
-            testcut = pDseq.cut(enzyme)
+            try:
+                testcut = pDseq.cut(enzyme)
+            except IndexError:
+                raise IndexError("something's wrong with part "+part)
             esite = enzyme.site.lower()
             esiterc = str(Dseq(enzyme.site).rc()).lower()
             if(numzymes > 2):
@@ -339,33 +357,60 @@ def makeDseqFromDF(part,partslist,col = "part",enzyme=enzymes["BsaI"]):
     return pDseq
 def bluntLeft(DSseq):
     """returns true if the left hand side of DSseq is blunt"""
+    if(type(DSseq)==Dseqrecord):
+        DSseq = DSseq.seq
     isblunt = (DSseq.five_prime_end()[0]=='blunt')&DSseq.linear
     return(isblunt)
 def bluntRight(DSseq):
     """returns true if the right hand side of DSseq is blunt"""
+    if(type(DSseq)==Dseqrecord):
+        DSseq = DSseq.seq
     isblunt = (DSseq.three_prime_end()[0]=='blunt')&DSseq.linear
     return(isblunt)
 def isNewDseq(newpart,partlist):
     """checks to see if newpart is contained within partlist, returns true
     if it isn't"""
     new = True
-    seqnewpart = str(newpart).upper()
+    if(type(newpart)==Dseqrecord):
+        newdseqpart = newpart.seq
+    #seqnewpart = str(newpart).upper()
     newcirc = newpart.circular
+    #dsequid = (newpart.seq).seguid()
+    #print("dsequid is "+str(dsequid))
     #dsnewpart = Dseqrecord(newpart)
+    #rcnewpart = newpart.rc()
+    newseguid = newdseqpart.seguid()
+    #print("newseguid is "+str(newseguid))
+    cseguid = None
+    if(newcirc and type(newpart)==Dseqrecord):
+        cseguid = newpart.cseguid()
     for part in partlist:
-        if(len(part) != len(newpart)):
-            continue
-        #dspart = Dseqrecord(part)
-        if(newcirc and part.circular):
-            if(seqnewpart in (str(part).upper()*3)):
-                new=False
-                break
-            elif(seqnewpart in (str(part.rc()).upper()*3)):
-                new=False
-                break
-        elif(dspart == dsnewpart):
+        if(type(part == Dseqrecord)):
+            dseqpart = part.seq
+        partseguid = dseqpart.seguid()
+
+        if(newseguid==partseguid):
             new=False
             break
+
+        #if(len(part) != len(newpart)):
+            #continue
+        #dspart = Dseqrecord(part)
+        if(newcirc and part.circular):
+            if(type(part) == Dseqrecord and cseguid != None):
+                comparid = part.cseguid()
+                if(comparid == cseguid):
+                    new=False
+                    break
+            #if(seqnewpart in (str(part.seq).upper()*3)):
+            #    new=False
+            #    break
+            #elif(seqnewpart in (str(part.seq.rc()).upper()*3)):
+            #    new=False
+            #    break
+        #elif(part == newpart or part == rcnewpart):
+            #new=False
+            #break
     return new
 def allCombDseq(partslist,resultlist = []):
     '''recursively finds all possible paths through the partslist'''
@@ -535,6 +580,88 @@ def getOverhang(Dnaseq,side="left"):
     """extracts the overhang in the DNA sequence, either on the left or right sides.
     If the dna sequence is blunt, then the returned overhang is called 'blunt'"""
 
+def appendPart(part,pind,edgeDict,nodeDict):
+    """this function appends a part to a dictionary of
+    edges (overhangs), and nodes(middle sequence) for running DPallcombDseq.
+    part is a DseqRecord of a DNA part that's been cut by an enzyme.
+    pind is the index of that part in the parts list
+    edgedict is a dictionary of edges that says which nodes they are connected
+    to.
+    nodedict is a dictionary of nodes that says which edges they have."""
+    Lend = ""
+    Rend = ""
+    Ltype,Lseq = part.five_prime_end()
+    Rtype,Rseq = part.three_prime_end()
+    if(Ltype == "blunt"):
+        Lend = "blunt"
+        #if the end is blunt append nothing
+        edgeDict[Lend].append([pind,0])
+        #pushDict(edgeDict,Lend,((pind,0),))
+    else:
+        if(Ltype == "3'"):
+            #if we have a 3' overhang, then add that sequence
+            Lend = str(Dseq(Lseq).rc()).lower()
+        else:
+            #otherwise, it must be a 5' overhang since we handled the
+            #blunt condition above.
+            Lend = str(Lseq).lower()
+        edgeDict[Lend].append([pind,0])
+    if(Rtype == "blunt"):
+        #same thing for the right side
+        Rend = "blunt"
+        edgeDict[Rend].append([pind,1])
+    else:
+        if(Rtype == "5'"):
+            Rend = str(Dseq(Rseq).rc()).lower()
+        else:
+            Rend = str(Rseq).lower()
+        edgeDict[Rend].append([pind,1])
+    nodeDict[pind] = (Lend,Rend)
+def annotateScar(part, end='3prime'):
+    plen = len(part)
+    if(end=='3prime'):
+        ovhg = part.seq.three_prime_end()
+        loc1 = plen-len(ovhg[1])
+        loc2 = plen
+    else:
+        ovhg = part.seq.five_prime_end()
+        loc1 = 0
+        loc2 = len(ovhg[1])
+    oseq = str(ovhg[1]).upper()
+    scarname = "?"
+    floc = int(loc1)
+    sloc = int(loc2)
+    dir = 1
+    #scardir = "fwd"
+    if((oseq in ENDDICT.keys()) or (oseq in rcENDDICT.keys())):
+        #either direction for now...
+        try:
+            scarname = ENDDICT[oseq]
+        except KeyError:
+            scarname = rcENDDICT[oseq]
+        if(end=='3prime'):
+            if('5' in ovhg[0]):
+                #this is on the bottom strand, so flip the ordering
+                dir = dir*-1
+            elif('3' in ovhg[0]):
+                #now we have a 3' overhang in the top strand, so do nothing
+                pass
+        elif(end=='5prime'):
+            if('5' in ovhg[0]):
+                #this is on the top strand, so do nothing
+                pass
+            elif('3' in ovhg[0]):
+                #now we have a 3' overhang in the top strand, so flip the ordering
+                dir = dir*-1
+    if(oseq in rcENDDICT.keys()):
+        #so if we found the reverse complement in fact, then reverse everything
+        #again
+        dir = dir*-1
+    if(dir==-1):
+        floc = int(loc2)
+        sloc = int(loc1)
+    #oseq = str(Dseq(oseq).rc())
+    part.add_feature(floc,sloc,label=scarname,type="Scar")
 def DPallCombDseq(partslist):
     '''Finds all paths through the partsist using a graph type of approach.
     First a graph is constructed from all possible overhang interactions,
@@ -548,34 +675,18 @@ def DPallCombDseq(partslist):
     partDict = {}#defaultdict(lambda : [])
     pind = 0
     import time
+    rcpartslist = []
+    number_of_parts = len(partslist)
     for part in partslist:
-        Lend = ""
-        Rend = ""
-        Ltype,Lseq = part.five_prime_end()
-        Rtype,Rseq = part.three_prime_end()
-        if(Ltype == "blunt"):
-            Lend = "blunt"
-            edgeDict[Lend].append([pind,0])
-            #pushDict(edgeDict,Lend,((pind,0),))
-        else:
-            if(Ltype == "3'"):
-                Lend = str(Dseq(Lseq).rc()).lower()
-            else:
-                Lend = str(Lseq).lower()
-            edgeDict[Lend].append([pind,0])
-        if(Rtype == "blunt"):
-            Rend = "blunt"
-            edgeDict[Rend].append([pind,1])
-        else:
-            if(Rtype == "5'"):
-                Rend = str(Dseq(Rseq).rc()).lower()
-            else:
-                Rend = str(Rseq).lower()
-            edgeDict[Rend].append([pind,1])
-        nodeDict[pind] = (Lend,Rend)
+        #this next part appends the part to the list of nodes and edges
+        appendPart(part,pind,edgeDict,nodeDict)
+        appendPart(part.rc(),pind+number_of_parts,edgeDict,nodeDict)
+        rcpartslist+=[part.rc()]
         pind+=1
+    partslist+=rcpartslist
     paths = []
     for pind in list(nodeDict.keys()):
+        #find good paths through the graph starting from every part
         paths += findDNAPaths(pind,nodeDict,edgeDict)
     goodpaths = []
     part1time = 0
@@ -586,24 +697,65 @@ def DPallCombDseq(partslist):
         fpart = path[0]
         rpart = path[-1]
         npart = False
+        accpart = Dseqrecord(partslist[fpart])
         if(nodeDict[fpart][0]=="blunt" and nodeDict[rpart][1]=="blunt"):
             #this means we have a blunt ended path! good
             npart = True
-            accpart = partslist[fpart]
+            plen = len(accpart)
+            #accpart.add_feature(0,3,label="?",type="scar")
+            #accpart.add_feature(plen-4,plen,label="?",type="scar")
             for pind in path[1:]:
-                #this is the part that traces back the path
+                #this traces back the path
+                #we want to add features as we go representing the cloning
+                #scars. These scars could be gibson or golden gate in nature
+                #SCARANNOT
+                '''
+                ovhg = accpart.seq.three_prime_end()
+                oseq = ovhg[1]
+                plen = len(accpart)
+                if("5" in ovhg[0]):
+                    #ideally we take note of what type of overhang it is
+                    #but for now i'll just take the top strand sequence
+                    oseq = str(Dseq(oseq).rc())
+                accpart.add_feature(plen-len(oseq),plen,label="?",type="scar")
+                #/scarannot'''
+                annotateScar(accpart)
                 accpart+=partslist[pind]
 
+
         elif(nodeDict[fpart][0]==nodeDict[rpart][1]):
-            #this is checking if the overhangs on the ends are compatible
+            #this is checking if the overhangs on the ends are compatible.
+            #if true, then create a circular piece of DNA!
             npart = True
             #this means we have a circular part! also good!
-            accpart = partslist[fpart]
+            #accpart = partslist[fpart]
             for pind in path[1:]:
+                #SCARANNOT
+                '''
+                ovhg = accpart.seq.three_prime_end()
+                oseq = ovhg[1]
+                plen = len(accpart)
+                if("5" in ovhg[0]):
+                    #ideally we take note of what type of overhang it is
+                    #but for now i'll just take the top strand sequence
+                    oseq = str(Dseq(oseq).rc())
+                accpart.add_feature(plen-len(oseq),plen,label="?",type="scar")
+                #/scarannot'''
+                annotateScar(accpart)
                 accpart+=partslist[pind]
+            #SCARANNOT
+            '''
+            ovhg = accpart.seq.three_prime_end()
+            oseq = ovhg[1]
+            plen = len(accpart)
+            if("5" in ovhg[0]):
+                #ideally we take note of what type of overhang it is
+                #but for now i'll just take the top strand sequence
+                oseq = str(Dseq(oseq).rc())
+            accpart.add_feature(plen-len(oseq),plen,label="?",type="scar")
+            #/scarannot'''
+            annotateScar(accpart)
             accpart=accpart.looped()
-        #part1time+= time.time()-stime
-        #stime = time.time()
         if(npart):
             #this checks if the part we think is good already exists
             #in the list
@@ -637,7 +789,7 @@ def chewback(seqtochew,chewamt,end="fiveprime"):
 def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
             output = "output.csv",selenzyme=selenzyme,fname="recentassembly",\
             protocolsDF=None,sepfiles=True,sepfilename="outputLDV.csv",\
-            printstuff=True,progbar=None,mypath="."):
+            printstuff=True,progbar=None,mypath=".",annotateDF=None):
     """makes an echo csv using the given list of assemblies and source plate of
     parts..
     inputs:
@@ -675,13 +827,15 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
     if("." in fname):
         fname = fname[:fname.index(".")]
 
-    #the following is for making a spreadsheet style sequence list for performing further assemblies
+    #the following is for making a spreadsheet style sequence list for
+    #performing further assemblies
     prodSeqSpread = "well,part,description,type,left,right,conc (nM),date,numvalue,sequence,circular,5pend,3pend,length\n"
     prevplate = None
     prevtype = None
     maxprog = float(len(aslist))
 
     for assnum in range(len(aslist)):
+        #this goes row by row
         if(progbar != None):
             progbar.value=float(assnum+1)/maxprog
         assembly = aslist[assnum:assnum+1] #cuts out one row of dataframe
@@ -700,6 +854,8 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
             cprt_temp = "gga"
             if(selenzyme == "gibson"):
                 cprt_temp = "gibson"
+            #iloc[0] is used in case there are multiple parts with the same
+            #name. Only the first one is used in that case.
             curprot = {"dnasln": protocolsDF[(protocolsDF.protocol==cprt_temp)&\
                             (protocolsDF.component == "dnasln")].amount.iloc[0]}
             partsFm = curprot[curprot.component==partfm].amount.iloc[0]
@@ -778,26 +934,35 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
                 num = 0
                 for prod in allprod:
                     Cnamenum = Cname
+                    #filename = Cname+".gbk"
                     if(len(allprod) > 1):
-                        wout = open(os.path.join(newpath,Cname+"_"+str(num)+".gbk"),"w")
+                        #filename = Cname+"_"+str(num)+".gbk"
+                        #wout = open(os.path.join(newpath,filename),"w")
                         Cnamenum = Cname+"_"+str(num)
                     else:
-                        wout = open(os.path.join(newpath,Cname+".gbk"),"w")
+                        pass
+                        #wout = open(os.path.join(newpath,filename),"w")
                     if((bluntLeft(prod) and bluntRight(prod)) or (prod.circular)):
                         num+=1
                         goodprod+=[prod]
-                        topo = ["linear","circular"][int(prod.circular)]
+                        #topo = ["linear","circular"][int(prod.circular)]
                         booltopo = ["FALSE","TRUE"][int(prod.circular)]
                         #wout.write("\r\n>Construct"+str(num)+"_"+topo)
                         un_prod = "_".join(Cnamenum.split())
-                        wout.write("LOCUS       {}                {} bp ds-DNA     {} SYN 01-JAN-0001\n".format(un_prod,len(prod),topo))
-                        wout.write("ORIGIN\n")
-                        wout.write(str(prod)+"\n//")
+                        #wout.write("LOCUS       {}                {} bp ds-DNA     {} SYN 01-JAN-0001\n".format(un_prod,len(prod),topo))
+                        #wout.write("ORIGIN\n")
+                        #wout.write(str(prod)+"\n//")
                         now = datetime.datetime.now()
                         nowdate = "{}/{}/{}".format(now.month,now.day,now.year)
+                        prod.name = Cnamenum
+                        plt.figure(figsize=(8,1))
+                        ax = plt.gca()
+                        drawConstruct(ax,prod,annotateDF=annotateDF)
+                        plt.show()
+                        prod.write(os.path.join(newpath,Cnamenum+".gbk"))
                         prodSeqSpread += "{},{},assembled with {},,,,30,{},,{},{},{},{},{}\n".format(\
-                                        dwell,un_prod,          selenzyme,nowdate,prod,booltopo,0,0,len(prod))
-                    wout.close()
+                                        dwell,un_prod,          selenzyme,nowdate,prod.seq,booltopo,0,0,len(prod))
+                    #wout.close()
                 assembend = ["y","ies"][int(len(goodprod)>1)]
                 if(printstuff):
                     print("Detected {} possible assembl{}".format(len(goodprod),assembend))
@@ -808,10 +973,29 @@ def makeEchoFile(parts,aslist,gga=ggaPD,partsFm=partsFm,source=source,\
                     #print("water from {} to {}, {} nl".format(waterwell,dwell,ewat))
                     if(prevplate == None):
                         #print("normalwater")
-                        outfile += echoline(waterwell,dwell,ewat)
+                        #im not convinced this ever gets triggered
+                        #but just in case, i guess we can find the first water well
+                        waterrows=parts[parts.part=="water"]
+                        if(len(waterrows)==0):
+                            raise KeyError("no water wells indicated!")
+                        #print(waterrows)
+                        waterrow = waterrows.iloc[0]
+                        waterwell = waterrow.well
+                        platetype= waterrow.platetype
+                        curplatebc = waterrow.platebc
+                        outfile += echoline(waterwell,dwell,ewat,spname =curplatebc,\
+                                                sptype=platetype,platebc = curplatebc,partname="water")
                     else:
                         #print("platewater")
-                        watline = echoline(waterwell,dwell,ewat,spname =prevplate,sptype=prevtype,platebc = prevplate)
+                        #print(prevplate)
+                        waterrows=parts[(parts.part=="water") & (parts.platebc==prevplate)]
+                        if(len(waterrows)==0):
+                            raise KeyError("no water wells indicated!")
+                        #print(waterrows)
+                        waterrow = waterrows.iloc[0]
+                        waterwell = waterrow.well
+                        watline = echoline(waterwell,dwell,ewat,spname =prevplate,\
+                                                sptype=prevtype,platebc = prevplate,partname="water")
                         if("LDV" in prevtype):
                             outfile2+=watline
                         else:
@@ -897,7 +1081,8 @@ outitems = []
 
 
 class assemblyFileMaker():
-    def __init__(self,mypath="."):
+    def __init__(self,mypath=".",partsdf = None):
+        self.p = partsdf
         self.holdup=False
         self.ddlay = widgets.Layout(width='75px',height='30px')
         self.eblay = widgets.Layout(width='50px',height='30px')
@@ -911,7 +1096,11 @@ class assemblyFileMaker():
                                 13,14,15,16,17,18,19,20,21,22,23,24)
         self.PlateRowsCols=(16,24)
         self.mypath = mypath
-        self.parts = findPartsListsDict(os.path.join(self.mypath,"partslist"))
+        if(type(self.p)==pd.DataFrame):
+            self.parts={"google doc":"google doc"}
+        else:
+            self.parts = findPartsListsDict(os.path.join(self.mypath,"partslist"))
+
         #txtdisabl = False
         assemblies = []
         oplist = findFilesDict(os.path.join(mypath,"assemblies"))
@@ -1049,9 +1238,9 @@ class assemblyFileMaker():
                 oplist = sorted(list(df[(df.type=="UNS")|\
                                         (df.type=="vector")].part))+[""]
             elif(colname=="enzyme"):
-                oplist =["BsaI","BbsI","gibson"]
+                oplist =enlist
                 if(prevval == ""):
-                    prevval = "BsaI"
+                    prevval = enlist[0]
             else:
                 oplist = sorted(list(df[df.type==colname].part))+[""]
         if(not (prevval in oplist)):
@@ -1102,9 +1291,11 @@ class assemblyFileMaker():
                 pass
 
             self.AddCols.value=len(ftoload.columns)-9
-        dfs = pd.read_excel(self.drop2.value,None)
-        sheetlist = list(dfs.keys())
-        self.p = pd.DataFrame.append(dfs["parts_1"],dfs["Gibson"])
+
+        if(not(type(self.p)==pd.DataFrame)):
+            dfs = pd.read_excel(self.drop2.value,None)
+            sheetlist = list(dfs.keys())
+            self.p = pd.DataFrame.append(dfs["parts_1"],dfs["Gibson"])
         self.collabels = ["vector1","promoter","UTR","CDS","Terminator","vector2","enzyme","name",""]
         if(self.AddCols.value>0):
             newclabeld = self.collabels
@@ -1301,13 +1492,16 @@ class assemblyFileMaker():
                 pass
 
 
-def make_assembly_file(mypath="."):
+def make_assembly_file(mypath=".",externalDF = None):
     """this function will assist the user with making assembly .csv files!"""
-    x=assemblyFileMaker(mypath=mypath)
+    x=assemblyFileMaker(mypath=mypath,partsdf=externalDF)
 
-def process_assembly_file(mypath=".",printstuff=True):
+def process_assembly_file(mypath=".",printstuff=True,partsdf=None,annotateDF=None):
     oplist = findFilesDict(os.path.join(mypath,"assemblies"))
-    parts = findPartsListsDict(os.path.join(mypath,"partslist"))
+    if(type(partsdf)==pd.DataFrame):
+        parts = {"google doc":"google doc"}
+    else:
+        parts = findPartsListsDict(os.path.join(mypath,"partslist"))
 
     drop1 = widgets.Dropdown(
         options=oplist,
@@ -1336,19 +1530,23 @@ def process_assembly_file(mypath=".",printstuff=True):
             max=1.0
         )
         display(pbar)
-        dfs = pd.read_excel(drop2.value,None)
-        #print(drop1.value)
         if(drop1.value[-4:]=="xlsx" or drop1.value[-3:]=="xls"):
             x=pd.read_excel(drop1.value)
         else:
             x=pd.read_csv(drop1.value)
-        sheetlist = list(dfs.keys())
-        p = pd.DataFrame.append(dfs["parts_1"],dfs["Gibson"])
+        if(type(partsdf)==pd.DataFrame):
+            p = partsdf
+        else:
+            dfs = pd.read_excel(drop2.value,None)
+            #print(drop1.value)
+
+            sheetlist = list(dfs.keys())
+            p = pd.DataFrame.append(dfs["parts_1"],dfs["Gibson"])
 
         makeEchoFile(p,x,fname = drop1.value, \
                     output = os.path.join(mypath,"output","output.csv"),\
                     sepfilename=os.path.join(mypath,"output","outputLDV.csv"),\
-                    printstuff=printstuff,progbar=pbar,mypath=mypath)
+                    printstuff=printstuff,progbar=pbar,mypath=mypath,annotateDF=annotateDF)
 
         #print(drop1.value+" and "+drop2.value)
 
@@ -1358,6 +1556,157 @@ def process_assembly_file(mypath=".",printstuff=True):
 
 #def fixPart(partseq,enz="BsaI",circ=True,end5p=0,end3p=0,goodends=ENDDICT):
 
+def drawConstruct(ax,construct,dnaline=3,dnascale=2,annotateDF=None,schematic=True,labels='off',showscars=0):
+    """creates a dnaplotlib image of a construct in dnaseqrecord format!"""
+    def substring_indexes(substring, string):
+        """
+        Generate indices of where substring begins in string
+
+        >>> list(find_substring('me', "The cat says meow, meow"))
+        [13, 19]
+        """
+        last_found = -1  # Begin at -1 so the next position to search from is 0
+        while True:
+            # Find next index of substring, by starting after its last known position
+            last_found = string.find(substring, last_found + 1)
+            if last_found == -1:
+                break  # All occurrences have been found
+            yield last_found
+
+    dr = dpl.DNARenderer(scale = dnascale,linewidth=dnaline)
+    part_renderers = dr.SBOL_part_renderers()
+
+    conlist = []
+    if(type(annotateDF)==pd.DataFrame):
+        str_conseq = str(construct.seq).lower()
+        #print("annotating!")
+        #now we annotate the plasmid!!
+        for feature_index in annotateDF.index:
+            fname = annotateDF.iloc[feature_index]["name"]
+            #iterate through all the features and see if they are in our sequence
+            #but the problem is that it could be circular
+            featseq = annotateDF.iloc[feature_index].sequence.lower()
+
+            colorstr = annotateDF.iloc[feature_index].colorlist
+            colorstr2 = annotateDF.iloc[feature_index].colorlist2
+
+            #print(featcolor)
+            feattype = annotateDF.iloc[feature_index].type
+            featlen = len(featseq)
+            #print(featcolor)
+            if(featseq[-3:]=="..."):
+                featseq=featseq[:-3]
+            rcfeatseq = str(Dseq(featseq).rc()).lower()
+            #if(feattype == 'CDS'):
+                #print(featseq[:10]+"..."+featseq[-10:])
+            if(featseq in str_conseq):
+                #it could be in there multiple times
+
+                for featfound in substring_indexes(featseq,str_conseq):
+                    #every time we find the feature...
+                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=fname,strand=1 )
+                    construct.features[-1].qualifiers["color"]=colorstr
+                    construct.features[-1].qualifiers["color2"]=colorstr2
+            if(rcfeatseq in str_conseq):
+                for featfound in substring_indexes(rcfeatseq,str_conseq):
+                    #every time we find the feature...
+                    construct.add_feature(featfound,featfound+featlen,seq=None,type=feattype,label=fname ,strand=-1)
+                    construct.features[-1].qualifiers["color"]=colorstr
+                    construct.features[-1].qualifiers["color2"]=colorstr2
+
+    if(schematic==False):
+        seqlen = len(construct)
+        sp = {'type':'EmptySpace', 'name':'base', 'fwd':True, \
+                                            'opts':{'x_extent':seqlen+10}}
+        design = [sp]
+        start,end = dr.renderDNA(ax,design,part_renderers)
+    sbol_featlist = []
+    flist = sorted(construct.features,key=lambda a: a.location.start)
+    for feature in flist:
+        #feature = a[1]
+        featname = feature.qualifiers["label"]
+        feattype = feature.type
+        if("color" in feature.qualifiers):
+            colorstr = feature.qualifiers["color"]
+            if(colorstr != "(255,255,255)" and not type(colorstr)==float):
+                #don't add pure white as a color
+                featcolor = tuple([float(a)/255.0 for a in colorstr[1:-1].split(",")])
+            else:
+                featcolor = None
+        else:
+            colorstr = None
+            featcolor = None
+        if("color2" in feature.qualifiers):
+
+            colorstr2 = feature.qualifiers["color2"]
+            if(colorstr2 != "(255,255,255)" and not type(colorstr2)==float):
+                #don't add pure white as a color
+                featcolor2 = tuple([float(a)/255.0 for a in colorstr2[1:-1].split(",")])
+            else:
+                featcolor2 = None
+        else:
+            colorstr2 = None
+            featcolor2 = None
+
+        #print(featcolor)
+        #print(feature.location)
+        loclist = [feature.location.start,feature.location.end]
+        if(loclist[1]<loclist[0]):
+            featstrand = False
+        else:
+            featstrand = True
+        if(feature.strand==-1):
+            featstrand = False
+        featstart = min(loclist)
+        featend = max(loclist)
+        featlen = featend-featstart
+        if(not schematic):
+            feat = {'type':feattype, 'name':featname, 'fwd':featstrand, \
+                                    'start':featstart,'end':featend,\
+                                    'opts':{'label':featname,'label_size':13,\
+                                    'label_y_offset':-5,'x_extent':featlen}}
+        else:
+            feat = {'type':feattype, 'name':featname, 'fwd':featstrand, \
+                                    #'start':featstart,'end':featend,\
+                                    'opts':{'label':featname,'label_size':13,\
+                                    'label_y_offset':-5}}
+            if(feattype == 'CDS'):
+                feat['opts']['x_extent']=30
+            if(not (featcolor == None) ):
+                #only add the color if it exists
+                feat['opts']['color']=featcolor
+            if(not (featcolor2 == None) ):
+                #only add the color if it exists
+                feat['opts']['color2']=featcolor2
+        if(labels=="off"):
+            feat['opts']['label']=""
+        if(feattype == 'Scar' and not showscars):
+            pass
+        else:
+            sbol_featlist+=[feat]
+
+    if(schematic):
+        start,end = dr.renderDNA(ax,sbol_featlist,part_renderers)
+    else:
+        for feat in sbol_featlist:
+            dr.annotate(ax,part_renderers,feat)
+    if(not construct.linear):
+        vheight = 5
+        curves = (end-start)*.05
+        plasmid = FancyBboxPatch((start-curves, -vheight*2), \
+                            (end-start)+(end-start)*.1+curves*2, vheight*2,\
+                fc="none",ec="black", linewidth=dnaline, \
+                boxstyle='round,pad=0,rounding_size={}'.format(curves), \
+                joinstyle="round", capstyle='round',mutation_aspect=vheight/curves)
+        ax.add_patch(plasmid)
+    else:
+        curves = 0
+    ax.set_xlim([start-1.2*curves, end+1.2*curves+(end-start)*.1*(1-construct.linear)])
+    ax.set_ylim([-12,12])
+    #ax_dna.set_aspect('equal')
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.axis('off')
 def runProgram():
     """runs the process_assembly_file function with command line prompts.
     Probably doesn't work"""

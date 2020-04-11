@@ -1,0 +1,6 @@
+vector1,promoter,UTR,CDS,Terminator,newcol1,vector2,enzyme,name,targwell
+U5A,PlacCIDAR,ntrig3,,T16m,EUX,,BsaI,Lnt5-X,A1
+U4A,PbadCIDAR,gqisc3,nscaff3,T15m,EU5,,BsaI,Bqinscaff4-5,A2
+bbLSK-X-1,S22bxT17m1-3,ptmdcast2m3-4,CT19m4-5,NT1DE5-6,Bg16-7,Cg27-X,gibson,rec25,A3
+bbLSK-X-1,S22bxT17m1-3,ptmdcast2m3-4,NT19m4-5,CT1DE5-6,Bg16-7,Cg27-X,gibson,rec26,A4
+Cole1HFA,PbadCIDAR,gqisc3,nscaff3,T15m,KanEF,,BsaI,circulartest,A5
