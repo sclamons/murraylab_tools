@@ -2,6 +2,8 @@
 #################
 reinstall_murraylab_tools.sh
 just_reinstall_murraylab_tools.sh
+push_murraylab_tools.sh
+local_reinstall_murraylab_tools.sh
 
 .ipynb_checkpoints
 *-checkpoint.ipynb
@@ -60,3 +62,6 @@ Thumbs.db
 # VIM backups #
 ######################
 .swp
+
+# DO include Travis files
+!.travis.yml
