@@ -6,7 +6,7 @@ python:
 notifications:
   email: false
 
- before_install:
+before_install:
 #   # Install codecov integration
    - pip install codecov pytest-cov
 
