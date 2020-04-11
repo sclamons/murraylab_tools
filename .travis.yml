@@ -1,7 +1,6 @@
 language: python
 python:
-- "2.7"
-- "3.4"
+- "3.5"
 - "3.7"
 
 notifications:
@@ -20,7 +19,7 @@ notifications:
 
 install:
   # run tests with coverage information
-  - pip install -r requirements
+  - pip install -r requirements.txt
   - py.test --cov=./
 
 after_success:

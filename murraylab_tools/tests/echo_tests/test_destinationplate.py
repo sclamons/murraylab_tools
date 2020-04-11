@@ -37,25 +37,23 @@ def test_request_too_many_wells(unused_plate):
     with pytest.raises(Exception):
         wells = unused_plate.request_wells(500)
 
-def test_assigning_plate_file_corrects_object_size():
-    pass
 
-def test_make_simple_picklist(test_dir):
-    # TODO Expand on assertions
-    dplate = mt_echo.DestinationPlate()
-    splate = mt_echo.SourcePlate()
-    splate.load_well_definitions(os.path.join(test_dir,
-                                'test_def_good_column_names.csv'))
-    rxns = [
-                [
-                    ['chem', 5, 10],
-                    ['h2o', 5]
-                ],
-                [
-                    ['chem', 5, 100],
-                    ['h2o', 5]
-                ]
-            ]
-    picklist, _ = dplate.make_picklist(splate, rxns)
-    assert picklist[0][0] == 'A3'
-    assert picklist[2][0] == 'A5'
+# def test_make_simple_picklist(test_dir):
+#     # TODO Expand on assertions
+#     dplate = mt_echo.DestinationPlate()
+#     splate = mt_echo.SourcePlate()
+#     splate.load_well_definitions(os.path.join(test_dir,
+#                                 'test_def_good_column_names.csv'))
+#     rxns = [
+#                 [
+#                     ['chem', 5, 10],
+#                     ['h2o', 5]
+#                 ],
+#                 [
+#                     ['chem', 5, 100],
+#                     ['h2o', 5]
+#                 ]
+#             ]
+#     picklist, _ = dplate.make_picklist(splate, rxns)
+#     assert picklist[0][0] == 'A3'
+#     assert picklist[2][0] == 'A5'
