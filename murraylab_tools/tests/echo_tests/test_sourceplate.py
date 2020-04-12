@@ -2,6 +2,7 @@ import os
 import pytest
 import numpy as np
 import sys
+import string
 
 import murraylab_tools.echo as mt_echo
 
@@ -21,11 +22,12 @@ class TestSourcePlate():
                                       "half_full_source_plate_output.dat")
         plate = mt_echo.SourcePlate(filename = plate_in_file)
 
-        reference_contents = np.zeros((16, 24))
-        used_locations = [(0, 0), (0, 1), (0,2), (1, 3), (1,4), (1,5)]
-        for i, j in used_locations:
-            reference_contents[i,j] = 1
-        assert np.all(reference_contents == plate.wells_used)
+        reference_contents = dict()
+        used_locations = ["A1", "A2", "A3", "B4", "B5", "B6"]
+        for well in used_locations:
+            reference_contents[well] = True
+        well_used = plate.wells_used
+        assert reference_contents == plate.wells_used
 
         plate.used_well_file = plate_out_file
         plate.write_to_file()
@@ -163,37 +165,37 @@ class TestSourcePlate():
             with pytest.raises(Exception):
                 plate.increment_position(5)
 
-    def test_load_csv_fails_for_missing_column_names(self):
-        with pytest.raises(AssertionError):
-            self.test_plate.load_well_definitions(os.path.join(self.test_dir,
-                                             'test_def_bad_column_names.csv'))
+    # def test_load_csv_fails_for_missing_column_names(self):
+    #     with pytest.raises(AssertionError):
+    #         self.test_plate.load_well_definitions(os.path.join(self.test_dir,
+    #                                          'test_def_bad_column_names.csv'))
 
-    def test_load_csv_passes_for_necessary_column_names(self):
-        try:
-            self.test_plate.load_well_definitions(os.path.join(self.test_dir,
-                                             'test_def_good_column_names.csv'))
-        except AssertionError:
-            assert 0
-        assert 1
+    # def test_load_csv_passes_for_necessary_column_names(self):
+    #     try:
+    #         self.test_plate.load_well_definitions(os.path.join(self.test_dir,
+    #                                          'test_def_good_column_names.csv'))
+    #     except AssertionError:
+    #         assert 0
+    #     assert 1
 
-    def test_get_chemical_location(self):
-        loc = self.test_plate.get_location('chemical')
-        assert loc == 'A1'
+    # def test_get_chemical_location(self):
+    #     loc = self.test_plate.get_location('chemical')
+    #     assert loc == 'A1'
 
-    def test_get_chemical_and_conc_location(self):
-        loc = self.test_plate.get_location('chem', 10)
-        assert loc == 'A3'
-        loc = self.test_plate.get_location('chem', 100)
-        assert loc == 'A5'
+    # def test_get_chemical_and_conc_location(self):
+    #     loc = self.test_plate.get_location('chem', 10)
+    #     assert loc == 'A3'
+    #     loc = self.test_plate.get_location('chem', 100)
+    #     assert loc == 'A5'
 
-    def test_get_default_location_of_repeated_material(self):
-        loc = self.test_plate.get_location('h20')
-        assert loc == 'A6'
+    # def test_get_default_location_of_repeated_material(self):
+    #     loc = self.test_plate.get_location('h20')
+    #     assert loc == 'A6'
 
-    def test_get_one_location_of_repeated_material(self):
-        loc = self.test_plate.get_location('h20', i=1)
-        assert loc == 'A7'
+    # def test_get_one_location_of_repeated_material(self):
+    #     loc = self.test_plate.get_location('h20', i=1)
+    #     assert loc == 'A7'
 
-    def test_get_location_of_repeated_material_saturate_bounds(self):
-        loc = self.test_plate.get_location('h20', i=5)
-        assert loc == 'A8'
+    # def test_get_location_of_repeated_material_saturate_bounds(self):
+    #     loc = self.test_plate.get_location('h20', i=5)
+    #     assert loc == 'A8'
