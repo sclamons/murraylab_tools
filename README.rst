@@ -8,7 +8,7 @@
 Tools for Common Murray Lab Protocols
 =====================================
 
-Code for common tasks in the Murray lab. Supports Python 3 only.
+Code for common tasks in the Murray lab. Supports Python >=3.6 only.
 
 Install with the following (probably requires sudo): ``pip install git+git://github.com/sclamons/murraylab_tools.git@master``
 
