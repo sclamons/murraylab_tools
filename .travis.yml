@@ -14,7 +14,9 @@ before_install:
 install:
   # run tests with coverage information
   - pip install -r requirements.txt
-  - py.test --cov=./
+  # - py.test --cov=./
+
+script: pytest
 
 after_success:
   - codecov
