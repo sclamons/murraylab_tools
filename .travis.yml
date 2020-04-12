@@ -6,17 +6,7 @@ python:
 notifications:
   email: false
 
-before_install:
-#   # Install codecov integration
-   - pip install codecov pytest-cov
-
-
 install:
-  # run tests with coverage information
   - pip install -r requirements.txt
-  # - py.test --cov=./
 
 script: pytest
-
-after_success:
-  - codecov
