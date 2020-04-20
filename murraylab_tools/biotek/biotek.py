@@ -164,7 +164,7 @@ def read_supplementary_info(input_filename):
             info[title_line[i]] = dict()
         for line in reader:
             line = list(map(lambda s:s.strip(), line))
-            if line[0].strip() == "":
+            if len(line) == 0 or line[0].strip() == "":
                 continue
             for i in range(1, len(title_line)):
                 info[title_line[i]][line[0]] = line[i]
