@@ -1,6 +1,6 @@
 Source Plate,Source Plate Type,Source Well,Sample ID,Destination Plate Name,Destination Well,Transfer Volume,Sample Comment
-Source[1],384PP_AQ_BP,F24,Cavendish,Nunc_384_black_glassbottom,D2,100,Actual concentration: 1.00 nM
-Source[1],384PP_AQ_BP,F24,Cavendish,Nunc_384_black_glassbottom,D3,100,Actual concentration: 1.00 nM
-Source[1],384PP_AQ_BP,F24,Cavendish,Nunc_384_black_glassbottom,E2,100,Actual concentration: 1.00 nM
-Source[1],384PP_AQ_BP,F24,Cavendish,Nunc_384_black_glassbottom,E3,100,Actual concentration: 1.00 nM
-Source[1],384PP_AQ_BP,H02,Gros Michel,Nunc_384_black_glassbottom,F5,300,Actual concentration: 3.00 nM
+Source[1],384PP_AQ_BP,K16,Cavendish,Nunc_384_black_glassbottom,D2,100,Actual concentration: 1.00 nM
+Source[1],384PP_AQ_BP,K16,Cavendish,Nunc_384_black_glassbottom,D3,100,Actual concentration: 1.00 nM
+Source[1],384PP_AQ_BP,K16,Cavendish,Nunc_384_black_glassbottom,E2,100,Actual concentration: 1.00 nM
+Source[1],384PP_AQ_BP,K16,Cavendish,Nunc_384_black_glassbottom,E3,100,Actual concentration: 1.00 nM
+Source[1],384PP_AQ_BP,K22,Gros Michel,Nunc_384_black_glassbottom,F5,300,Actual concentration: 3.00 nM

@@ -24,10 +24,10 @@ GFP Plasmid:
 	total volume: 22.25 uL
 
 On the source plate:
-	Add 65.0uL of master_mix in well: A13
-	Add 53.0uL of master_mix in well: A14
-	Add 40.375uL of water in well: A16
-	Add 22.1uL of Positive Control in well: A18
-	Add 21.925uL of RFP Plasmid in well: A20
-	Add 22.35uL of CFP Plasmid in well: A22
-	Add 22.25uL of GFP Plasmid in well: A24
+	Add 65.0uL of master_mix in well: D13
+	Add 53.0uL of master_mix in well: D14
+	Add 40.375uL of water in well: D16
+	Add 22.1uL of Positive Control in well: D18
+	Add 21.925uL of RFP Plasmid in well: D20
+	Add 22.35uL of CFP Plasmid in well: D22
+	Add 22.25uL of GFP Plasmid in well: D24

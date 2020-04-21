@@ -8,6 +8,7 @@ from .biotek import calibration_data, \
                     window_averages, \
                     spline_fit, \
                     smoothed_derivatives, \
+                    moving_average_fit, \
                     read_supplementary_info, \
                     extract_trajectories_only, \
                     normalize, \

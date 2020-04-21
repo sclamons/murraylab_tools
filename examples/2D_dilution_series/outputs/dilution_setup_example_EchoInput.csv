@@ -1,239 +1,239 @@
 Source Plate,Source Plate Type,Source Well,Sample ID,Destination Plate Name,Destination Well,Transfer Volume,Sample Comment
-Source[1],384PP_AQ_BP,J01,txtl_mm,Nunc_384_black_glassbottom,D2,7500,
-Source[1],384PP_AQ_BP,J01,txtl_mm,Nunc_384_black_glassbottom,D3,7500,
-Source[1],384PP_AQ_BP,J01,txtl_mm,Nunc_384_black_glassbottom,D4,7500,
-Source[1],384PP_AQ_BP,J01,txtl_mm,Nunc_384_black_glassbottom,D5,7500,
-Source[1],384PP_AQ_BP,J01,txtl_mm,Nunc_384_black_glassbottom,D6,7500,
-Source[1],384PP_AQ_BP,J01,txtl_mm,Nunc_384_black_glassbottom,D7,6500,
-Source[1],384PP_AQ_BP,J02,txtl_mm,Nunc_384_black_glassbottom,D7,1000,
-Source[1],384PP_AQ_BP,J02,txtl_mm,Nunc_384_black_glassbottom,D8,7500,
-Source[1],384PP_AQ_BP,J02,txtl_mm,Nunc_384_black_glassbottom,D9,7500,
-Source[1],384PP_AQ_BP,J02,txtl_mm,Nunc_384_black_glassbottom,D10,7500,
-Source[1],384PP_AQ_BP,J02,txtl_mm,Nunc_384_black_glassbottom,D11,7500,
-Source[1],384PP_AQ_BP,J02,txtl_mm,Nunc_384_black_glassbottom,E2,7500,
-Source[1],384PP_AQ_BP,J02,txtl_mm,Nunc_384_black_glassbottom,E3,5500,
-Source[1],384PP_AQ_BP,J03,txtl_mm,Nunc_384_black_glassbottom,E3,2000,
-Source[1],384PP_AQ_BP,J03,txtl_mm,Nunc_384_black_glassbottom,E4,7500,
-Source[1],384PP_AQ_BP,J03,txtl_mm,Nunc_384_black_glassbottom,E5,7500,
-Source[1],384PP_AQ_BP,J03,txtl_mm,Nunc_384_black_glassbottom,E6,7500,
-Source[1],384PP_AQ_BP,J03,txtl_mm,Nunc_384_black_glassbottom,E7,7500,
-Source[1],384PP_AQ_BP,J03,txtl_mm,Nunc_384_black_glassbottom,E8,7500,
-Source[1],384PP_AQ_BP,J03,txtl_mm,Nunc_384_black_glassbottom,E9,4500,
-Source[1],384PP_AQ_BP,J04,txtl_mm,Nunc_384_black_glassbottom,E9,3000,
-Source[1],384PP_AQ_BP,J04,txtl_mm,Nunc_384_black_glassbottom,E10,7500,
-Source[1],384PP_AQ_BP,J04,txtl_mm,Nunc_384_black_glassbottom,E11,7500,
-Source[1],384PP_AQ_BP,J04,txtl_mm,Nunc_384_black_glassbottom,F2,7500,
-Source[1],384PP_AQ_BP,J04,txtl_mm,Nunc_384_black_glassbottom,F3,7500,
-Source[1],384PP_AQ_BP,J04,txtl_mm,Nunc_384_black_glassbottom,F4,7500,
-Source[1],384PP_AQ_BP,J04,txtl_mm,Nunc_384_black_glassbottom,F5,3500,
-Source[1],384PP_AQ_BP,J05,txtl_mm,Nunc_384_black_glassbottom,F5,4000,
-Source[1],384PP_AQ_BP,J05,txtl_mm,Nunc_384_black_glassbottom,F6,7500,
-Source[1],384PP_AQ_BP,J05,txtl_mm,Nunc_384_black_glassbottom,F7,7500,
-Source[1],384PP_AQ_BP,J05,txtl_mm,Nunc_384_black_glassbottom,F8,7500,
-Source[1],384PP_AQ_BP,J05,txtl_mm,Nunc_384_black_glassbottom,F9,7500,
-Source[1],384PP_AQ_BP,J05,txtl_mm,Nunc_384_black_glassbottom,F10,7500,
-Source[1],384PP_AQ_BP,J05,txtl_mm,Nunc_384_black_glassbottom,F11,2500,
-Source[1],384PP_AQ_BP,J06,txtl_mm,Nunc_384_black_glassbottom,F11,5000,
-Source[1],384PP_AQ_BP,J06,txtl_mm,Nunc_384_black_glassbottom,G2,7500,
-Source[1],384PP_AQ_BP,J06,txtl_mm,Nunc_384_black_glassbottom,G3,7500,
-Source[1],384PP_AQ_BP,J06,txtl_mm,Nunc_384_black_glassbottom,G4,7500,
-Source[1],384PP_AQ_BP,J06,txtl_mm,Nunc_384_black_glassbottom,G5,7500,
-Source[1],384PP_AQ_BP,J06,txtl_mm,Nunc_384_black_glassbottom,G6,7500,
-Source[1],384PP_AQ_BP,J06,txtl_mm,Nunc_384_black_glassbottom,G7,1500,
-Source[1],384PP_AQ_BP,J07,txtl_mm,Nunc_384_black_glassbottom,G7,6000,
-Source[1],384PP_AQ_BP,J07,txtl_mm,Nunc_384_black_glassbottom,G8,7500,
-Source[1],384PP_AQ_BP,J07,txtl_mm,Nunc_384_black_glassbottom,G9,7500,
-Source[1],384PP_AQ_BP,J07,txtl_mm,Nunc_384_black_glassbottom,G10,7500,
-Source[1],384PP_AQ_BP,J07,txtl_mm,Nunc_384_black_glassbottom,G11,7500,
-Source[1],384PP_AQ_BP,J07,txtl_mm,Nunc_384_black_glassbottom,H2,7500,
-Source[1],384PP_AQ_BP,J07,txtl_mm,Nunc_384_black_glassbottom,H3,500,
-Source[1],384PP_AQ_BP,J08,txtl_mm,Nunc_384_black_glassbottom,H3,7000,
-Source[1],384PP_AQ_BP,J08,txtl_mm,Nunc_384_black_glassbottom,H4,7500,
-Source[1],384PP_AQ_BP,J08,txtl_mm,Nunc_384_black_glassbottom,H5,7500,
-Source[1],384PP_AQ_BP,J08,txtl_mm,Nunc_384_black_glassbottom,H6,7500,
-Source[1],384PP_AQ_BP,J08,txtl_mm,Nunc_384_black_glassbottom,H7,7500,
-Source[1],384PP_AQ_BP,J08,txtl_mm,Nunc_384_black_glassbottom,H8,7000,
-Source[1],384PP_AQ_BP,J09,txtl_mm,Nunc_384_black_glassbottom,H8,500,
-Source[1],384PP_AQ_BP,J09,txtl_mm,Nunc_384_black_glassbottom,H9,7500,
-Source[1],384PP_AQ_BP,J09,txtl_mm,Nunc_384_black_glassbottom,H10,7500,
-Source[1],384PP_AQ_BP,J09,txtl_mm,Nunc_384_black_glassbottom,H11,7500,
-Source[1],384PP_AQ_BP,J09,txtl_mm,Nunc_384_black_glassbottom,I2,7500,
-Source[1],384PP_AQ_BP,J09,txtl_mm,Nunc_384_black_glassbottom,I3,7500,
-Source[1],384PP_AQ_BP,J09,txtl_mm,Nunc_384_black_glassbottom,I4,6000,
-Source[1],384PP_AQ_BP,J10,txtl_mm,Nunc_384_black_glassbottom,I4,1500,
-Source[1],384PP_AQ_BP,J10,txtl_mm,Nunc_384_black_glassbottom,I5,7500,
-Source[1],384PP_AQ_BP,J10,txtl_mm,Nunc_384_black_glassbottom,I6,7500,
-Source[1],384PP_AQ_BP,J10,txtl_mm,Nunc_384_black_glassbottom,I7,7500,
-Source[1],384PP_AQ_BP,J10,txtl_mm,Nunc_384_black_glassbottom,I8,7500,
-Source[1],384PP_AQ_BP,J10,txtl_mm,Nunc_384_black_glassbottom,I9,7500,
-Source[1],384PP_AQ_BP,J10,txtl_mm,Nunc_384_black_glassbottom,I10,5000,
-Source[1],384PP_AQ_BP,J11,txtl_mm,Nunc_384_black_glassbottom,I10,2500,
-Source[1],384PP_AQ_BP,J11,txtl_mm,Nunc_384_black_glassbottom,I11,7500,
-Source[1],384PP_AQ_BP,J11,txtl_mm,Nunc_384_black_glassbottom,J2,7500,
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E2,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E3,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E4,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E5,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E6,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E7,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E8,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E9,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E10,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,E11,75,Actual concentration: 1.04 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F2,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F3,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F4,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F5,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F6,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F7,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F8,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F9,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F10,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,F11,150,Actual concentration: 2.09 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G2,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G3,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G4,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G5,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G6,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G7,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G8,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G9,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G10,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,G11,225,Actual concentration: 3.13 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H2,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H3,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H4,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H5,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H6,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H7,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H8,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H9,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H10,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,H11,300,Actual concentration: 4.17 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I2,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I3,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I4,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I5,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I6,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I7,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I8,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I9,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I10,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J13,GFP Plasmid,Nunc_384_black_glassbottom,I11,350,Actual concentration: 4.87 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,D3,100,Actual concentration: 10.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,D4,200,Actual concentration: 20.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,D5,300,Actual concentration: 30.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,D6,400,Actual concentration: 40.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,D7,500,Actual concentration: 50.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,D8,600,Actual concentration: 60.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,D9,700,Actual concentration: 70.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,D10,800,Actual concentration: 80.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,D11,900,Actual concentration: 90.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,E3,100,Actual concentration: 10.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,E4,200,Actual concentration: 20.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,E5,300,Actual concentration: 30.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,E6,400,Actual concentration: 40.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,E7,500,Actual concentration: 50.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,E8,600,Actual concentration: 60.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,E9,700,Actual concentration: 70.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,E10,800,Actual concentration: 80.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,E11,900,Actual concentration: 90.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,F3,100,Actual concentration: 10.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,F4,200,Actual concentration: 20.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,F5,300,Actual concentration: 30.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,F6,400,Actual concentration: 40.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,F7,500,Actual concentration: 50.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,F8,600,Actual concentration: 60.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,F9,700,Actual concentration: 70.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,F10,800,Actual concentration: 80.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,F11,900,Actual concentration: 90.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,G3,100,Actual concentration: 10.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,G4,200,Actual concentration: 20.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,G5,300,Actual concentration: 30.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,G6,400,Actual concentration: 40.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,G7,500,Actual concentration: 50.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,G8,600,Actual concentration: 60.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,G9,700,Actual concentration: 70.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,G10,800,Actual concentration: 80.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,G11,900,Actual concentration: 90.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,H3,100,Actual concentration: 10.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,H4,200,Actual concentration: 20.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,H5,300,Actual concentration: 30.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,H6,400,Actual concentration: 40.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,H7,500,Actual concentration: 50.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,H8,600,Actual concentration: 60.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,H9,700,Actual concentration: 70.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,H10,800,Actual concentration: 80.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,H11,900,Actual concentration: 90.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,I3,100,Actual concentration: 10.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,I4,200,Actual concentration: 20.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,I5,300,Actual concentration: 30.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,I6,400,Actual concentration: 40.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,I7,500,Actual concentration: 50.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,I8,600,Actual concentration: 60.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,I9,700,Actual concentration: 70.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,I10,800,Actual concentration: 80.00 nM
-Source[1],384PP_AQ_BP,J15,ATc,Nunc_384_black_glassbottom,I11,900,Actual concentration: 90.00 nM
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D2,2500,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D3,2400,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D4,2300,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D5,2200,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D6,2100,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D7,2000,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D8,1900,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D9,1800,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D10,1700,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,D11,1600,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E2,2425,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E3,2325,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E4,2225,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E5,2125,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E6,2025,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E7,1925,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E8,1825,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E9,1725,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E10,1625,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,E11,1525,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,F2,2350,
-Source[1],384PP_AQ_BP,J17,water,Nunc_384_black_glassbottom,F3,1400,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,F3,850,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,F4,2150,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,F5,2050,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,F6,1950,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,F7,1850,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,F8,1750,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,F9,1650,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,F10,1550,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,F11,1450,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G2,2275,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G3,2175,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G4,2075,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G5,1975,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G6,1875,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G7,1775,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G8,1675,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G9,1575,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G10,1475,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,G11,1375,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,H2,2200,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,H3,2100,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,H4,2000,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,H5,1900,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,H6,1800,
-Source[1],384PP_AQ_BP,J18,water,Nunc_384_black_glassbottom,H7,500,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,H7,1200,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,H8,1600,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,H9,1500,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,H10,1400,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,H11,1300,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I2,2150,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I3,2050,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I4,1950,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I5,1850,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I6,1750,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I7,1650,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I8,1550,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I9,1450,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I10,1350,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,I11,1250,
-Source[1],384PP_AQ_BP,J19,water,Nunc_384_black_glassbottom,J2,2500,
+Source[1],384PP_AQ_BP,O01,txtl_mm,Nunc_384_black_glassbottom,D2,7500,
+Source[1],384PP_AQ_BP,O01,txtl_mm,Nunc_384_black_glassbottom,D3,7500,
+Source[1],384PP_AQ_BP,O01,txtl_mm,Nunc_384_black_glassbottom,D4,7500,
+Source[1],384PP_AQ_BP,O01,txtl_mm,Nunc_384_black_glassbottom,D5,7500,
+Source[1],384PP_AQ_BP,O01,txtl_mm,Nunc_384_black_glassbottom,D6,7500,
+Source[1],384PP_AQ_BP,O01,txtl_mm,Nunc_384_black_glassbottom,D7,6500,
+Source[1],384PP_AQ_BP,O02,txtl_mm,Nunc_384_black_glassbottom,D7,1000,
+Source[1],384PP_AQ_BP,O02,txtl_mm,Nunc_384_black_glassbottom,D8,7500,
+Source[1],384PP_AQ_BP,O02,txtl_mm,Nunc_384_black_glassbottom,D9,7500,
+Source[1],384PP_AQ_BP,O02,txtl_mm,Nunc_384_black_glassbottom,D10,7500,
+Source[1],384PP_AQ_BP,O02,txtl_mm,Nunc_384_black_glassbottom,D11,7500,
+Source[1],384PP_AQ_BP,O02,txtl_mm,Nunc_384_black_glassbottom,E2,7500,
+Source[1],384PP_AQ_BP,O02,txtl_mm,Nunc_384_black_glassbottom,E3,5500,
+Source[1],384PP_AQ_BP,O03,txtl_mm,Nunc_384_black_glassbottom,E3,2000,
+Source[1],384PP_AQ_BP,O03,txtl_mm,Nunc_384_black_glassbottom,E4,7500,
+Source[1],384PP_AQ_BP,O03,txtl_mm,Nunc_384_black_glassbottom,E5,7500,
+Source[1],384PP_AQ_BP,O03,txtl_mm,Nunc_384_black_glassbottom,E6,7500,
+Source[1],384PP_AQ_BP,O03,txtl_mm,Nunc_384_black_glassbottom,E7,7500,
+Source[1],384PP_AQ_BP,O03,txtl_mm,Nunc_384_black_glassbottom,E8,7500,
+Source[1],384PP_AQ_BP,O03,txtl_mm,Nunc_384_black_glassbottom,E9,4500,
+Source[1],384PP_AQ_BP,O04,txtl_mm,Nunc_384_black_glassbottom,E9,3000,
+Source[1],384PP_AQ_BP,O04,txtl_mm,Nunc_384_black_glassbottom,E10,7500,
+Source[1],384PP_AQ_BP,O04,txtl_mm,Nunc_384_black_glassbottom,E11,7500,
+Source[1],384PP_AQ_BP,O04,txtl_mm,Nunc_384_black_glassbottom,F2,7500,
+Source[1],384PP_AQ_BP,O04,txtl_mm,Nunc_384_black_glassbottom,F3,7500,
+Source[1],384PP_AQ_BP,O04,txtl_mm,Nunc_384_black_glassbottom,F4,7500,
+Source[1],384PP_AQ_BP,O04,txtl_mm,Nunc_384_black_glassbottom,F5,3500,
+Source[1],384PP_AQ_BP,O05,txtl_mm,Nunc_384_black_glassbottom,F5,4000,
+Source[1],384PP_AQ_BP,O05,txtl_mm,Nunc_384_black_glassbottom,F6,7500,
+Source[1],384PP_AQ_BP,O05,txtl_mm,Nunc_384_black_glassbottom,F7,7500,
+Source[1],384PP_AQ_BP,O05,txtl_mm,Nunc_384_black_glassbottom,F8,7500,
+Source[1],384PP_AQ_BP,O05,txtl_mm,Nunc_384_black_glassbottom,F9,7500,
+Source[1],384PP_AQ_BP,O05,txtl_mm,Nunc_384_black_glassbottom,F10,7500,
+Source[1],384PP_AQ_BP,O05,txtl_mm,Nunc_384_black_glassbottom,F11,2500,
+Source[1],384PP_AQ_BP,O06,txtl_mm,Nunc_384_black_glassbottom,F11,5000,
+Source[1],384PP_AQ_BP,O06,txtl_mm,Nunc_384_black_glassbottom,G2,7500,
+Source[1],384PP_AQ_BP,O06,txtl_mm,Nunc_384_black_glassbottom,G3,7500,
+Source[1],384PP_AQ_BP,O06,txtl_mm,Nunc_384_black_glassbottom,G4,7500,
+Source[1],384PP_AQ_BP,O06,txtl_mm,Nunc_384_black_glassbottom,G5,7500,
+Source[1],384PP_AQ_BP,O06,txtl_mm,Nunc_384_black_glassbottom,G6,7500,
+Source[1],384PP_AQ_BP,O06,txtl_mm,Nunc_384_black_glassbottom,G7,1500,
+Source[1],384PP_AQ_BP,O07,txtl_mm,Nunc_384_black_glassbottom,G7,6000,
+Source[1],384PP_AQ_BP,O07,txtl_mm,Nunc_384_black_glassbottom,G8,7500,
+Source[1],384PP_AQ_BP,O07,txtl_mm,Nunc_384_black_glassbottom,G9,7500,
+Source[1],384PP_AQ_BP,O07,txtl_mm,Nunc_384_black_glassbottom,G10,7500,
+Source[1],384PP_AQ_BP,O07,txtl_mm,Nunc_384_black_glassbottom,G11,7500,
+Source[1],384PP_AQ_BP,O07,txtl_mm,Nunc_384_black_glassbottom,H2,7500,
+Source[1],384PP_AQ_BP,O07,txtl_mm,Nunc_384_black_glassbottom,H3,500,
+Source[1],384PP_AQ_BP,O08,txtl_mm,Nunc_384_black_glassbottom,H3,7000,
+Source[1],384PP_AQ_BP,O08,txtl_mm,Nunc_384_black_glassbottom,H4,7500,
+Source[1],384PP_AQ_BP,O08,txtl_mm,Nunc_384_black_glassbottom,H5,7500,
+Source[1],384PP_AQ_BP,O08,txtl_mm,Nunc_384_black_glassbottom,H6,7500,
+Source[1],384PP_AQ_BP,O08,txtl_mm,Nunc_384_black_glassbottom,H7,7500,
+Source[1],384PP_AQ_BP,O08,txtl_mm,Nunc_384_black_glassbottom,H8,7000,
+Source[1],384PP_AQ_BP,O09,txtl_mm,Nunc_384_black_glassbottom,H8,500,
+Source[1],384PP_AQ_BP,O09,txtl_mm,Nunc_384_black_glassbottom,H9,7500,
+Source[1],384PP_AQ_BP,O09,txtl_mm,Nunc_384_black_glassbottom,H10,7500,
+Source[1],384PP_AQ_BP,O09,txtl_mm,Nunc_384_black_glassbottom,H11,7500,
+Source[1],384PP_AQ_BP,O09,txtl_mm,Nunc_384_black_glassbottom,I2,7500,
+Source[1],384PP_AQ_BP,O09,txtl_mm,Nunc_384_black_glassbottom,I3,7500,
+Source[1],384PP_AQ_BP,O09,txtl_mm,Nunc_384_black_glassbottom,I4,6000,
+Source[1],384PP_AQ_BP,O10,txtl_mm,Nunc_384_black_glassbottom,I4,1500,
+Source[1],384PP_AQ_BP,O10,txtl_mm,Nunc_384_black_glassbottom,I5,7500,
+Source[1],384PP_AQ_BP,O10,txtl_mm,Nunc_384_black_glassbottom,I6,7500,
+Source[1],384PP_AQ_BP,O10,txtl_mm,Nunc_384_black_glassbottom,I7,7500,
+Source[1],384PP_AQ_BP,O10,txtl_mm,Nunc_384_black_glassbottom,I8,7500,
+Source[1],384PP_AQ_BP,O10,txtl_mm,Nunc_384_black_glassbottom,I9,7500,
+Source[1],384PP_AQ_BP,O10,txtl_mm,Nunc_384_black_glassbottom,I10,5000,
+Source[1],384PP_AQ_BP,O11,txtl_mm,Nunc_384_black_glassbottom,I10,2500,
+Source[1],384PP_AQ_BP,O11,txtl_mm,Nunc_384_black_glassbottom,I11,7500,
+Source[1],384PP_AQ_BP,O11,txtl_mm,Nunc_384_black_glassbottom,J2,7500,
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E2,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E3,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E4,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E5,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E6,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E7,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E8,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E9,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E10,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,E11,75,Actual concentration: 1.04 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F2,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F3,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F4,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F5,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F6,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F7,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F8,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F9,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F10,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,F11,150,Actual concentration: 2.09 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G2,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G3,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G4,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G5,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G6,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G7,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G8,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G9,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G10,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,G11,225,Actual concentration: 3.13 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H2,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H3,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H4,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H5,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H6,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H7,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H8,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H9,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H10,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,H11,300,Actual concentration: 4.17 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I2,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I3,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I4,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I5,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I6,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I7,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I8,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I9,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I10,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O13,GFP Plasmid,Nunc_384_black_glassbottom,I11,350,Actual concentration: 4.87 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,D3,100,Actual concentration: 10.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,D4,200,Actual concentration: 20.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,D5,300,Actual concentration: 30.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,D6,400,Actual concentration: 40.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,D7,500,Actual concentration: 50.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,D8,600,Actual concentration: 60.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,D9,700,Actual concentration: 70.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,D10,800,Actual concentration: 80.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,D11,900,Actual concentration: 90.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,E3,100,Actual concentration: 10.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,E4,200,Actual concentration: 20.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,E5,300,Actual concentration: 30.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,E6,400,Actual concentration: 40.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,E7,500,Actual concentration: 50.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,E8,600,Actual concentration: 60.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,E9,700,Actual concentration: 70.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,E10,800,Actual concentration: 80.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,E11,900,Actual concentration: 90.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,F3,100,Actual concentration: 10.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,F4,200,Actual concentration: 20.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,F5,300,Actual concentration: 30.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,F6,400,Actual concentration: 40.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,F7,500,Actual concentration: 50.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,F8,600,Actual concentration: 60.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,F9,700,Actual concentration: 70.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,F10,800,Actual concentration: 80.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,F11,900,Actual concentration: 90.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,G3,100,Actual concentration: 10.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,G4,200,Actual concentration: 20.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,G5,300,Actual concentration: 30.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,G6,400,Actual concentration: 40.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,G7,500,Actual concentration: 50.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,G8,600,Actual concentration: 60.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,G9,700,Actual concentration: 70.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,G10,800,Actual concentration: 80.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,G11,900,Actual concentration: 90.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,H3,100,Actual concentration: 10.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,H4,200,Actual concentration: 20.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,H5,300,Actual concentration: 30.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,H6,400,Actual concentration: 40.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,H7,500,Actual concentration: 50.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,H8,600,Actual concentration: 60.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,H9,700,Actual concentration: 70.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,H10,800,Actual concentration: 80.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,H11,900,Actual concentration: 90.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,I3,100,Actual concentration: 10.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,I4,200,Actual concentration: 20.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,I5,300,Actual concentration: 30.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,I6,400,Actual concentration: 40.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,I7,500,Actual concentration: 50.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,I8,600,Actual concentration: 60.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,I9,700,Actual concentration: 70.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,I10,800,Actual concentration: 80.00 nM
+Source[1],384PP_AQ_BP,O15,ATc,Nunc_384_black_glassbottom,I11,900,Actual concentration: 90.00 nM
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D2,2500,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D3,2400,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D4,2300,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D5,2200,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D6,2100,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D7,2000,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D8,1900,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D9,1800,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D10,1700,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,D11,1600,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E2,2425,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E3,2325,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E4,2225,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E5,2125,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E6,2025,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E7,1925,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E8,1825,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E9,1725,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E10,1625,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,E11,1525,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,F2,2350,
+Source[1],384PP_AQ_BP,O17,water,Nunc_384_black_glassbottom,F3,1400,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,F3,850,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,F4,2150,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,F5,2050,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,F6,1950,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,F7,1850,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,F8,1750,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,F9,1650,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,F10,1550,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,F11,1450,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G2,2275,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G3,2175,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G4,2075,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G5,1975,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G6,1875,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G7,1775,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G8,1675,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G9,1575,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G10,1475,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,G11,1375,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,H2,2200,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,H3,2100,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,H4,2000,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,H5,1900,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,H6,1800,
+Source[1],384PP_AQ_BP,O18,water,Nunc_384_black_glassbottom,H7,500,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,H7,1200,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,H8,1600,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,H9,1500,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,H10,1400,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,H11,1300,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I2,2150,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I3,2050,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I4,1950,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I5,1850,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I6,1750,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I7,1650,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I8,1550,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I9,1450,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I10,1350,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,I11,1250,
+Source[1],384PP_AQ_BP,O19,water,Nunc_384_black_glassbottom,J2,2500,

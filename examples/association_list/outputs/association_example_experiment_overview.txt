@@ -28,12 +28,12 @@ CFP plasmid:
 	total volume: 21.23 uL
 
 On the source plate:
-	Add 28.5uL of primer_1F in well: C07
-	Add 28.5uL of primer_1R in well: C09
-	Add 28.5uL of primer_2F in well: C11
-	Add 28.5uL of primer_2R in well: C13
-	Add 28.5uL of primer_3F in well: C15
-	Add 28.5uL of primer_3R in well: C17
-	Add 21.225uL of GFP plasmid in well: C19
-	Add 21.15uL of RFP plasmid in well: C21
-	Add 21.225uL of CFP plasmid in well: C23
+	Add 28.5uL of primer_1F in well: D19
+	Add 28.5uL of primer_1R in well: D21
+	Add 28.5uL of primer_2F in well: D23
+	Add 28.5uL of primer_2R in well: E01
+	Add 28.5uL of primer_3F in well: E03
+	Add 28.5uL of primer_3R in well: E05
+	Add 21.225uL of GFP plasmid in well: E07
+	Add 21.15uL of RFP plasmid in well: E09
+	Add 21.225uL of CFP plasmid in well: E11

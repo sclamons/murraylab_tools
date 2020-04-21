@@ -10,8 +10,8 @@ Viscous:
 	total volume: 0.50 uL
 
 On the source plate:
-	Add 21.4uL of Cavendish in well: F24
-	Add 21.3uL of Gros Michel in well: H02
+	Add 21.4uL of Cavendish in well: K16
+	Add 21.3uL of Gros Michel in well: K22
 
 On destination plate:
 	Pipette 0.50 ul of Viscous into wells:, E4
