@@ -5,6 +5,8 @@
    :alt: TravisCI test coverage
    :target: https://codecov.io/github/sclamons/murraylab_tools/
 
+This package has moved to https://github.com/biocircuits/murraylab_tools and is no longer actively maintained here. 
+
 Tools for Common Murray Lab Protocols
 =====================================
 
